@@ -1,7 +1,67 @@
-/*
- * Computer Reservation System
- * Custom Styles
- */
+/* acknowledgement to sir art for this font import*/
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+*{
+    margin: 0%;
+    padding: 0;
+    font-weight: bold;
+}
+
+body{
+    font-size: 14px;
+    line-height: 18px;
+    font-family: Roboto, sans-serif;
+}
+
+.bg-img{
+   background-image: url("/assets/default.png");
+   background-position: cover;
+   background-size: contain;     
+}
+
+.logo-img{
+   background-image: url("/assets/logo.png");
+   background-size: cover;
+   width: 32px;
+   height: 32px;
+}
+
+
+.topnav {
+  background-color: #000000;
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 20px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav img{
+   background-image: url("/assets/logo.png");
+   background-size: cover;
+   float: left;
+   width: 32px;
+   height: 32px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
 
 /* ================================
    TODO: Global Styles
