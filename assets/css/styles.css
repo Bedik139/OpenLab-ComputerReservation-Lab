@@ -1,118 +1,537 @@
-/* acknowledgement to sir art for this font import*/
+/* ================================================================
+   OPENLAB - Computer Reservation System Stylesheet
+   ================================================================
+   Author: OpenLab Team
+   Description: Main stylesheet for the DLSU Computer Lab Reservation System
+
+   TABLE OF CONTENTS:
+   1. Font Imports
+   2. CSS Reset & Base Styles
+   3. Site Grid Layout
+   4. Navigation
+   5. Search Bar
+   6. Landing Banner
+   7. Features Section
+   8. TODO: Login Page (login.html)
+   9. TODO: Register Page (register.html)
+   10. TODO: Dashboard Page (dashboard.html)
+   11. TODO: Available Slots Page (available-slots.html)
+   12. TODO: JavaScript Interactions (main.js)
+   ================================================================ */
+
+
+/* ================================================================
+   1. FONT IMPORTS
+   ================================================================
+   @import: Loads external Google Fonts
+   - Roboto: Clean, modern sans-serif font
+   - Weights: 400 (regular), 700 (bold)
+   - display=swap: Shows fallback font while loading (better UX)
+   ================================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-*{
-    margin: 0%;
-    padding: 0;
-    font-weight: bold;
+
+/* ================================================================
+   2. CSS RESET & BASE STYLES
+   ================================================================
+   Universal selector (*) resets all elements to ensure
+   consistent styling across different browsers.
+   ================================================================ */
+
+* {
+    margin: 0;              /* Remove default margins */
+    padding: 0;             /* Remove default padding */
+    box-sizing: border-box; /* Include padding/border in element's total width/height */
 }
 
-body{
-    font-size: 14px;
-    line-height: 18px;
-    font-family: Roboto, sans-serif;
-}
-
-.bg-img{
-   background-image: url("/assets/default.png");
-   background-position: cover;
-   background-size: contain;     
-}
-
-.logo-img{
-   background-image: url("/assets/logo.png");
-   background-size: cover;
-   width: 32px;
-   height: 32px;
+body {
+    font-size: 14px;                    /* Base font size */
+    line-height: 1.6;                   /* Line height for readability (1.6x font size) */
+    font-family: Roboto, sans-serif;    /* Primary font with fallback */
 }
 
 
+/* ================================================================
+   3. SITE GRID LAYOUT
+   ================================================================
+   Modern CSS Grid layout for the entire page structure.
+   Creates a "sticky footer" pattern where footer stays at bottom.
+
+   grid-template-rows: auto 1fr auto
+   - auto: Header takes only needed space
+   - 1fr: Main content fills remaining space (fr = fraction unit)
+   - auto: Footer takes only needed space
+   ================================================================ */
+
+.site-wrapper {
+    display: grid;                          /* Enable CSS Grid */
+    grid-template-rows: auto 1fr auto;      /* 3-row layout: header, main, footer */
+    grid-template-columns: 1fr;             /* Single column, full width */
+    min-height: 100vh;                      /* Minimum height = full viewport height */
+}
+
+
+/* ================================================================
+   4. NAVIGATION
+   ================================================================
+   Fixed navigation bar that stays at top of viewport.
+   Uses Flexbox for horizontal alignment of logo and links.
+   ================================================================ */
+
+/* Main navigation wrapper */
 .topnav {
-  background-color: #000000;
-  overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.8);   /* Semi-transparent black (80% opacity) */
+    position: fixed;                         /* Stays fixed when scrolling */
+    top: 0;                                  /* Stick to top */
+    left: 0;                                 /* Stretch from left edge */
+    right: 0;                                /* Stretch to right edge */
+    z-index: 1000;                           /* Stack above other content */
 }
 
-/* Style the links inside the navigation bar */
-.topnav a {
-  float: left;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 20px 16px;
-  text-decoration: none;
-  font-size: 17px;
+/* Centers navigation content with max-width */
+.nav-container {
+    display: flex;                          /* Enable Flexbox */
+    justify-content: space-between;         /* Logo left, links right */
+    align-items: center;                    /* Vertically center items */
+    max-width: 1200px;                      /* Maximum container width */
+    margin: 0 auto;                         /* Center horizontally */
+    padding: 0 20px;                        /* Horizontal padding */
+    height: 80px;                           /* Height of the topnav */
 }
 
-.topnav img{
-   background-image: url("/assets/logo.png");
-   background-size: cover;
-   float: left;
-   width: 32px;
-   height: 32px;
+/* Logo styling */
+.topnav .logo {
+    color: #ffffff;                         /* White text */
+    font-size: 24px;                        /* Larger font for brand */
+    font-weight: bold;                      /* Bold weight */
+    text-decoration: none;                  /* Remove underline */
+    padding: 15px 0;                        /* Vertical padding for click area */
 }
 
-/* Change the color of links on hover */
-.topnav a:hover {
-  background-color: #ddd;
-  color: black;
+/* Container for navigation links */
+.nav-links {
+    display: flex;                          /* Horizontal layout */
+    align-items: center;                    /* Vertically center */
 }
 
-/* Add a color to the active/current link */
-.topnav a.active {
-  background-color: #04AA6D;
-  color: white;
+/* Individual navigation links */
+.nav-links a {
+    color: #ffffff;                         /* White text */
+    text-decoration: none;                  /* Remove underline */
+    padding: 15px 20px;                     /* Clickable area padding */
+    font-size: 16px;                        /* Link font size */
+    transition: background-color 0.5s, color 0.5s;  /* Smooth hover animation */
+}
+
+/* Hover state for links */
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);  /* Light white overlay */
+}
+
+/* Active/current page indicator */
+.nav-links a.active {
+    color: #04AA6D;                         /* Green highlight color */
 }
 
 
-/* ================================
-   TODO: Global Styles
-   ================================ */
-/* - Custom color variables */
-/* - Body defaults */
-/* - Typography */
+/* ================================================================
+   5. SEARCH BAR
+   ================================================================
+   Modern expandable search input with pill shape.
+   Expands on focus for better UX.
+
+   :focus-within - Applies styles when any child has focus
+   ================================================================ */
+
+.search-bar {
+    display: flex;                              /* Align input and button */
+    align-items: center;                        /* Vertically center */
+    margin-left: 15px;                          /* Space from nav links */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle white background */
+    border-radius: 25px;                        /* Pill shape (rounded ends) */
+    overflow: hidden;                           /* Clip content to border-radius */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+    transition: all 0.5s ease;                  /* Smooth animation */
+}
+
+/* Hover and focus states */
+.search-bar:hover,
+.search-bar:focus-within {
+    background-color: rgba(255, 255, 255, 0.15);    /* Slightly brighter */
+    border-color: rgba(255, 255, 255, 0.4);         /* More visible border */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);    /* Green glow effect */
+    opacity: 50%;                                    /* Dim slightly */
+}
+
+/* Search input field */
+.search-bar input {
+    border: none;                           /* Remove default border */
+    background: transparent;                /* Transparent background */
+    padding: 10px 15px;                     /* Inner spacing */
+    color: #ffffff;                         /* White text */
+    font-size: 14px;                        /* Font size */
+    width: 150px;                           /* Default width */
+    outline: none;                          /* Remove focus outline */
+    transition: width 0.5s ease;            /* Smooth width animation */
+}
+
+/* Placeholder text styling */
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.6);        /* Semi-transparent white */
+}
+
+/* Expanded state when focused */
+.search-bar input:focus {
+    width: 200px;                           /* Wider when typing */
+}
 
 
-/* ================================
-   TODO: Login/Register Pages
-   ================================ */
-/* - Centered card styling */
-/* - Logo/branding area */
-/* - Form input styling */
+/* ================================================================
+   6. LANDING BANNER
+   ================================================================
+   Full-width hero section with background image.
+   Uses ::before pseudo-element for dark overlay.
+
+   Pseudo-element: Virtual element created via CSS
+   - content: '' - Required, even if empty
+   - position: absolute - Positions relative to parent
+   ================================================================ */
+
+.landing-banner {
+    background-image: url("../bg.png");     /* Background image path */
+    background-size: cover;                 /* Scale to cover entire area */
+    background-position: center;            /* Center the image */
+    display: flex;                          /* Enable Flexbox */
+    height: 750px;                          /* Fixed height */
+    align-items: center;                    /* Vertically center content */
+    justify-content: center;                /* Horizontally center content */
+    text-align: center;                     /* Center text */
+    position: relative;                     /* Anchor for ::before pseudo-element */
+}
+
+/* Dark overlay for text readability */
+.landing-banner::before {
+    content: '';                            /* Required for pseudo-element */
+    position: absolute;                     /* Cover entire parent */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);         /* 50% black overlay */
+}
+
+/* Content container (sits above overlay) */
+.banner-content {
+    position: relative;                     /* Create stacking context */
+    z-index: 1;                             /* Stack above ::before overlay */
+    color: #ffffff;                         /* White text */
+    padding: 20px;                          /* Inner spacing */
+}
+
+/* Main headline */
+.banner-content h1 {
+    font-size: 48px;                        /* Large heading */
+    font-weight: bold;                      /* Bold text */
+    margin-bottom: 20px;                    /* Space below */
+    line-height: 1.2;                       /* Tight line height */
+}
+
+/* Subheadline paragraph */
+.banner-content p {
+    font-size: 18px;                        /* Readable size */
+    margin-bottom: 30px;                    /* Space below */
+    font-weight: 400;                       /* Regular weight */
+}
+
+/* Button container */
+.banner-buttons {
+    display: flex;                          /* Horizontal layout */
+    gap: 20px;                              /* Space between buttons */
+    justify-content: center;                /* Center buttons */
+    margin-bottom: 40px;                    /* Space below */
+}
+
+/* Base button styles */
+.banner-buttons .btn {
+    padding: 15px 30px;                     /* Button padding */
+    font-size: 16px;                        /* Text size */
+    font-weight: bold;                      /* Bold text */
+    text-decoration: none;                  /* Remove underline */
+    border-radius: 5px;                     /* Rounded corners */
+    transition: all 0.5s;                   /* Smooth hover animation */
+}
+
+/* Primary button (filled green) */
+.banner-buttons .btn-primary {
+    background-color: #04AA6D;              /* Green background */
+    color: #ffffff;                         /* White text */
+    border: 2px solid #04AA6D;              /* Matching border */
+}
+
+/* Primary button hover state */
+.banner-buttons .btn-primary:hover {
+    background-color: #038a58;              /* Darker green */
+    border-color: #038a58;                  /* Match border */
+}
+
+/* Outline button (transparent) */
+.banner-buttons .btn-outline {
+    background-color: transparent;          /* No fill */
+    color: #ffffff;                         /* White text */
+    border: 2px solid #ffffff;              /* White border */
+}
+
+/* Dot indicators for carousel */
+.banner-dots {
+    display: flex;                          /* Horizontal layout */
+    gap: 10px;                              /* Space between dots */
+    justify-content: center;                /* Center dots */
+}
+
+/* Individual dot */
+.banner-dots .dot {
+    width: 12px;                            /* Dot size */
+    height: 12px;
+    border-radius: 50%;                     /* Perfect circle */
+    background-color: rgba(255, 255, 255, 0.5);  /* Semi-transparent */
+    cursor: pointer;                        /* Hand cursor */
+    transition: background-color 0.3s;      /* Smooth animation */
+}
+
+/* Active dot state */
+.banner-dots .dot.active {
+    background-color: #ffffff;              /* Solid white */
+}
 
 
-/* ================================
-   TODO: Navigation
-   ================================ */
-/* - Navbar customization */
-/* - Active link styles */
-/* - User dropdown styling */
+/* ================================================================
+   7. FEATURES SECTION
+   ================================================================
+   Three-column grid showcasing app features.
+   Responsive: 3 cols -> 2 cols -> 1 col based on screen size.
+
+   CSS Grid: Modern layout system for 2D arrangements
+   - repeat(3, 1fr): Creates 3 equal columns
+   - gap: Space between grid items
+   ================================================================ */
+
+.features {
+    padding: 80px 20px;                     /* Vertical and horizontal padding */
+    background-color: #f8f9fa;              /* Light gray background */
+}
+
+/* Grid container for feature cards */
+.features-grid {
+    display: grid;                          /* Enable CSS Grid */
+    grid-template-columns: repeat(3, 1fr);  /* 3 equal columns */
+    gap: 30px;                              /* Space between cards */
+    max-width: 1200px;                      /* Maximum width */
+    margin: 0 auto;                         /* Center horizontally */
+}
+
+/* RESPONSIVE BREAKPOINT: Tablet (992px and below) */
+@media (max-width: 992px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);  /* 2 columns on tablet */
+    }
+}
+
+/* RESPONSIVE BREAKPOINT: Mobile (576px and below) */
+@media (max-width: 576px) {
+    .features-grid {
+        grid-template-columns: 1fr;             /* 1 column on mobile */
+    }
+}
+
+/* Individual feature card */
+.feature-card {
+    background-color: #ffffff;              /* White background */
+    padding: 40px 30px;                     /* Inner spacing */
+    border-radius: 10px;                    /* Rounded corners */
+    text-align: center;                     /* Center content */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);   /* Subtle shadow */
+    transition: transform 0.5s,             /*  hover animations */
+                box-shadow 0.5s;
+}
+
+/* Card hover effect - lifts up */
+.feature-card:hover {
+    transform: translateY(-10px);           /* Move up 10px */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Larger shadow */
+}
+
+/* Feature icon placeholder */
+.feature-icon {
+    font-size: 48px;                        /* Icon size */
+    margin-bottom: 20px;                    /* Space below */
+}
+
+/* Feature card heading */
+.feature-card h3 {
+    font-size: 20px;                        /* Heading size */
+    font-weight: bold;                      /* Bold text */
+    margin-bottom: 15px;                    /* Space below */
+    color: #333;                            /* Dark gray */
+}
+
+/* Feature card description */
+.feature-card p {
+    font-size: 14px;                        /* Text size */
+    color: #666;                            /* Medium gray */
+    font-weight: 400;                       /* Regular weight */
+}
 
 
-/* ================================
-   TODO: Dashboard
-   ================================ */
-/* - Stats cards */
-/* - Quick action buttons */
-/* - Activity feed styling */
+/* ================================================================
+   8. TODO: LOGIN PAGE (login.html)
+   ================================================================
+   Styles needed for the login page:
+
+   .login-page          - Page wrapper with centered layout
+   .login-card          - Main login form container (white card)
+   .login-header        - Logo and "Welcome back" text
+   .login-form          - Form element wrapper
+   .form-group          - Input field container (label + input)
+   .form-input          - Styled input fields
+   .form-input:focus    - Focus state for inputs
+   .form-label          - Input labels
+   .remember-me         - Checkbox for "Remember me"
+   .forgot-password     - Link to password reset
+   .login-btn           - Submit button
+   .login-divider       - "OR" divider line
+   .social-login        - Google/Facebook login buttons
+   .signup-link         - "Don't have an account? Register" link
+   ================================================================ */
 
 
-/* ================================
-   TODO: Tables
-   ================================ */
-/* - Table row hover effects */
-/* - Status badges */
-/* - Action buttons in tables */
+/* ================================================================
+   9. TODO: REGISTER PAGE (register.html)
+   ================================================================
+   Styles needed for the registration page:
+
+   .register-page       - Page wrapper
+   .register-card       - Main registration form container
+   .register-header     - Logo and "Create Account" text
+   .register-form       - Form element wrapper
+   .name-fields         - First name / Last name side by side
+   .email-field         - Email input with validation icon
+   .password-field      - Password with show/hide toggle
+   .password-strength   - Password strength indicator bar
+   .terms-checkbox      - "I agree to terms" checkbox
+   .register-btn        - Submit button
+   .login-link          - "Already have an account? Login" link
+   ================================================================ */
 
 
-/* ================================
-   TODO: Modals
-   ================================ */
-/* - Modal header styling */
-/* - Form layout inside modals */
+/* ================================================================
+   10. TODO: DASHBOARD PAGE (dashboard.html)
+   ================================================================
+   Styles needed for the user dashboard:
+
+   .dashboard-layout    - Main grid: sidebar + content area
+   .sidebar             - Left navigation sidebar
+   .sidebar-menu        - Navigation menu items
+   .sidebar-item        - Individual menu item
+   .sidebar-item.active - Currently selected menu item
+
+   .dashboard-header    - Top bar with user info
+   .user-dropdown       - User profile dropdown menu
+   .notifications       - Notification bell with badge
+
+   .stats-grid          - Grid for stats cards
+   .stat-card           - Individual stat (e.g., "5 Active Reservations")
+   .stat-number         - Large number display
+   .stat-label          - Description text
+
+   .recent-activity     - Recent reservations list
+   .activity-item       - Individual activity entry
+   .activity-time       - Timestamp
+   .activity-status     - Status badge (confirmed, pending, cancelled)
+
+   .quick-actions       - Quick action buttons grid
+   .action-btn          - Individual action button
+   ================================================================ */
 
 
-/* ================================
-   TODO: Utility Classes
-   ================================ */
-/* - Custom spacing */
-/* - Status colors */
-/* - Loading states */
+/* ================================================================
+   11. TODO: AVAILABLE SLOTS PAGE (available-slots.html)
+   ================================================================
+   Styles needed for the lab availability page:
+
+   .slots-page          - Page wrapper
+   .filter-bar          - Building/date/time filters
+   .filter-dropdown     - Dropdown select styling
+   .filter-btn          - Filter apply button
+
+   .building-tabs       - Tab navigation for buildings
+   .building-tab        - Individual tab
+   .building-tab.active - Selected building tab
+
+   .lab-grid            - Grid of lab rooms
+   .lab-card            - Individual lab room card
+   .lab-name            - Lab room name (e.g., "G302")
+   .lab-capacity        - Number of seats
+   .lab-status          - Available/Full indicator
+
+   .seat-map            - Visual seat arrangement
+   .seat                - Individual seat
+   .seat.available      - Green - can be reserved
+   .seat.occupied       - Red - already taken
+   .seat.selected       - Blue - user's selection
+   .seat.disabled       - Gray - out of service
+
+   .reservation-panel   - Side panel for booking
+   .time-slots          - Available time slot buttons
+   .time-slot           - Individual time slot
+   .time-slot.selected  - Selected time slot
+   .confirm-btn         - Confirm reservation button
+
+   .legend              - Seat status color legend
+   ================================================================ */
+
+
+/* ================================================================
+   12. TODO: JAVASCRIPT INTERACTIONS (assets/js/main.js)
+   ================================================================
+   JavaScript functionality to implement:
+
+   NAVIGATION:
+   - Mobile hamburger menu toggle
+   - Active nav link highlighting based on scroll position
+   - Search bar expand/collapse animation
+   - Search functionality with autocomplete
+
+   LANDING PAGE:
+   - Banner carousel/slider with dot navigation
+   - Smooth scroll to sections
+   - Animate features on scroll (intersection observer)
+
+   LOGIN/REGISTER:
+   - Form validation (email format, password strength)
+   - Show/hide password toggle
+   - "Remember me" localStorage
+   - Form submission with loading state
+
+   DASHBOARD:
+   - Sidebar collapse/expand
+   - Notification dropdown
+   - User dropdown menu
+   - Stats counter animation
+   - Activity feed real-time updates
+
+   AVAILABLE SLOTS:
+   - Building tab switching
+   - Filter apply/reset
+   - Seat selection/deselection
+   - Multiple seat selection
+   - Time slot selection
+   - Reservation confirmation modal
+   - Real-time availability updates (WebSocket/polling)
+
+   UTILITIES:
+   - Toast/snackbar notifications
+   - Modal open/close
+   - Loading spinners
+   - Date/time picker
+   - Form data persistence (draft saving)
+   ================================================================ */

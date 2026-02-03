@@ -1,32 +1,139 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
+    <!-- ============================================
+         META TAGS
+         - charset: Defines character encoding (UTF-8 supports all characters)
+         - viewport: Makes the page responsive on mobile devices
+           * width=device-width: Sets width to match device screen
+           * initial-scale=1: Sets initial zoom level to 100%
+           * shrink-to-fit=no: Prevents iOS Safari from shrinking content
+         ============================================ -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
+    <!-- ============================================
+         STYLESHEETS
+         - Bootstrap 4.4.1: CSS framework for responsive grid and components
+         - styles.css: Custom styles that override Bootstrap defaults
+         ============================================ -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <!-- local css -->
-     <link rel="stylesheet" type="text/css" media="all" href="assets/css/styles.css">
+    <link rel="stylesheet" type="text/css" media="all" href="assets/css/styles.css">
 
     <title>Open Lab</title>
   </head>
-  
-  <body>
-    <header>
-        <div class="topnav">
-        <!-- Logo here not yet implemented-->
-            <a href="#home">Home</a>
-            <a href="#news">Available Slots</a>
-            <a href="#contact">Login</a>
-            <a href="#about">Register</a>
-        </div>
-    <!-- Content part bg with floating infos-->
-    </header>   
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <body>
+    <!-- ============================================
+         SITE WRAPPER
+         - Main grid container that holds all page content
+         - Uses CSS Grid for modern layout control
+         - Ensures footer stays at bottom (sticky footer pattern)
+         ============================================ -->
+    <div class="site-wrapper">
+
+      <!-- ============================================
+           NAVIGATION BAR
+           - Fixed position: stays at top when scrolling
+           - Contains: logo, nav links, search bar
+           - .topnav: Main navigation wrapper
+           - .nav-container: Centers content with max-width
+           - .nav-links: Flexbox container for menu items
+           ============================================ -->
+      <nav class="topnav">
+        <div class="nav-container">
+          <!-- Logo: Links back to homepage -->
+          <a href="#" class="logo">OpenLab</a>
+
+          <!-- Navigation Links -->
+          <div class="nav-links">
+            <!-- .active class highlights current page -->
+            <a href="#" class="active">Home</a>
+            <a href="#">Available Slots</a>
+            <a href="#">Login</a>
+            <a href="#">Register</a>
+
+            <!-- Search Bar: Expandable input field -->
+            <div class="search-bar">
+              <input type="text" placeholder="Search...">
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ============================================
+           LANDING BANNER
+           - Full-width banner with background image
+           - Dark overlay for text readability (::before pseudo-element)
+           - Contains: headline, description, CTA buttons, dot indicators
+           - #bg-img: ID for background image styling
+           ============================================ -->
+      <section class="landing-banner" id="bg-img">
+        <div class="banner-content">
+          <!-- Main Headline: <br> creates line break for visual impact -->
+          <h1>Find Your Seat,<br>Skip the Search</h1>
+
+          <!-- Subheadline: Brief description of the service -->
+          <p>Check real-time computer lab availability across DLSU.<br>Reserve your slot in seconds — no more wandering.</p>
+
+          <!-- Call-to-Action Buttons -->
+          <div class="banner-buttons">
+            <!-- Primary button: Main action (green, filled) -->
+            <a href="#" class="btn btn-primary">View Labs</a>
+            <!-- Outline button: Secondary action (transparent with border) -->
+            <a href="#" class="btn btn-outline">Register Now</a>
+          </div>
+
+          <!-- Dot Indicators: For carousel/slider navigation (visual only for now) -->
+          <div class="banner-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           FEATURES SECTION
+           - Showcases 3 key features of the application
+           - Uses CSS Grid for responsive 3-column layout
+           - <article> tags: Semantic HTML for self-contained content
+           - Each card has: icon, title, description
+           ============================================ -->
+      <section class="features">
+        <div class="features-grid">
+          <!-- Feature Card 1: Real-Time Availability -->
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3>Real-Time Availability</h3>
+            <p>See which seats are open now across all labs</p>
+          </article>
+
+          <!-- Feature Card 2: Easy Reservations -->
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3>Easy Reservations</h3>
+            <p>Book 30-min slots up to 7 days ahead</p>
+          </article>
+
+          <!-- Feature Card 3: Multiple Buildings -->
+          <article class="feature-card">
+            <div class="feature-icon"></div>
+            <h3>Multiple Buildings</h3>
+            <p>Gokongwei, Andrew, and Velasco labs</p>
+          </article>
+        </div>
+      </section>
+
+    </div><!-- End .site-wrapper -->
+
+    <!-- ============================================
+         JAVASCRIPT LIBRARIES
+         - Load order matters! jQuery must come first.
+         1. jQuery: DOM manipulation library (required by Bootstrap)
+         2. Popper.js: Tooltip/popover positioning (required by Bootstrap)
+         3. Bootstrap JS: Interactive components (modals, dropdowns, etc.)
+         ============================================ -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
