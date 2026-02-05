@@ -1,0 +1,593 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+
+/* CSS RESET & BASE STYLES */
+
+* {
+    margin: 0;              /* Remove default margins */
+    padding: 0;             /* Remove default padding */
+}
+
+body {
+    font-size: 14px;                    /* Base font size */
+    line-height: 1.6;                   /* Line height for readability (1.6x font size) */
+    font-family: Roboto, sans-serif;    /* Primary font with fallback */
+}
+
+
+/* SITE GRID LAYOUT */
+
+.site-wrapper {
+    display: grid;                          /* Enable CSS Grid */
+    grid-template-rows: auto 1fr auto;      /* 3-row layout: header, main, footer */
+    grid-template-columns: 1fr;             /* Single column, full width */
+    min-height: 100vh;                      /* Minimum height = full viewport height */
+}
+
+
+/* NAVIGATION */
+
+/* Main navigation wrapper */
+.topnav {
+    background-color: rgba(0, 0, 0, 0.8);   /* Semi-transparent black (80% opacity) */
+    position: fixed;                         /* Stays fixed when scrolling */
+    top: 0;                                  /* Stick to top */
+    left: 0;                                 /* Stretch from left edge */
+    right: 0;                                /* Stretch to right edge */
+    z-index: 1000;                           /* Stack above other content */
+}
+
+/* Centers navigation content with max-width */
+.nav-container {
+    display: flex;                          /* Enable Flexbox */
+    justify-content: space-between;         /* Logo left, links right */
+    align-items: center;                    /* Vertically center items */
+    max-width: 1200px;                      /* Maximum container width */
+    margin: 0 auto;                         /* Center horizontally */
+    padding: 0 20px;                        /* Horizontal padding */
+    height: 80px;                           /* Height of the topnav */
+}
+
+/* Logo styling */
+.topnav .logo {
+    color: #ffffff;                         /* White text */
+    font-size: 24px;                        /* Larger font for brand */
+    font-weight: bold;                      /* Bold weight */
+    text-decoration: none;                  /* Remove underline */
+    padding: 15px 0;                        /* Vertical padding for click area */
+}
+
+/* Container for navigation links */
+.nav-links {
+    display: flex;                          /* Horizontal layout */
+    align-items: center;                    /* Vertically center */
+}
+
+/* Individual navigation links */
+.nav-links a {
+    color: #ffffff;                         /* White text */
+    text-decoration: none;                  /* Remove underline */
+    padding: 15px 20px;                     /* Clickable area padding */
+    font-size: 16px;                        /* Link font size */
+    transition: background-color 0.5s, color 0.5s;  /* Smooth hover animation */
+}
+
+/* Hover state for links */
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);  /* Light white overlay */
+}
+
+/* Active/current page indicator */
+.nav-links a.active {
+    color: #04AA6D;                         /* Green highlight color */
+}
+
+
+/* SEARCH BAR */
+
+.search-bar {
+    display: flex;                              /* Align input and button */
+    align-items: center;                        /* Vertically center */
+    margin-left: 15px;                          /* Space from nav links */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle white background */
+    border-radius: 25px;                        /* Pill shape (rounded ends) */
+    overflow: hidden;                           /* Clip content to border-radius */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+    transition: all 0.5s ease;                  /* Smooth animation */
+}
+
+/* Hover and focus states */
+.search-bar:hover,
+.search-bar:focus-within {
+    background-color: rgba(255, 255, 255, 0.15);    /* Slightly brighter */
+    border-color: rgba(255, 255, 255, 0.4);         /* More visible border */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);    /* Green glow effect */
+}
+
+/* Search input field */
+.search-bar input {
+    border: none;                           /* Remove default border */
+    background: transparent;                /* Transparent background */
+    padding: 10px 15px;                     /* Inner spacing */
+    color: #ffffff;                         /* White text */
+    font-size: 14px;                        /* Font size */
+    width: 150px;                           /* Default width */
+    outline: none;                          /* Remove focus outline */
+    transition: width 0.5s ease;            /* Smooth width animation */
+}
+
+/* Placeholder text styling */
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.6);        /* Semi-transparent white */
+}
+
+/* Expanded state when focused */
+.search-bar input:focus {
+    width: 200px;                           /* Wider when typing */
+}
+
+
+/* LOGIN BANNER */
+.landing-banner {
+    background-image: url("../bg.png");     /* Background image path */
+    background-size: cover;                 /* Scale to cover entire area */
+    background-position: center;            /* Center the image */
+    background-attachment: fixed;           /* Parallax effect */
+    display: flex;                          /* Enable Flexbox */
+    min-height: 100vh;                      /* Full viewport height */
+    align-items: center;                    /* Vertically center content */
+    justify-content: center;                /* Horizontally center content */
+    text-align: center;                     /* Center text */
+    position: relative;                     /* Anchor for ::before pseudo-element */
+    padding-top: 80px;                      /* Account for fixed navbar height */
+}
+
+/* : Gradient overlay */
+.landing-banner::before {
+    content: '';                            /* Required for pseudo-element */
+    position: absolute;                     /* Cover entire parent */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* : Multi-layer gradient for depth */
+    background:
+        /* Dark overlay */
+        linear-gradient(135deg,
+            rgba(0, 0, 0, 0.6) 0%,
+            rgba(0, 0, 0, 0.4) 50%,
+            rgba(0, 0, 0, 0.6) 100%),
+        /* Subtle color tint for glassmorphism effect */
+        linear-gradient(45deg,
+            rgba(4, 170, 109, 0.1) 0%,
+            rgba(0, 0, 0, 0) 50%,
+            rgba(4, 100, 80, 0.1) 100%);
+}
+
+/* Content container (sits above overlay) */
+.banner-content {
+    position: relative;                     /* Create stacking context */
+    z-index: 1;                             /* Stack above ::before overlay */
+    color: #ffffff;                         /* White text */
+    padding: 20px;                          /* Inner spacing */
+    width: 100%;                            /* Full width for centering children */
+    max-width: 500px;                       /* Max width for the form container */
+}
+
+/* Main headline */
+.banner-content h1 {
+    font-size: 48px;                        /* Large heading */
+    font-weight: bold;                      /* Bold text */
+    margin-bottom: 20px;                    /* Space below */
+    line-height: 1.2;                       /* Tight line height */
+}
+
+/* Subheadline paragraph */
+.banner-content p {
+    font-size: 18px;                        /* Readable size */
+    margin-bottom: 30px;                    /* Space below */
+    font-weight: 400;                       /* Regular weight */
+}
+
+
+/* LOGIN CARD */
+
+.login-card {
+    /*  EFFECT: Semi-transparent white background */
+    /* Using slightly higher opacity for better visibility */
+    background: rgba(255, 255, 255, 0.15);
+
+    /*  EFFECT: Frosted glass blur - increased for stronger effect */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);    /* Safari support */
+
+    /* Rounded corners for modern look */
+    border-radius: 20px;
+
+    /*  EFFECT: Gradient border for glass-like shine */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Inner spacing for form elements */
+    padding: 40px;
+
+    /*  EFFECT: Layered shadows for depth and glow */
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),           /* Main shadow */
+        inset 0 0 80px rgba(255, 255, 255, 0.05), /* Inner glow */
+        0 0 20px rgba(4, 170, 109, 0.1);          /* Subtle green ambient glow */
+
+    /* Full width within parent container */
+    width: 100%;
+
+    /* Center the card */
+    margin: 0 auto;
+
+    /* Smooth transition for hover effects */
+    transition: all 0.3s ease;
+}
+
+/* Login card hover effect - subtle lift and glow */
+.login-card:hover {
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 80px rgba(255, 255, 255, 0.08),
+        0 0 30px rgba(4, 170, 109, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Login card header/title -  text styling */
+.login-card h2 {
+    font-size: 30px;                        /* Large title */
+    font-weight: 700;                       /* Bold weight */
+    margin-bottom: 10px;                    /* Space below */
+    color: #ffffff;                         /* White text */
+    /* : Subtle text shadow for depth */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;                  /* Slight letter spacing */
+}
+
+/* Login card subtitle/description */
+.login-card .subtitle {
+    font-size: 15px;                        /* Slightly larger text */
+    color: rgba(255, 255, 255, 0.75);       /* Semi-transparent white */
+    margin-bottom: 35px;                    /* Space below */
+    /* : Subtle text shadow */
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+/* FORM ELEMENTS */
+
+/* Form container */
+.login-form {
+    display: flex;                          /* Flexbox for vertical stacking */
+    flex-direction: column;                 /* Stack elements vertically */
+}
+
+/* Individual input group (label + input) */
+.form-group {
+    display: flex;                          /* Flexbox layout */
+    flex-direction: column;                 /* Stack label above input */
+    text-align: left;                       /* Left-align text */
+}
+
+/* Form labels - styled */
+.login-card .form-group > label,
+.login-form .form-group > label {
+    font-size: 14px;                        /* Label size */
+    font-weight: 500;                       /* Medium weight */
+    color: rgba(255, 255, 255, 0.9);        /* Slightly transparent white */
+    margin-bottom: 5px;                    /* Space between label and input */
+    /*Subtle text shadow */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.3px;                  /* Slight letter spacing */
+    display: block;                         /* Ensure block display */
+}
+
+/* Text input fields */
+/* Using .login-form for higher specificity to override Bootstrap */
+.login-form .form-group input,
+.login-card .form-group input {
+    /*Semi-transparent background */
+    background: rgba(255, 255, 255, 0.1) !important;
+    /* : Subtle blur effect on input */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    /* Transparent border that becomes visible on focus */
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    /* Rounded corners matching card style */
+    border-radius: 12px !important;
+    /* Inner spacing */
+    padding: 15px 18px !important;
+    /* Font settings */
+    font-size: 14px;
+    color: #ffffff !important;                         /* White text */
+    /* Remove default outline */
+    outline: none !important;
+    /* Smooth transition for focus state */
+    transition: all 0.3s ease;
+    /* : Inner shadow for depth */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Ensure full width */
+    width: 100%;
+    height: auto;
+}
+
+/* Input placeholder text */
+.login-form .form-group input::placeholder,
+.login-card .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;        /* Semi-transparent placeholder */
+}
+
+/* Input focus state - highlights the active field */
+.login-form .form-group input:focus,
+.login-card .form-group input:focus {
+    /* Brighter border on focus */
+    border-color: rgba(4, 170, 109, 0.8) !important;   /* Green border */
+    /*  EFFECT: Glow effect on focus */
+    box-shadow:
+        0 0 20px rgba(4, 170, 109, 0.4),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    /* Slightly brighter background */
+    background: rgba(255, 255, 255, 0.18) !important;
+}
+
+
+/* FORM OPTIONS ROW */
+.form-options {
+    display: flex;                          /* Horizontal layout */
+    justify-content: space-between;         /* Items at opposite ends */
+    align-items: center;                    /* Vertically center */
+    font-size: 14px;                        /* Text size */
+}
+
+/* Remember me checkbox container */
+.remember-me {
+    display: flex;                          /* Inline layout */
+    align-items: center;                    /* Vertically center */
+    gap: 10px;                              /* Space between checkbox and label */
+    color: rgba(255, 255, 255, 0.85);       /* Semi-transparent white */
+    cursor: pointer;                        /* Hand cursor for clickability */
+    font-size: 14px;                        /* Text size */
+}
+
+/* Custom checkbox styling -  */
+.remember-me input[type="checkbox"] {
+    width: 18px;                            /* Checkbox size */
+    height: 18px;
+    accent-color: #04AA6D;                  /* Green check color */
+    cursor: pointer;                        /* Hand cursor */
+
+    /* : Custom checkbox appearance */
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Checkbox checked state */
+.remember-me input[type="checkbox"]:checked {
+    background: rgba(4, 170, 109, 0.8);
+    border-color: rgba(4, 170, 109, 0.9);
+}
+
+/* Checkbox checkmark */
+.remember-me input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Checkbox hover state */
+.remember-me input[type="checkbox"]:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Forgot password link */
+.forgot-password {
+    color: rgba(4, 200, 130, 0.9);          /* Bright green link color */
+    text-decoration: none;                  /* Remove underline */
+    transition: all 0.3s ease;              /* Smooth hover transition */
+    font-size: 14px;                        /* Text size */
+}
+
+/* Forgot password hover state */
+.forgot-password:hover {
+    color: #06d68a;                         /* Lighter green on hover */
+    text-decoration: underline;             /* Add underline on hover */
+    text-shadow: 0 0 10px rgba(4, 170, 109, 0.5);  /* : Glow effect */
+}
+
+
+/*  LOGIN BUTTON   */
+
+.login-btn {
+    /* Button sizing */
+    width: 100%;                            /* Full width */
+    padding: 16px;                          /* Inner spacing */
+
+    /* : Semi-transparent green with gradient */
+    background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
+
+    /* : Blur effect */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    /* White text */
+    color: #ffffff;
+
+    /* : Subtle border */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    /* Rounded corners */
+    border-radius: 12px;
+
+    /* Font styling */
+    font-size: 16px;
+    font-weight: 700;                       /* Bold text */
+
+    /* Hand cursor on hover */
+    cursor: pointer;
+
+    /* Smooth transitions */
+    transition: all 0.3s ease;
+
+    /* Top margin for spacing from form */
+    margin-top: 10px;
+
+    /*  EFFECT: Layered shadows for depth */
+    box-shadow:
+        0 4px 15px rgba(4, 170, 109, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Login button hover state */
+.login-btn:hover {
+    /* Brighter gradient on hover */
+    background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
+
+    /* Lift effect with larger shadow */
+    transform: translateY(-3px);
+    box-shadow:
+        0 8px 25px rgba(4, 170, 109, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+    /* Brighter border on hover */
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Login button active/click state */
+.login-btn:active {
+    /* Press down effect */
+    transform: translateY(0);
+    box-shadow:
+        0 2px 10px rgba(4, 170, 109, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* 
+   11. DIVIDER
+   
+   Visual separator with "or" text between login form and
+   social login options.
+    */
+
+.divider {
+    display: flex;                          /* Horizontal layout */
+    align-items: center;                    /* Vertically center */
+    margin: 30px 0;                         /* Vertical spacing */
+}
+
+/* Divider lines (left and right of "or") -  gradient */
+.divider::before,
+.divider::after {
+    content: '';                            /* Empty content for line */
+    flex: 1;                                /* Take equal space */
+    height: 1px;                            /* Line thickness */
+    /* : Gradient line for subtle effect */
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0.1) 100%);
+}
+
+.divider::before {
+    /* Reverse gradient for left line */
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.4) 100%);
+}
+
+.divider::after {
+    /* Normal gradient for right line */
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.1) 100%);
+}
+
+/* "Or" text in divider */
+.divider span {
+    padding: 0 20px;                        /* Horizontal spacing around text */
+    color: rgba(255, 255, 255, 0.7);        /* Semi-transparent white */
+    font-size: 13px;                        /* Text size */
+    text-transform: uppercase;              /* Uppercase for style */
+    letter-spacing: 1px;                    /* Spaced letters */
+    font-weight: 500;                       /* Medium weight */
+}
+
+
+/* REGISTER LINK  */
+
+.register-link {
+    margin-top: 30px;                       /* Space above */
+    font-size: 14px;                        /* Text size */
+    color: rgba(255, 255, 255, 0.75);       /* Semi-transparent white */
+    padding-top: 20px;                      /* Extra padding */
+    /* : Subtle top border */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Register link anchor styling */
+.register-link a {
+    color: rgba(4, 200, 130, 0.95);         /* Bright green link color */
+    text-decoration: none;                  /* Remove underline */
+    font-weight: 600;                       /* Semi-bold */
+    transition: all 0.3s ease;              /* Smooth hover transition */
+}
+
+/* Register link hover state */
+.register-link a:hover {
+    color: #06d68a;                         /* Lighter green on hover */
+    text-decoration: underline;             /* Add underline on hover */
+    /* : Glow effect on hover */
+    text-shadow: 0 0 15px rgba(4, 170, 109, 0.6);
+}
+
+
+/*  DOT INDICATORS    */
+
+.banner-dots {
+    display: flex;                          /* Horizontal layout */
+    gap: 12px;                              /* Space between dots */
+    justify-content: center;                /* Center dots */
+    margin-top: 35px;                       /* Space above */
+}
+
+/* Individual dot -  STYLED */
+.banner-dots .dot {
+    width: 12px;                            /* Dot size */
+    height: 12px;
+    border-radius: 50%;                     /* Perfect circle */
+    /* : Semi-transparent with blur */
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;                        /* Hand cursor */
+    transition: all 0.3s ease;              /* Smooth animation */
+}
+
+/* Dot hover state */
+.banner-dots .dot:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* Active dot state -  with glow */
+.banner-dots .dot.active {
+    background-color: rgba(4, 170, 109, 0.9);  /* Brand green for active */
+    border-color: rgba(4, 170, 109, 0.5);
+    /* : Glow effect */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.6);
+}

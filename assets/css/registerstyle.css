@@ -1,0 +1,543 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+
+/* CSS RESET & BASE STYLES */
+
+* {
+    margin: 0;              /* Remove default margins */
+    padding: 0;             /* Remove default padding */
+}
+
+body {
+    font-size: 14px;                    /* Base font size */
+    line-height: 1.6;                   /* Line height for readability (1.6x font size) */
+    font-family: Roboto, sans-serif;    /* Primary font with fallback */
+}
+
+
+/* SITE GRID LAYOUT */
+
+.site-wrapper {
+    display: grid;                          /* Enable CSS Grid */
+    grid-template-rows: auto 1fr auto;      /* 3-row layout: header, main, footer */
+    grid-template-columns: 1fr;             /* Single column, full width */
+    min-height: 100vh;                      /* Minimum height = full viewport height */
+}
+
+
+/* NAVIGATION */
+
+/* Main navigation wrapper */
+.topnav {
+    background-color: rgba(0, 0, 0, 0.8);   /* Semi-transparent black (80% opacity) */
+    position: fixed;                         /* Stays fixed when scrolling */
+    top: 0;                                  /* Stick to top */
+    left: 0;                                 /* Stretch from left edge */
+    right: 0;                                /* Stretch to right edge */
+    z-index: 1000;                           /* Stack above other content */
+}
+
+/* Centers navigation content with max-width */
+.nav-container {
+    display: flex;                          /* Enable Flexbox */
+    justify-content: space-between;         /* Logo left, links right */
+    align-items: center;                    /* Vertically center items */
+    max-width: 1200px;                      /* Maximum container width */
+    margin: 0 auto;                         /* Center horizontally */
+    padding: 0 20px;                        /* Horizontal padding */
+    height: 80px;                           /* Height of the topnav */
+}
+
+/* Logo styling */
+.topnav .logo {
+    color: #ffffff;                         /* White text */
+    font-size: 24px;                        /* Larger font for brand */
+    font-weight: bold;                      /* Bold weight */
+    text-decoration: none;                  /* Remove underline */
+    padding: 15px 0;                        /* Vertical padding for click area */
+}
+
+/* Container for navigation links */
+.nav-links {
+    display: flex;                          /* Horizontal layout */
+    align-items: center;                    /* Vertically center */
+}
+
+/* Individual navigation links */
+.nav-links a {
+    color: #ffffff;                         /* White text */
+    text-decoration: none;                  /* Remove underline */
+    padding: 15px 20px;                     /* Clickable area padding */
+    font-size: 16px;                        /* Link font size */
+    transition: background-color 0.5s, color 0.5s;  /* Smooth hover animation */
+}
+
+/* Hover state for links */
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);  /* Light white overlay */
+}
+
+/* Active/current page indicator */
+.nav-links a.active {
+    color: #04AA6D;                         /* Green highlight color */
+}
+
+
+/* SEARCH BAR */
+
+.search-bar {
+    display: flex;                              /* Align input and button */
+    align-items: center;                        /* Vertically center */
+    margin-left: 15px;                          /* Space from nav links */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle white background */
+    border-radius: 25px;                        /* Pill shape (rounded ends) */
+    overflow: hidden;                           /* Clip content to border-radius */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+    transition: all 0.5s ease;                  /* Smooth animation */
+}
+
+/* Hover and focus states */
+.search-bar:hover,
+.search-bar:focus-within {
+    background-color: rgba(255, 255, 255, 0.15);    /* Slightly brighter */
+    border-color: rgba(255, 255, 255, 0.4);         /* More visible border */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);    /* Green glow effect */
+}
+
+/* Search input field */
+.search-bar input {
+    border: none;                           /* Remove default border */
+    background: transparent;                /* Transparent background */
+    padding: 10px 15px;                     /* Inner spacing */
+    color: #ffffff;                         /* White text */
+    font-size: 14px;                        /* Font size */
+    width: 150px;                           /* Default width */
+    outline: none;                          /* Remove focus outline */
+    transition: width 0.5s ease;            /* Smooth width animation */
+}
+
+/* Placeholder text styling */
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.6);        /* Semi-transparent white */
+}
+
+/* Expanded state when focused */
+.search-bar input:focus {
+    width: 200px;                           /* Wider when typing */
+}
+
+
+/* LOGIN BANNER */
+.landing-banner {
+    background-image: url("../bg.png");     /* Background image path */
+    background-size: cover;                 /* Scale to cover entire area */
+    background-position: center;            /* Center the image */
+    background-attachment: fixed;           /* Parallax effect */
+    display: flex;                          /* Enable Flexbox */
+    min-height: 100vh;                      /* Full viewport height */
+    align-items: center;                    /* Vertically center content */
+    justify-content: center;                /* Horizontally center content */
+    text-align: center;                     /* Center text */
+    position: relative;                     /* Anchor for ::before pseudo-element */
+    padding-top: 80px;                      /* Account for fixed navbar height */
+}
+
+/* : Gradient overlay */
+.landing-banner::before {
+    content: '';                            /* Required for pseudo-element */
+    position: absolute;                     /* Cover entire parent */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* : Multi-layer gradient for depth */
+    background:
+        /* Dark overlay */
+        linear-gradient(135deg,
+            rgba(0, 0, 0, 0.6) 0%,
+            rgba(0, 0, 0, 0.4) 50%,
+            rgba(0, 0, 0, 0.6) 100%),
+        /* Subtle color tint for glassmorphism effect */
+        linear-gradient(45deg,
+            rgba(4, 170, 109, 0.1) 0%,
+            rgba(0, 0, 0, 0) 50%,
+            rgba(4, 100, 80, 0.1) 100%);
+}
+
+/* Content container (sits above overlay) */
+.banner-content {
+    position: relative;                     /* Create stacking context */
+    z-index: 1;                             /* Stack above ::before overlay */
+    color: #ffffff;                         /* White text */
+    padding: 20px;                          /* Inner spacing */
+    width: 100%;                            /* Full width for centering children */
+    max-width: 500px;                       /* Max width for the form container */
+}
+
+/* Main headline */
+.banner-content h1 {
+    font-size: 48px;                        /* Large heading */
+    font-weight: bold;                      /* Bold text */
+    margin-bottom: 20px;                    /* Space below */
+    line-height: 1.2;                       /* Tight line height */
+}
+
+/* Subheadline paragraph */
+.banner-content p {
+    font-size: 18px;                        /* Readable size */
+    margin-bottom: 30px;                    /* Space below */
+    font-weight: 400;                       /* Regular weight */
+}
+
+
+/* REGISTER CARD */
+
+.register-card {
+    /*  EFFECT: Semi-transparent white background (matches login-card) */
+    background: rgba(255, 255, 255, 0.15);
+
+    /*  EFFECT: Frosted glass blur (matches login-card) */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);    /* Safari support */
+
+    /* Rounded corners for modern look */
+    border-radius: 20px;
+
+    /*  EFFECT: Border (matches login-card) */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Inner spacing for form elements */
+    padding: 40px;
+
+    /*  EFFECT: Layered shadows (matches login-card) */
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 0 80px rgba(255, 255, 255, 0.05),
+        0 0 20px rgba(4, 170, 109, 0.1);
+
+    /* Full width within parent container */
+    width: 100%;
+
+    /* Center the card */
+    margin: 0 auto;
+
+    /* Smooth transition for hover effects */
+    transition: all 0.3s ease;
+}
+
+/* Register card hover effect (matches login-card) */
+.register-card:hover {
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 80px rgba(255, 255, 255, 0.08),
+        0 0 30px rgba(4, 170, 109, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Register card header/title (matches login-card h2) */
+.register-card h2 {
+    font-size: 30px;                        /* Large title */
+    font-weight: 700;                       /* Bold weight */
+    margin-bottom: 10px;                    /* Space below */
+    color: #ffffff;                         /* White text */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+}
+
+/* Register card subtitle/description (matches login-card) */
+.register-card .subtitle {
+    font-size: 15px;                        /* Slightly larger text */
+    color: rgba(255, 255, 255, 0.75);       /* Semi-transparent white */
+    margin-bottom: 30px;                    /* Space below */
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+/* FORM ELEMENTS */
+
+/* Form container */
+.register-form {
+    display: flex;                          /* Flexbox for vertical stacking */
+    flex-direction: column;                 /* Stack elements vertically */
+}
+
+/* Individual input group (label + input) */
+.form-group {
+    display: flex;                          /* Flexbox layout */
+    flex-direction: column;                 /* Stack label above input */
+    text-align: left;                       /* Left-align text */
+}
+
+/* Form labels */
+.form-group label {
+    font-size: 14px;                        /* Label size */
+    font-weight: 500;                       /* Medium weight */
+    color: rgba(255, 255, 255, 0.9);        /* Slightly transparent white */
+    margin-bottom: 8px;                     /* Space between label and input */
+}
+
+/* Text input fields */
+.form-group input,
+.form-group select {
+    /*  INPUT: Semi-transparent background */
+    background: rgba(255, 255, 255, 0.1);
+
+    /* Transparent border that becomes visible on focus */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    /* Rounded corners matching card style */
+    border-radius: 10px;
+
+    /* Inner spacing */
+    padding: 15px;
+
+    /* Font settings */
+    font-size: 14px;
+    color: #ffffff;                         /* White text */
+
+    /* Remove default outline */
+    outline: none;
+
+    /* Smooth transition for focus state */
+    transition: all 0.3s ease;
+}
+
+/* Select dropdown specific styling */
+.form-group select {
+    cursor: pointer;                        /* Hand cursor for dropdown */
+    appearance: none;                       /* Remove default dropdown arrow */
+
+    /* Custom dropdown arrow using CSS */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;                    /* Space for arrow */
+}
+
+/* Select dropdown options (when expanded) */
+.form-group select option {
+    background-color: #333;                 /* Dark background for options */
+    color: #ffffff;                         /* White text */
+}
+
+/* Input placeholder text */
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);        /* Semi-transparent placeholder */
+}
+
+/* Input focus state - highlights the active field */
+.form-group input:focus,
+.form-group select:focus {
+    /* Brighter border on focus */
+    border-color: rgba(4, 170, 109, 0.8);   /* Green border */
+
+    /*  EFFECT: Glow effect on focus */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);
+
+    /* Slightly brighter background */
+    background: rgba(255, 255, 255, 0.15);
+}
+
+
+/* name field row */
+.name-row {
+    display: grid;                          
+    grid-template-columns: 1fr 1fr;         /* Two equal columns */
+    gap: 10px;                              /* Space between columns */
+}
+
+/*  REGISTER BUTTON */
+
+.register-btn {
+    /* Button sizing */
+    /* Full width */
+    width: 100%;    
+    /* Inner spacing */
+    padding: 15px;         
+    /* Brand green background */
+    background-color: #04AA6D;
+    /* White text */
+    color: #ffffff;
+    /* No border (solid button) */
+    border: none;
+    /* Rounded corners */
+    border-radius: 10px;
+    /* Font styling */
+    font-size: 16px;
+    font-weight: 700;/* Bold text */
+    /* Hand cursor on hover */
+    cursor: pointer;
+    /* Smooth transitions */
+    transition: all 0.3s ease;
+    /* Top margin for spacing from form */
+    margin-top: 10px;
+    /*  EFFECT: Soft shadow */
+    box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
+}
+
+/* Register button hover state */
+.register-btn:hover {
+    /* Darker green on hover */
+    background-color: #038a58;
+
+    /* Lift effect with larger shadow */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(4, 170, 109, 0.4);
+}
+
+/* Register button active/click state */
+.register-btn:active {
+    /* Press down effect */
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(4, 170, 109, 0.3);
+}
+
+/* Disabled button state (when terms not accepted) */
+.register-btn:disabled {
+    background-color: rgba(4, 170, 109, 0.5);   /* Faded green */
+    cursor: not-allowed;                         /* Not-allowed cursor */
+    transform: none;                             /* No hover effects */
+    box-shadow: none;                            /* No shadow */
+}
+
+
+/*  DIVIDER */
+
+.divider {
+    display: flex;                          /* Horizontal layout */
+    align-items: center;                    /* Vertically center */
+    margin: 25px 0;                         /* Vertical spacing */
+}
+
+/* Divider lines (left and right of "or") */
+.divider::before,
+.divider::after {
+    content: '';                            /* Empty content for line */
+    flex: 1;                                /* Take equal space */
+    height: 1px;                            /* Line thickness */
+    background: rgba(255, 255, 255, 0.3);   /* Semi-transparent white line */
+}
+
+/* "Or" text in divider */
+.divider span {
+    padding: 0 15px;                        /* Horizontal spacing around text */
+    color: rgba(255, 255, 255, 0.6);        /* Semi-transparent white */
+    font-size: 14px;                        /* Text size */
+}
+
+/* Individual social signup button */
+.social-btn {
+    /* Full width */
+    width: 100%;
+    padding: 12px;
+
+    /*  EFFECT: Transparent background */
+    background: rgba(255, 255, 255, 0.1);
+
+    /* White border for visibility */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Rounded corners */
+    border-radius: 10px;
+
+    /* White text */
+    color: #ffffff;
+
+    /* Font styling */
+    font-size: 14px;
+    font-weight: 500;
+
+    /* Hand cursor */
+    cursor: pointer;
+
+    /* Smooth transitions */
+    transition: all 0.3s ease;
+
+    /* Flexbox for icon + text alignment */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;                              /* Space between icon and text */
+}
+
+/* Social button hover state */
+.social-btn:hover {
+    /* Brighter background on hover */
+    background: rgba(255, 255, 255, 0.2);
+
+    /* More visible border */
+    border-color: rgba(255, 255, 255, 0.5);
+
+    /* Slight lift effect */
+    transform: translateY(-2px);
+}
+
+/* Social button icons (placeholder styling) */
+.social-btn img {
+    width: 20px;                            /* Icon size */
+    height: 20px;
+}
+
+
+/*  LOGIN LINK    */
+
+.login-link {
+    margin-top: 25px;                       /* Space above */
+    font-size: 14px;                        /* Text size */
+    color: rgba(255, 255, 255, 0.7);        /* Semi-transparent white */
+}
+
+/* Login link anchor styling */
+.login-link a {
+    color: #04AA6D;                         /* Green link color */
+    text-decoration: none;                  /* Remove underline */
+    font-weight: 600;                       /* Semi-bold */
+    transition: color 0.3s ease;            /* Smooth hover transition */
+}
+
+/* Login link hover state */
+.login-link a:hover {
+    color: #06d68a;                         /* Lighter green on hover */
+    text-decoration: underline;             /* Add underline on hover */
+}
+
+/* 
+   16. DOT INDICATORS
+   
+   Carousel/slider dot indicators (visual decoration).
+    */
+
+.banner-dots {
+    display: flex;                          /* Horizontal layout */
+    gap: 12px;                              /* Space between dots */
+    justify-content: center;                /* Center dots */
+    margin-top: 35px;                       /* Space above */
+}
+
+/* Individual dot (matches login page) */
+.banner-dots .dot {
+    width: 12px;                            /* Dot size */
+    height: 12px;
+    border-radius: 50%;                     /* Perfect circle */
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;                        /* Hand cursor */
+    transition: all 0.3s ease;              /* Smooth animation */
+}
+
+/* Dot hover state (matches login page) */
+.banner-dots .dot:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* Active dot state (matches login page) */
+.banner-dots .dot.active {
+    background-color: rgba(4, 170, 109, 0.9);
+    border-color: rgba(4, 170, 109, 0.5);
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.6);
+}
+
+

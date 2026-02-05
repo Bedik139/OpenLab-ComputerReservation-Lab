@@ -1,42 +1,255 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Computer Reservation System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../css/styles.css" rel="stylesheet">
-</head>
-<body>
+<!doctype html>
+<html>
+  <head>
+    <!-- ============================================
+         DOCUMENT HEAD
+         Contains metadata, stylesheets, and page title.
+         ============================================ -->
 
-    <!-- REGISTRATION PAGE -->
-    <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow">
-                    <div class="card-body p-4">
-                        <h2 class="text-center mb-4">Create Account</h2>
+    <!-- ============================================
+         STYLESHEETS
+         - Bootstrap 4.4.1: CSS framework for responsive grid and components
+         - registerstyle.css: Custom glassmorphism styles for the register page
+         ============================================ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="all" href="../assets/css/registerstyle.css">
 
-                        <!-- Registration Form -->
-                        <form id="registerForm">
-                            <!-- TODO: Add registration fields -->
-                            <!-- - Full Name -->
-                            <!-- - Email -->
-                            <!-- - Student ID / Employee ID -->
-                            <!-- - Password -->
-                            <!-- - Confirm Password -->
-                            <!-- - Role selection (if applicable) -->
-                            <!-- - Register button -->
-                            <!-- - Back to login link -->
-                        </form>
-                    </div>
-                </div>
+    <!-- Page Title: Displayed in browser tab -->
+    <title>Register - OpenLab</title>
+  </head>
+
+  <body>
+    <!-- ============================================
+         SITE WRAPPER
+         - Main grid container that holds all page content
+         - Uses CSS Grid for modern layout control
+         - Ensures footer stays at bottom (sticky footer pattern)
+         ============================================ -->
+    <div class="site-wrapper">
+
+      <!-- ============================================
+           NAVIGATION BAR
+           - Fixed position: stays at top when scrolling
+           - Contains: logo, nav links, search bar
+           - .topnav: Main navigation wrapper
+           - .nav-container: Centers content with max-width
+           - .nav-links: Flexbox container for menu items
+           ============================================ -->
+      <nav class="topnav">
+        <div class="nav-container">
+          <!-- Logo: Links back to homepage -->
+          <a href="../index.html" class="logo">OpenLab</a>
+
+          <!-- Navigation Links -->
+          <div class="nav-links">
+            <!-- .active class highlights current page -->
+            <a href="../index.html">Home</a>
+            <a href="cmpslots.html">Available Slots</a>
+            <a href="login.html">Login</a>
+            <a href="register.html" class="active">Register</a>
+
+            <!-- Search Bar: Expandable input field -->
+            <div class="search-bar">
+              <input type="text" placeholder="Search...">
             </div>
+          </div>
         </div>
-    </div>
+      </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/app.js"></script>
-</body>
+      <!-- ============================================
+           REGISTER SECTION
+           - Full-viewport hero section with background image
+           - Dark overlay for text readability (::before pseudo-element)
+           - Contains the glassmorphism registration card/form
+           ============================================ -->
+      <section class="landing-banner" id="bg-img">
+        <div class="banner-content">
+
+          <!-- ============================================
+               GLASSMORPHISM REGISTER CARD
+               - Semi-transparent background with blur effect
+               - Contains: title, subtitle, form, social signup, login link
+               - .register-card: Main card container with glassmorphism styling
+
+               GLASSMORPHISM EFFECT ACHIEVED BY:
+               - background: rgba(255, 255, 255, 0.1) - Semi-transparent
+               - backdrop-filter: blur(10px) - Frosted glass blur
+               - border: 1px solid rgba(255, 255, 255, 0.2) - Subtle border
+               - box-shadow for depth
+               ============================================ -->
+          <div class="register-card">
+
+            <!-- Card Header: Title and subtitle -->
+            <h2>Create Account</h2>
+            <p class="subtitle">Join OpenLab to start reserving computer slots</p>
+
+            <!-- ============================================
+                 REGISTRATION FORM
+                 - Contains all user registration fields
+                 - action="#": Form submission URL (to be implemented)
+                 - method="POST": Secure form submission method
+                 ============================================ -->
+            <form class="register-form" action="#" method="POST">
+
+              <!-- ============================================
+                   NAME FIELDS ROW
+                   - Two-column grid layout for first/last name
+                   - Responsive: stacks vertically on mobile
+                   ============================================ -->
+              <div class="name-row">
+                <!-- First Name Input -->
+                <div class="form-group">
+                  <label for="firstName">First Name</label>
+                  <!-- autocomplete: Helps browsers autofill user data -->
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    placeholder="Juan"
+                    autocomplete="given-name"
+                    required
+                  >
+                </div>
+
+                <!-- Last Name Input -->
+                <div class="form-group">
+                  <label for="lastName">Last Name</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    placeholder="Dela Cruz"
+                    autocomplete="family-name"
+                    required
+                  >
+                </div>
+              </div><!-- End .name-row -->
+
+              <!-- ============================================
+                   STUDENT ID INPUT
+                   - DLSU Student ID number field
+                   - pattern: Validates ID format (adjust regex as needed)
+                   ============================================ -->
+              <div class="form-group">
+                <label for="studentId">Student ID</label>
+                <!-- pattern: Regex validation for DLSU ID format -->
+                <input
+                  type="text"
+                  id="studentId"
+                  name="studentId"
+                  placeholder="12345678"
+                  pattern="[0-9]{8}"
+                  title="Please enter your 8-digit student ID"
+                  required
+                >
+              </div>
+
+              <!-- ============================================
+                   EMAIL INPUT
+                   - DLSU email address field
+                   - type="email": Validates email format
+                   ============================================ -->
+              <div class="form-group">
+                <label for="email">DLSU Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="juan_delacruz@dlsu.edu.ph"
+                  autocomplete="email"
+                  required
+                >
+              </div>
+
+              <!-- ============================================
+                   COLLEGE DROPDOWN
+                   - Select dropdown for college/department
+                   - Custom styled with CSS arrow
+                   ============================================ -->
+              <div class="form-group">
+                <label for="college">College</label>
+                <!-- select: Dropdown menu element -->
+                <select id="college" name="college" required>
+                  <!-- Placeholder option (disabled, selected by default) -->
+                  <option value="" disabled selected>Select your college</option>
+                  <option value="CCS">College of Computer Studies</option>
+                  <option value="CLA">College of Liberal Arts</option>
+                  <option value="COB">College of Business</option>
+                  <option value="COE">College of Engineering</option>
+                  <option value="COS">College of Science</option>
+                  <option value="GCOE">Gokongwei College of Engineering</option>
+                  <option value="SOE">School of Economics</option>
+                  <option value="BAGCED">Br. Andrew Gonzalez College of Education</option>
+                </select>
+              </div>
+
+              <!-- ============================================
+                   PASSWORD INPUT
+                   - Password field with strength indicator
+                   - minlength: Minimum password length requirement
+                   ============================================ -->
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Create a strong password"
+                  minlength="8"
+                  autocomplete="new-password"
+                  required
+                >
+                <br>
+              <!-- ============================================
+                   CONFIRM PASSWORD INPUT
+                   - Must match the password field above
+                   - Validation handled by JavaScript (to be implemented)
+                   ============================================ -->
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Re-enter your password"
+                  autocomplete="new-password"
+                  required
+                >
+              </div>
+
+              <!-- ============================================
+                   REGISTER BUTTON
+                   - Primary CTA (Call-to-Action) button
+                   - type="submit": Triggers form submission
+                   - Full width with hover effects
+                   ============================================ -->
+              <button type="submit" class="register-btn">Create Account</button>
+
+            </form><!-- End .register-form -->
+            <!-- ============================================
+                 LOGIN LINK
+                 - Link to login page for existing users
+                 - Positioned at bottom of card
+                 ============================================ -->
+            <p class="login-link">
+              Already have an account? <a href="login.html">Sign in</a>
+            </p>
+
+          </div><!-- End .register-card -->
+        </div><!-- End .banner-content -->
+      </section><!-- End .landing-banner -->
+
+    </div><!-- End .site-wrapper -->
+
+    <!-- ============================================
+         JAVASCRIPT LIBRARIES
+         - Load order matters! jQuery must come first.
+         1. jQuery: DOM manipulation library (required by Bootstrap)
+         2. Popper.js: Tooltip/popover positioning (required by Bootstrap)
+         3. Bootstrap JS: Interactive components (modals, dropdowns, etc.)
+         ============================================ -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
 </html>

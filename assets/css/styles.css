@@ -1,47 +1,11 @@
-/* ================================================================
-   OPENLAB - Computer Reservation System Stylesheet
-   ================================================================
-   Author: OpenLab Team
-   Description: Main stylesheet for the DLSU Computer Lab Reservation System
-
-   TABLE OF CONTENTS:
-   1. Font Imports
-   2. CSS Reset & Base Styles
-   3. Site Grid Layout
-   4. Navigation
-   5. Search Bar
-   6. Landing Banner
-   7. Features Section
-   8. TODO: Login Page (login.html)
-   9. TODO: Register Page (register.html)
-   10. TODO: Dashboard Page (dashboard.html)
-   11. TODO: Available Slots Page (available-slots.html)
-   12. TODO: JavaScript Interactions (main.js)
-   ================================================================ */
-
-
-/* ================================================================
-   1. FONT IMPORTS
-   ================================================================
-   @import: Loads external Google Fonts
-   - Roboto: Clean, modern sans-serif font
-   - Weights: 400 (regular), 700 (bold)
-   - display=swap: Shows fallback font while loading (better UX)
-   ================================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 
-/* ================================================================
-   2. CSS RESET & BASE STYLES
-   ================================================================
-   Universal selector (*) resets all elements to ensure
-   consistent styling across different browsers.
-   ================================================================ */
+/* CSS RESET & BASE STYLES */
 
 * {
     margin: 0;              /* Remove default margins */
     padding: 0;             /* Remove default padding */
-    box-sizing: border-box; /* Include padding/border in element's total width/height */
 }
 
 body {
@@ -51,17 +15,7 @@ body {
 }
 
 
-/* ================================================================
-   3. SITE GRID LAYOUT
-   ================================================================
-   Modern CSS Grid layout for the entire page structure.
-   Creates a "sticky footer" pattern where footer stays at bottom.
-
-   grid-template-rows: auto 1fr auto
-   - auto: Header takes only needed space
-   - 1fr: Main content fills remaining space (fr = fraction unit)
-   - auto: Footer takes only needed space
-   ================================================================ */
+/* SITE GRID LAYOUT */
 
 .site-wrapper {
     display: grid;                          /* Enable CSS Grid */
@@ -71,12 +25,7 @@ body {
 }
 
 
-/* ================================================================
-   4. NAVIGATION
-   ================================================================
-   Fixed navigation bar that stays at top of viewport.
-   Uses Flexbox for horizontal alignment of logo and links.
-   ================================================================ */
+/* NAVIGATION */
 
 /* Main navigation wrapper */
 .topnav {
@@ -134,14 +83,7 @@ body {
 }
 
 
-/* ================================================================
-   5. SEARCH BAR
-   ================================================================
-   Modern expandable search input with pill shape.
-   Expands on focus for better UX.
-
-   :focus-within - Applies styles when any child has focus
-   ================================================================ */
+/* SEARCH BAR */
 
 .search-bar {
     display: flex;                              /* Align input and button */
@@ -160,7 +102,6 @@ body {
     background-color: rgba(255, 255, 255, 0.15);    /* Slightly brighter */
     border-color: rgba(255, 255, 255, 0.4);         /* More visible border */
     box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);    /* Green glow effect */
-    opacity: 50%;                                    /* Dim slightly */
 }
 
 /* Search input field */
@@ -186,30 +127,22 @@ body {
 }
 
 
-/* ================================================================
-   6. LANDING BANNER
-   ================================================================
-   Full-width hero section with background image.
-   Uses ::before pseudo-element for dark overlay.
-
-   Pseudo-element: Virtual element created via CSS
-   - content: '' - Required, even if empty
-   - position: absolute - Positions relative to parent
-   ================================================================ */
-
+/* LOGIN BANNER */
 .landing-banner {
     background-image: url("../bg.png");     /* Background image path */
     background-size: cover;                 /* Scale to cover entire area */
     background-position: center;            /* Center the image */
+    background-attachment: fixed;           /* Parallax effect */
     display: flex;                          /* Enable Flexbox */
-    height: 750px;                          /* Fixed height */
+    min-height: 100vh;                      /* Full viewport height */
     align-items: center;                    /* Vertically center content */
     justify-content: center;                /* Horizontally center content */
     text-align: center;                     /* Center text */
     position: relative;                     /* Anchor for ::before pseudo-element */
+    padding-top: 80px;                      /* Account for fixed navbar height */
 }
 
-/* Dark overlay for text readability */
+/* : Gradient overlay */
 .landing-banner::before {
     content: '';                            /* Required for pseudo-element */
     position: absolute;                     /* Cover entire parent */
@@ -217,7 +150,18 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);         /* 50% black overlay */
+    /* : Multi-layer gradient for depth */
+    background:
+        /* Dark overlay */
+        linear-gradient(135deg,
+            rgba(0, 0, 0, 0.6) 0%,
+            rgba(0, 0, 0, 0.4) 50%,
+            rgba(0, 0, 0, 0.6) 100%),
+        /* Subtle color tint for glassmorphism effect */
+        linear-gradient(45deg,
+            rgba(4, 170, 109, 0.1) 0%,
+            rgba(0, 0, 0, 0) 50%,
+            rgba(4, 100, 80, 0.1) 100%);
 }
 
 /* Content container (sits above overlay) */
@@ -226,6 +170,8 @@ body {
     z-index: 1;                             /* Stack above ::before overlay */
     color: #ffffff;                         /* White text */
     padding: 20px;                          /* Inner spacing */
+    width: 100%;                            /* Full width for centering children */
+    max-width: 500px;                       /* Max width for the form container */
 }
 
 /* Main headline */
@@ -251,73 +197,100 @@ body {
     margin-bottom: 40px;                    /* Space below */
 }
 
-/* Base button styles */
+/* Base button styles -  (matches login-btn style) */
 .banner-buttons .btn {
-    padding: 15px 30px;                     /* Button padding */
+    padding: 16px 35px;                     /* Button padding */
     font-size: 16px;                        /* Text size */
-    font-weight: bold;                      /* Bold text */
+    font-weight: 700;                       /* Bold text */
     text-decoration: none;                  /* Remove underline */
-    border-radius: 5px;                     /* Rounded corners */
-    transition: all 0.5s;                   /* Smooth hover animation */
+    border-radius: 10px;                    /* Rounded corners (matches login) */
+    transition: all 0.3s ease;              /* Smooth hover animation */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
-/* Primary button (filled green) */
+/* Primary button (filled green) -  (matches login-btn) */
 .banner-buttons .btn-primary {
-    background-color: #04AA6D;              /* Green background */
-    color: #ffffff;                         /* White text */
-    border: 2px solid #04AA6D;              /* Matching border */
+    background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 4px 15px rgba(4, 170, 109, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Primary button hover state */
 .banner-buttons .btn-primary:hover {
-    background-color: #038a58;              /* Darker green */
-    border-color: #038a58;                  /* Match border */
+    background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(4, 170, 109, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Outline button (transparent) */
+/* Outline button (transparent) -  (matches social-btn style) */
 .banner-buttons .btn-outline {
-    background-color: transparent;          /* No fill */
-    color: #ffffff;                         /* White text */
-    border: 2px solid #ffffff;              /* White border */
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Dot indicators for carousel */
+/* Outline button hover state */
+.banner-buttons .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Dot indicators for carousel -  (matches login page) */
 .banner-dots {
     display: flex;                          /* Horizontal layout */
-    gap: 10px;                              /* Space between dots */
+    gap: 12px;                              /* Space between dots */
     justify-content: center;                /* Center dots */
 }
 
-/* Individual dot */
+/* Individual dot -  */
 .banner-dots .dot {
     width: 12px;                            /* Dot size */
     height: 12px;
     border-radius: 50%;                     /* Perfect circle */
-    background-color: rgba(255, 255, 255, 0.5);  /* Semi-transparent */
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;                        /* Hand cursor */
-    transition: background-color 0.3s;      /* Smooth animation */
+    transition: all 0.3s ease;              /* Smooth animation */
 }
 
-/* Active dot state */
+/* Dot hover state */
+.banner-dots .dot:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* Active dot state -  with glow (matches login page) */
 .banner-dots .dot.active {
-    background-color: #ffffff;              /* Solid white */
+    background-color: rgba(4, 170, 109, 0.9);
+    border-color: rgba(4, 170, 109, 0.5);
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.6);
 }
 
 
-/* ================================================================
-   7. FEATURES SECTION
-   ================================================================
-   Three-column grid showcasing app features.
-   Responsive: 3 cols -> 2 cols -> 1 col based on screen size.
-
-   CSS Grid: Modern layout system for 2D arrangements
-   - repeat(3, 1fr): Creates 3 equal columns
-   - gap: Space between grid items
-   ================================================================ */
-
+/* footer SECTION */
 .features {
     padding: 80px 20px;                     /* Vertical and horizontal padding */
-    background-color: #f8f9fa;              /* Light gray background */
+    /* Dark gradient background matching login page overlay colors */
+    background: linear-gradient(180deg,
+        rgba(20, 20, 35, 1) 0%,
+        rgba(25, 25, 45, 1) 50%,
+        rgba(20, 20, 35, 1) 100%);
+    position: relative;
+    overflow: hidden;
 }
 
 /* Grid container for feature cards */
@@ -327,43 +300,50 @@ body {
     gap: 30px;                              /* Space between cards */
     max-width: 1200px;                      /* Maximum width */
     margin: 0 auto;                         /* Center horizontally */
+    position: relative;
+    z-index: 1;
 }
 
-/* RESPONSIVE BREAKPOINT: Tablet (992px and below) */
-@media (max-width: 992px) {
-    .features-grid {
-        grid-template-columns: repeat(2, 1fr);  /* 2 columns on tablet */
-    }
-}
-
-/* RESPONSIVE BREAKPOINT: Mobile (576px and below) */
-@media (max-width: 576px) {
-    .features-grid {
-        grid-template-columns: 1fr;             /* 1 column on mobile */
-    }
-}
-
-/* Individual feature card */
+/* Individual feature card -  (matches login-card style) */
 .feature-card {
-    background-color: #ffffff;              /* White background */
+    /* : Same as login-card */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 40px 30px;                     /* Inner spacing */
-    border-radius: 10px;                    /* Rounded corners */
-    text-align: center;                     /* Center content */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);   /* Subtle shadow */
-    transition: transform 0.5s,             /*  hover animations */
-                box-shadow 0.5s;
+    border-radius: 20px;                    /* Matches login-card */
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 0 80px rgba(255, 255, 255, 0.05),
+        0 0 20px rgba(4, 170, 109, 0.1);
+    transition: all 0.3s ease;
 }
 
-/* Card hover effect - lifts up */
+/* Card hover effect - matches login-card hover */
 .feature-card:hover {
-    transform: translateY(-10px);           /* Move up 10px */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Larger shadow */
+    transform: translateY(-5px);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 80px rgba(255, 255, 255, 0.08),
+        0 0 30px rgba(4, 170, 109, 0.15);
 }
 
 /* Feature icon placeholder */
 .feature-icon {
     font-size: 48px;                        /* Icon size */
     margin-bottom: 20px;                    /* Space below */
+    width: 70px;
+    height: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(4, 170, 109, 0.2);
+    border-radius: 50%;
+    border: 1px solid rgba(4, 170, 109, 0.3);
 }
 
 /* Feature card heading */
@@ -371,167 +351,50 @@ body {
     font-size: 20px;                        /* Heading size */
     font-weight: bold;                      /* Bold text */
     margin-bottom: 15px;                    /* Space below */
-    color: #333;                            /* Dark gray */
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Feature card description */
 .feature-card p {
     font-size: 14px;                        /* Text size */
-    color: #666;                            /* Medium gray */
-    font-weight: 400;                       /* Regular weight */
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 400;
+    line-height: 1.6;
 }
 
+/*login/signup buttons*/
 
-/* ================================================================
-   8. TODO: LOGIN PAGE (login.html)
-   ================================================================
-   Styles needed for the login page:
+.login-buttons {
+    display: flex;                          /* Horizontal layout */
+    gap: 30px;                              /* Space between buttons */
+    justify-content: center;                /* Center buttons */
+    margin-bottom: 40px;                    /* Space below */
+}
 
-   .login-page          - Page wrapper with centered layout
-   .login-card          - Main login form container (white card)
-   .login-header        - Logo and "Welcome back" text
-   .login-form          - Form element wrapper
-   .form-group          - Input field container (label + input)
-   .form-input          - Styled input fields
-   .form-input:focus    - Focus state for inputs
-   .form-label          - Input labels
-   .remember-me         - Checkbox for "Remember me"
-   .forgot-password     - Link to password reset
-   .login-btn           - Submit button
-   .login-divider       - "OR" divider line
-   .social-login        - Google/Facebook login buttons
-   .signup-link         - "Don't have an account? Register" link
-   ================================================================ */
+/* Base button styles */
+.login-buttons .btn {
+    padding: 15px 30px;                     /* Button padding */
+    font-size: 16px;                        /* Text size */
+    font-weight: bold;                      /* Bold text */
+    text-decoration: none;                  /* Remove underline */
+    border-radius: 5px;                     /* Rounded corners */
+    transition: all 0.5s;                   /* Smooth hover animation */
+}
 
+/* Primary button (filled green) */
+.login-buttons .btn-primary {
+    background-color: #04AA6D;              /* Green background */
+    color: #ffffff;                         /* White text */
+    border: 2px solid #04AA6D;              /* Matching border */
+    width: 100px;
+    height: 50px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 
-/* ================================================================
-   9. TODO: REGISTER PAGE (register.html)
-   ================================================================
-   Styles needed for the registration page:
+}
 
-   .register-page       - Page wrapper
-   .register-card       - Main registration form container
-   .register-header     - Logo and "Create Account" text
-   .register-form       - Form element wrapper
-   .name-fields         - First name / Last name side by side
-   .email-field         - Email input with validation icon
-   .password-field      - Password with show/hide toggle
-   .password-strength   - Password strength indicator bar
-   .terms-checkbox      - "I agree to terms" checkbox
-   .register-btn        - Submit button
-   .login-link          - "Already have an account? Login" link
-   ================================================================ */
-
-
-/* ================================================================
-   10. TODO: DASHBOARD PAGE (dashboard.html)
-   ================================================================
-   Styles needed for the user dashboard:
-
-   .dashboard-layout    - Main grid: sidebar + content area
-   .sidebar             - Left navigation sidebar
-   .sidebar-menu        - Navigation menu items
-   .sidebar-item        - Individual menu item
-   .sidebar-item.active - Currently selected menu item
-
-   .dashboard-header    - Top bar with user info
-   .user-dropdown       - User profile dropdown menu
-   .notifications       - Notification bell with badge
-
-   .stats-grid          - Grid for stats cards
-   .stat-card           - Individual stat (e.g., "5 Active Reservations")
-   .stat-number         - Large number display
-   .stat-label          - Description text
-
-   .recent-activity     - Recent reservations list
-   .activity-item       - Individual activity entry
-   .activity-time       - Timestamp
-   .activity-status     - Status badge (confirmed, pending, cancelled)
-
-   .quick-actions       - Quick action buttons grid
-   .action-btn          - Individual action button
-   ================================================================ */
-
-
-/* ================================================================
-   11. TODO: AVAILABLE SLOTS PAGE (available-slots.html)
-   ================================================================
-   Styles needed for the lab availability page:
-
-   .slots-page          - Page wrapper
-   .filter-bar          - Building/date/time filters
-   .filter-dropdown     - Dropdown select styling
-   .filter-btn          - Filter apply button
-
-   .building-tabs       - Tab navigation for buildings
-   .building-tab        - Individual tab
-   .building-tab.active - Selected building tab
-
-   .lab-grid            - Grid of lab rooms
-   .lab-card            - Individual lab room card
-   .lab-name            - Lab room name (e.g., "G302")
-   .lab-capacity        - Number of seats
-   .lab-status          - Available/Full indicator
-
-   .seat-map            - Visual seat arrangement
-   .seat                - Individual seat
-   .seat.available      - Green - can be reserved
-   .seat.occupied       - Red - already taken
-   .seat.selected       - Blue - user's selection
-   .seat.disabled       - Gray - out of service
-
-   .reservation-panel   - Side panel for booking
-   .time-slots          - Available time slot buttons
-   .time-slot           - Individual time slot
-   .time-slot.selected  - Selected time slot
-   .confirm-btn         - Confirm reservation button
-
-   .legend              - Seat status color legend
-   ================================================================ */
-
-
-/* ================================================================
-   12. TODO: JAVASCRIPT INTERACTIONS (assets/js/main.js)
-   ================================================================
-   JavaScript functionality to implement:
-
-   NAVIGATION:
-   - Mobile hamburger menu toggle
-   - Active nav link highlighting based on scroll position
-   - Search bar expand/collapse animation
-   - Search functionality with autocomplete
-
-   LANDING PAGE:
-   - Banner carousel/slider with dot navigation
-   - Smooth scroll to sections
-   - Animate features on scroll (intersection observer)
-
-   LOGIN/REGISTER:
-   - Form validation (email format, password strength)
-   - Show/hide password toggle
-   - "Remember me" localStorage
-   - Form submission with loading state
-
-   DASHBOARD:
-   - Sidebar collapse/expand
-   - Notification dropdown
-   - User dropdown menu
-   - Stats counter animation
-   - Activity feed real-time updates
-
-   AVAILABLE SLOTS:
-   - Building tab switching
-   - Filter apply/reset
-   - Seat selection/deselection
-   - Multiple seat selection
-   - Time slot selection
-   - Reservation confirmation modal
-   - Real-time availability updates (WebSocket/polling)
-
-   UTILITIES:
-   - Toast/snackbar notifications
-   - Modal open/close
-   - Loading spinners
-   - Date/time picker
-   - Form data persistence (draft saving)
-   ================================================================ */
+/* Primary button hover state */
+.login-buttons .btn-primary:hover {
+    background-color: #038a58;              /* Darker green */
+    border-color: #038a58;                  /* Match border */
+}

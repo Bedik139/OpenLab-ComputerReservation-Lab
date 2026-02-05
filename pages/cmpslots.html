@@ -7,8 +7,7 @@
          - styles.css: Custom styles that override Bootstrap defaults
          ============================================ -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" media="all" href="assets/css/styles.css">
-
+    <link rel="stylesheet" type="text/css" media="all" href="../assets/css/styles.css">
     <title>Open Lab</title>
   </head>
 
@@ -20,7 +19,6 @@
          - Ensures footer stays at bottom (sticky footer pattern)
          ============================================ -->
     <div class="site-wrapper">
-
       <!-- ============================================
            NAVIGATION BAR
            - Fixed position: stays at top when scrolling
@@ -32,15 +30,15 @@
       <nav class="topnav">
         <div class="nav-container">
           <!-- Logo: Links back to homepage -->
-          <a href="index.html" class="logo">OpenLab</a>
+          <a href="../index.html" class="logo">OpenLab</a>
 
           <!-- Navigation Links -->
           <div class="nav-links">
             <!-- .active class highlights current page -->
-            <a href="index.html" class="active">Home</a>
-            <a href="pages/cmpslots.html">Available Slots</a>
-            <a href="pages/login.html">Login</a>
-            <a href="pages/register.html">Register</a>
+            <a href="../index.html">Home</a>
+            <a href="cmpslots.html" class="active">Available Slots</a>
+            <a href="login.html">Login</a>
+            <a href="register.html" >Register</a>
 
             <!-- Search Bar: Expandable input field -->
             <div class="search-bar">
@@ -93,24 +91,26 @@
         <div class="features-grid">
           <!-- Feature Card 1: Real-Time Availability -->
           <article class="feature-card">
+            <div class="feature-icon"></div>
             <h3>Real-Time Availability</h3>
             <p>See which seats are open now across all labs</p>
           </article>
 
           <!-- Feature Card 2: Easy Reservations -->
           <article class="feature-card">
+            <div class="feature-icon"></div>
             <h3>Easy Reservations</h3>
             <p>Book 30-min slots up to 7 days ahead</p>
           </article>
 
           <!-- Feature Card 3: Multiple Buildings -->
           <article class="feature-card">
+            <div class="feature-icon"></div>
             <h3>Multiple Buildings</h3>
             <p>Gokongwei, Andrew, and Velasco labs</p>
           </article>
         </div>
       </section>
-
     </div><!-- End .site-wrapper -->
 
     <!-- ============================================
