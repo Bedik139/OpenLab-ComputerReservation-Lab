@@ -1,34 +1,14 @@
 <!doctype html>
 <html>
   <head>
-    <!-- ============================================
-         STYLESHEETS
-         - Bootstrap 4.4.1: CSS framework for responsive grid and components
-         - styles.css: Custom styles that override Bootstrap defaults
-         ============================================ -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" media="all" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="all" href="assets/css/indexstyle.css">
 
     <title>Open Lab</title>
   </head>
 
   <body>
-    <!-- ============================================
-         SITE WRAPPER
-         - Main grid container that holds all page content
-         - Uses CSS Grid for modern layout control
-         - Ensures footer stays at bottom (sticky footer pattern)
-         ============================================ -->
     <div class="site-wrapper">
-
-      <!-- ============================================
-           NAVIGATION BAR
-           - Fixed position: stays at top when scrolling
-           - Contains: logo, nav links, search bar
-           - .topnav: Main navigation wrapper
-           - .nav-container: Centers content with max-width
-           - .nav-links: Flexbox container for menu items
-           ============================================ -->
       <nav class="topnav">
         <div class="nav-container">
           <!-- Logo: Links back to homepage -->
@@ -39,8 +19,9 @@
             <!-- .active class highlights current page -->
             <a href="index.html" class="active">Home</a>
             <a href="pages/cmpslots.html">Available Slots</a>
+            <a href="pages/dashboard.html">Dashboard</a>
+            <a href="pages/reservations.html">My Reservations</a>
             <a href="pages/login.html">Login</a>
-            <a href="pages/register.html">Register</a>
 
             <!-- Search Bar: Expandable input field -->
             <div class="search-bar">
@@ -49,15 +30,7 @@
           </div>
         </div>
       </nav>
-
-      <!-- ============================================
-           LANDING BANNER
-           - Full-width banner with background image
-           - Dark overlay for text readability (::before pseudo-element)
-           - Contains: headline, description, CTA buttons, dot indicators
-           - #bg-img: ID for background image styling
-           ============================================ -->
-      <section class="landing-banner" id="bg-img">
+      <div class="landing-banner" id="bg-img">
         <div class="banner-content">
           <!-- Main Headline: <br> creates line break for visual impact -->
           <h1>Find Your Seat,<br>Skip the Search</h1>
@@ -68,9 +41,9 @@
           <!-- Call-to-Action Buttons -->
           <div class="banner-buttons">
             <!-- Primary button: Main action (green, filled) -->
-            <a href="#" class="btn btn-primary">View Labs</a>
+            <a href="pages/cmpslots.html" class="btn btn-primary">View Labs</a>
             <!-- Outline button: Secondary action (transparent with border) -->
-            <a href="#" class="btn btn-outline">Register Now</a>
+            <a href="pages/register.html" class="btn btn-outline">Register Now</a>
           </div>
 
           <!-- Dot Indicators: For carousel/slider navigation (visual only for now) -->
@@ -80,48 +53,28 @@
             <span class="dot"></span>
           </div>
         </div>
-      </section>
-
-      <!-- ============================================
-           FEATURES SECTION
-           - Showcases 3 key features of the application
-           - Uses CSS Grid for responsive 3-column layout
-           - <article> tags: Semantic HTML for self-contained content
-           - Each card has: icon, title, description
-           ============================================ -->
-      <section class="features">
+      </div>
+      <div class="features">
         <div class="features-grid">
-          <!-- Feature Card 1: Real-Time Availability -->
           <article class="feature-card">
             <h3>Real-Time Availability</h3>
             <p>See which seats are open now across all labs</p>
           </article>
-
-          <!-- Feature Card 2: Easy Reservations -->
           <article class="feature-card">
             <h3>Easy Reservations</h3>
             <p>Book 30-min slots up to 7 days ahead</p>
           </article>
-
-          <!-- Feature Card 3: Multiple Buildings -->
           <article class="feature-card">
             <h3>Multiple Buildings</h3>
             <p>Gokongwei, Andrew, and Velasco labs</p>
           </article>
         </div>
-      </section>
+      </div>
 
     </div><!-- End .site-wrapper -->
-
-    <!-- ============================================
-         JAVASCRIPT LIBRARIES
-         - Load order matters! jQuery must come first.
-         1. jQuery: DOM manipulation library (required by Bootstrap)
-         2. Popper.js: Tooltip/popover positioning (required by Bootstrap)
-         3. Bootstrap JS: Interactive components (modals, dropdowns, etc.)
-         ============================================ -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>

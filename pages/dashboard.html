@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="all" href="../assets/css/dashboardstyle.css">
+    <title>Dashboard - OpenLab</title>
+  </head>
+
+  <body>
+    <div class="site-wrapper">
+      <!-- Navigation Bar -->
+      <div class="topnav">
+        <div class="nav-container">
+          <a href="../index.html" class="logo">OpenLab</a>
+          <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="cmpslots.html">Available Slots</a>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="reservations.html">My Reservations</a>
+            <a href="profile.html">Profile</a>
+            <div class="search-bar">
+              <input type="text" placeholder="Search...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="landing-banner" id="bg-img">
+        <div class="dashboard-container">
+          <!-- Welcome Header -->
+          <div class="welcome-header">
+            <div class="welcome-text">
+              <h1>Welcome back, Juan!</h1>
+              <p>Here's an overview of your lab reservations</p>
+            </div>
+            <a href="cmpslots.html" class="new-reservation-btn">+ New Reservation</a>
+          </div>
+
+          <!-- Stats Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon upcoming"></div>
+              <div class="stat-content">
+                <span class="stat-number">2</span>
+                <span class="stat-label">Upcoming Reservations</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon completed"></div>
+              <div class="stat-content">
+                <span class="stat-number">15</span>
+                <span class="stat-label">Completed Sessions</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon hours"></div>
+              <div class="stat-content">
+                <span class="stat-number">7.5</span>
+                <span class="stat-label">Hours This Month</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon streak"></div>
+              <div class="stat-content">
+                <span class="stat-number">5</span>
+                <span class="stat-label">Day Streak</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Dashboard Grid -->
+          <div class="dashboard-grid">
+            <!-- Upcoming Reservations -->
+            <div class="dashboard-card upcoming-reservations">
+              <div class="card-header">
+                <h3>Upcoming Reservations</h3>
+                <a href="reservations.html" class="view-all">View All</a>
+              </div>
+              <div class="card-content">
+                <!-- Reservation Item 1 -->
+                <div class="reservation-item">
+                  <div class="reservation-date">
+                    <span class="day">10</span>
+                    <span class="month">FEB</span>
+                  </div>
+                  <div class="reservation-details">
+                    <h4>GK101A - Seat B5</h4>
+                    <p>Gokongwei Building</p>
+                    <span class="time">09:00 AM - 09:30 AM</span>
+                  </div>
+                  <div class="reservation-status upcoming">
+                    <span>Upcoming</span>
+                  </div>
+                </div>
+
+                <!-- Reservation Item 2 -->
+                <div class="reservation-item">
+                  <div class="reservation-date">
+                    <span class="day">12</span>
+                    <span class="month">FEB</span>
+                  </div>
+                  <div class="reservation-details">
+                    <h4>LS313 - Seat A8</h4>
+                    <p>La Salle Hall</p>
+                    <span class="time">02:00 PM - 02:30 PM</span>
+                  </div>
+                  <div class="reservation-status upcoming">
+                    <span>Upcoming</span>
+                  </div>
+                </div>
+
+                <!-- Empty State (hidden when there are reservations) -->
+                <!-- <div class="empty-state">
+                  <p>No upcoming reservations</p>
+                  <a href="cmpslots.html">Book a slot now</a>
+                </div> -->
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card quick-actions">
+              <div class="card-header">
+                <h3>Quick Actions</h3>
+              </div>
+              <div class="card-content">
+                <div class="action-grid">
+                  <a href="cmpslots.html" class="action-item">
+                    <div class="action-icon reserve"></div>
+                    <span>Reserve a Seat</span>
+                  </a>
+                  <a href="reservations.html" class="action-item">
+                    <div class="action-icon manage"></div>
+                    <span>Manage Bookings</span>
+                  </a>
+                  <a href="profile.html" class="action-item">
+                    <div class="action-icon profile"></div>
+                    <span>Edit Profile</span>
+                  </a>
+                  <a href="users.html" class="action-item">
+                    <div class="action-icon search"></div>
+                    <span>Find Users</span>
+                  </a>
+                  <a href="walkin.html" class="action-item">
+                    <div class="action-icon reserve"></div>
+                    <span>Walk-In (Tech)</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="dashboard-card recent-activity">
+              <div class="card-header">
+                <h3>Recent Activity</h3>
+              </div>
+              <div class="card-content">
+                <div class="activity-list">
+                  <div class="activity-item">
+                    <div class="activity-indicator completed"></div>
+                    <div class="activity-details">
+                      <p>Completed session at <strong>AG1010</strong></p>
+                      <span class="activity-time">Today, 11:30 AM</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-indicator booked"></div>
+                    <div class="activity-details">
+                      <p>Booked seat at <strong>GK101A</strong></p>
+                      <span class="activity-time">Yesterday, 3:45 PM</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-indicator completed"></div>
+                    <div class="activity-details">
+                      <p>Completed session at <strong>LS313</strong></p>
+                      <span class="activity-time">Feb 7, 2025</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-indicator cancelled"></div>
+                    <div class="activity-details">
+                      <p>Cancelled reservation at <strong>VL205</strong></p>
+                      <span class="activity-time">Feb 6, 2025</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-indicator booked"></div>
+                    <div class="activity-details">
+                      <p>Booked seat at <strong>LS313</strong></p>
+                      <span class="activity-time">Feb 5, 2025</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Favorite Labs -->
+            <div class="dashboard-card favorite-labs">
+              <div class="card-header">
+                <h3>Frequently Used Labs</h3>
+              </div>
+              <div class="card-content">
+                <div class="lab-list">
+                  <a href="reserve.html?lab=GK101A" class="lab-item">
+                    <div class="lab-info">
+                      <h4>GK101A</h4>
+                      <p>Gokongwei Building</p>
+                    </div>
+                    <div class="lab-usage">
+                      <span class="usage-count">8 visits</span>
+                    </div>
+                  </a>
+                  <a href="reserve.html?lab=LS313" class="lab-item">
+                    <div class="lab-info">
+                      <h4>LS313</h4>
+                      <p>La Salle Hall</p>
+                    </div>
+                    <div class="lab-usage">
+                      <span class="usage-count">5 visits</span>
+                    </div>
+                  </a>
+                  <a href="reserve.html?lab=AG1010" class="lab-item">
+                    <div class="lab-info">
+                      <h4>AG1010</h4>
+                      <p>Andrew Building</p>
+                    </div>
+                    <div class="lab-usage">
+                      <span class="usage-count">2 visits</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>

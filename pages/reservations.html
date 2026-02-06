@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="all" href="../assets/css/reservationsstyle.css">
+    <title>My Reservations - OpenLab</title>
+  </head>
+
+  <body>
+    <div class="site-wrapper">
+      <!-- Navigation Bar -->
+      <div class="topnav">
+        <div class="nav-container">
+          <a href="../index.html" class="logo">OpenLab</a>
+          <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="cmpslots.html">Available Slots</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="reservations.html" class="active">My Reservations</a>
+            <a href="profile.html">Profile</a>
+            <div class="search-bar">
+              <input type="text" placeholder="Search...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="landing-banner" id="bg-img">
+        <div class="reservations-container">
+          <!-- Page Header -->
+          <div class="page-header">
+            <div class="header-content">
+              <h1>My Reservations</h1>
+              <p>View and manage your lab reservations</p>
+            </div>
+            <a href="cmpslots.html" class="new-btn">+ New Reservation</a>
+          </div>
+
+          <!-- Filter Tabs -->
+          <div class="filter-tabs">
+            <button class="tab-btn active" data-filter="all">All</button>
+            <button class="tab-btn" data-filter="upcoming">Upcoming</button>
+            <button class="tab-btn" data-filter="completed">Completed</button>
+            <button class="tab-btn" data-filter="cancelled">Cancelled</button>
+          </div>
+
+          <!-- Reservations List -->
+          <div class="reservations-list">
+            <!-- Upcoming Reservation 1 -->
+            <div class="reservation-card upcoming" data-status="upcoming">
+              <div class="card-date">
+                <span class="day">10</span>
+                <span class="month">FEB</span>
+                <span class="year">2025</span>
+              </div>
+              <div class="card-content">
+                <div class="reservation-main">
+                  <h3>GK101A - Seat B5</h3>
+                  <p class="location">Gokongwei Building</p>
+                  <div class="time-slot">
+                    <span class="time">09:00 AM - 09:30 AM</span>
+                  </div>
+                </div>
+                <div class="reservation-meta">
+                  <span class="status-badge upcoming">Upcoming</span>
+                  <span class="booked-date">Booked on Feb 8, 2025</span>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn edit">Edit</button>
+                <button class="action-btn cancel">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Upcoming Reservation 2 -->
+            <div class="reservation-card upcoming" data-status="upcoming">
+              <div class="card-date">
+                <span class="day">12</span>
+                <span class="month">FEB</span>
+                <span class="year">2025</span>
+              </div>
+              <div class="card-content">
+                <div class="reservation-main">
+                  <h3>LS313 - Seat A8</h3>
+                  <p class="location">La Salle Hall</p>
+                  <div class="time-slot">
+                    <span class="time">02:00 PM - 02:30 PM</span>
+                  </div>
+                </div>
+                <div class="reservation-meta">
+                  <span class="status-badge upcoming">Upcoming</span>
+                  <span class="booked-date">Booked on Feb 9, 2025</span>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn edit">Edit</button>
+                <button class="action-btn cancel">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Completed Reservation 1 -->
+            <div class="reservation-card completed" data-status="completed">
+              <div class="card-date">
+                <span class="day">08</span>
+                <span class="month">FEB</span>
+                <span class="year">2025</span>
+              </div>
+              <div class="card-content">
+                <div class="reservation-main">
+                  <h3>AG1010 - Seat C3</h3>
+                  <p class="location">Andrew Building</p>
+                  <div class="time-slot">
+                    <span class="time">11:00 AM - 11:30 AM</span>
+                  </div>
+                </div>
+                <div class="reservation-meta">
+                  <span class="status-badge completed">Completed</span>
+                  <span class="booked-date">Booked on Feb 6, 2025</span>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn rebook">Book Again</button>
+              </div>
+            </div>
+
+            <!-- Completed Reservation 2 -->
+            <div class="reservation-card completed" data-status="completed">
+              <div class="card-date">
+                <span class="day">07</span>
+                <span class="month">FEB</span>
+                <span class="year">2025</span>
+              </div>
+              <div class="card-content">
+                <div class="reservation-main">
+                  <h3>GK101A - Seat D7</h3>
+                  <p class="location">Gokongwei Building</p>
+                  <div class="time-slot">
+                    <span class="time">03:00 PM - 03:30 PM</span>
+                  </div>
+                </div>
+                <div class="reservation-meta">
+                  <span class="status-badge completed">Completed</span>
+                  <span class="booked-date">Booked on Feb 5, 2025</span>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn rebook">Book Again</button>
+              </div>
+            </div>
+
+            <!-- Cancelled Reservation -->
+            <div class="reservation-card cancelled" data-status="cancelled">
+              <div class="card-date">
+                <span class="day">06</span>
+                <span class="month">FEB</span>
+                <span class="year">2025</span>
+              </div>
+              <div class="card-content">
+                <div class="reservation-main">
+                  <h3>VL205 - Seat A2</h3>
+                  <p class="location">Velasco Building</p>
+                  <div class="time-slot">
+                    <span class="time">10:00 AM - 10:30 AM</span>
+                  </div>
+                </div>
+                <div class="reservation-meta">
+                  <span class="status-badge cancelled">Cancelled</span>
+                  <span class="booked-date">Cancelled on Feb 5, 2025</span>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn rebook">Book Again</button>
+              </div>
+            </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <button class="page-btn" disabled>Previous</button>
+            <span class="page-info">Page 1 of 3</span>
+            <button class="page-btn">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>

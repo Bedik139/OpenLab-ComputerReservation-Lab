@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="all" href="../assets/css/walkinstyle.css">
+    <title>Walk-In Reservation - OpenLab</title>
+  </head>
+
+  <body>
+    <div class="site-wrapper">
+      <!-- Navigation Bar -->
+      <div class="topnav">
+        <div class="nav-container">
+          <a href="../index.html" class="logo">OpenLab</a>
+          <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="cmpslots.html">Available Slots</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="reservations.html">My Reservations</a>
+            <a href="profile.html">Profile</a>
+            <div class="search-bar">
+              <input type="text" placeholder="Search...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="landing-banner" id="bg-img">
+        <div class="reserve-container">
+          <!-- Page Header -->
+          <div class="page-header">
+            <h1>Walk-In Reservation</h1>
+            <p>Lab technicians: Reserve a seat for a walk-in student</p>
+          </div>
+
+          <div class="reserve-layout">
+            <!-- Left Column: Walk-In Form -->
+            <div class="seat-selection-panel">
+              <div class="panel-card">
+                <div class="panel-header">
+                  <h3>Walk-In Student Details</h3>
+                </div>
+
+                <form class="walkin-form">
+                  <!-- Student ID -->
+                  <div class="time-selection">
+                    <label for="walkinStudentId">Student ID</label>
+                    <div class="time-row">
+                      <input type="text" id="walkinStudentId" placeholder="Enter 8-digit student ID" pattern="[0-9]{8}" required>
+                    </div>
+                  </div>
+
+                  <!-- Lab Selection -->
+                  <div class="time-selection">
+                    <label for="walkinLab">Select Lab</label>
+                    <div class="time-row">
+                      <select id="walkinLab" required>
+                        <option value="" disabled selected>Choose a lab</option>
+                        <option value="AG1010">AG1010 - Andrew Building</option>
+                        <option value="LS313">LS313 - La Salle Hall</option>
+                        <option value="GK101A">GK101A - Gokongwei Building</option>
+                        <option value="GK101B">GK101B - Gokongwei Building</option>
+                        <option value="GK304">GK304 - Gokongwei Building</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Seat Selection -->
+                  <div class="time-selection">
+                    <label for="walkinSeat">Seat Number</label>
+                    <div class="time-row">
+                      <input type="text" id="walkinSeat" placeholder="e.g., A1, B5, C10" required>
+                    </div>
+                  </div>
+
+                  <!-- Date & Time -->
+                  <div class="time-selection">
+                    <label>Date & Time Slot</label>
+                    <div class="time-row">
+                      <input type="date" id="walkinDate">
+                      <select id="walkinTime">
+                        <option value="07:30">07:30 AM - 08:00 AM</option>
+                        <option value="08:00">08:00 AM - 08:30 AM</option>
+                        <option value="08:30">08:30 AM - 09:00 AM</option>
+                        <option value="09:00" selected>09:00 AM - 09:30 AM</option>
+                        <option value="09:30">09:30 AM - 10:00 AM</option>
+                        <option value="10:00">10:00 AM - 10:30 AM</option>
+                        <option value="10:30">10:30 AM - 11:00 AM</option>
+                        <option value="11:00">11:00 AM - 11:30 AM</option>
+                        <option value="11:30">11:30 AM - 12:00 PM</option>
+                        <option value="12:00">12:00 PM - 12:30 PM</option>
+                        <option value="12:30">12:30 PM - 01:00 PM</option>
+                        <option value="13:00">01:00 PM - 01:30 PM</option>
+                        <option value="13:30">01:30 PM - 02:00 PM</option>
+                        <option value="14:00">02:00 PM - 02:30 PM</option>
+                        <option value="14:30">02:30 PM - 03:00 PM</option>
+                        <option value="15:00">03:00 PM - 03:30 PM</option>
+                        <option value="15:30">03:30 PM - 04:00 PM</option>
+                        <option value="16:00">04:00 PM - 04:30 PM</option>
+                        <option value="16:30">04:30 PM - 05:00 PM</option>
+                        <option value="17:00">05:00 PM - 05:30 PM</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="confirm-btn">Reserve for Student</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Right Column: Current Reservations (for No-Show Removal) -->
+            <div class="booking-summary-panel">
+              <div class="panel-card summary-card">
+                <h3>Current Reservations</h3>
+                <p>Remove no-show students (available within 10 min of start time)</p>
+
+                <div class="summary-details">
+                  <!-- Sample Reservation 1 -->
+                  <div class="walkin-reservation-item" data-reservation-id="1">
+                    <div class="summary-item">
+                      <span class="label">GK101A - Seat B5</span>
+                      <span class="value">09:00 AM - Juan Dela Cruz (12345678)</span>
+                    </div>
+                    <button class="remove-noshow-btn" disabled>Remove No-Show</button>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <!-- Sample Reservation 2 -->
+                  <div class="walkin-reservation-item" data-reservation-id="2">
+                    <div class="summary-item">
+                      <span class="label">GK101A - Seat A8</span>
+                      <span class="value">09:00 AM - Maria Santos (12340001)</span>
+                    </div>
+                    <button class="remove-noshow-btn" disabled>Remove No-Show</button>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <!-- Sample Reservation 3 -->
+                  <div class="walkin-reservation-item" data-reservation-id="3">
+                    <div class="summary-item">
+                      <span class="label">LS313 - Seat C3</span>
+                      <span class="value">09:30 AM - Jose Rizal Jr. (12340002)</span>
+                    </div>
+                    <button class="remove-noshow-btn" disabled>Remove No-Show</button>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <!-- Sample Reservation 4 -->
+                  <div class="walkin-reservation-item" data-reservation-id="4">
+                    <div class="summary-item">
+                      <span class="label">AG1010 - Seat D1</span>
+                      <span class="value">10:00 AM - Ana Garcia (12340003)</span>
+                    </div>
+                    <button class="remove-noshow-btn" disabled>Remove No-Show</button>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <!-- Sample Reservation 5 -->
+                  <div class="walkin-reservation-item" data-reservation-id="5">
+                    <div class="summary-item">
+                      <span class="label">GK304 - Seat A2</span>
+                      <span class="value">10:30 AM - Pedro Reyes (12340004)</span>
+                    </div>
+                    <button class="remove-noshow-btn" disabled>Remove No-Show</button>
+                  </div>
+                </div>
+
+                <a href="dashboard.html" class="back-link">Back to Dashboard</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>
