@@ -7,7 +7,7 @@
          - styles.css: Custom styles that override Bootstrap defaults
          ============================================ -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" media="all" href="../assets/css/styles.css">
+    <link rel="stylesheet" type="text/css" media="all" href="../assets/css/registerstyle.css">
     <title>Open Lab</title>
   </head>
 
@@ -57,61 +57,33 @@
            ============================================ -->
       <section class="landing-banner" id="bg-img">
         <div class="banner-content">
-          <!-- Main Headline: <br> creates line break for visual impact -->
-          <h1>Find Your Seat,<br>Skip the Search</h1>
+          <section class="features">
+            <div class="features-grid">
+              <!-- Feature Card 1: Real-Time Availability -->
+              <article class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>AG1010</h3>
+                <p>placeholder</p>
+              </article>
 
-          <!-- Subheadline: Brief description of the service -->
-          <p>Check real-time computer lab availability across DLSU.<br>Reserve your slot in seconds — no more wandering.</p>
+              <!-- Feature Card 2: Easy Reservations -->
+              <article class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>LS313</h3>
+                <p>placeholder</p>
+              </article>
 
-          <!-- Call-to-Action Buttons -->
-          <div class="banner-buttons">
-            <!-- Primary button: Main action (green, filled) -->
-            <a href="#" class="btn btn-primary">View Labs</a>
-            <!-- Outline button: Secondary action (transparent with border) -->
-            <a href="#" class="btn btn-outline">Register Now</a>
-          </div>
-
-          <!-- Dot Indicators: For carousel/slider navigation (visual only for now) -->
-          <div class="banner-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
-        </div>
+              <!-- Feature Card 3: Multiple Buildings -->
+              <article class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>GK101A</h3>
+                <p>placeholder</p>
+              </article>
+            </div>
+          </section>
+        </div><!-- End .site-wrapper -->
       </section>
 
-      <!-- ============================================
-           FEATURES SECTION
-           - Showcases 3 key features of the application
-           - Uses CSS Grid for responsive 3-column layout
-           - <article> tags: Semantic HTML for self-contained content
-           - Each card has: icon, title, description
-           ============================================ -->
-      <section class="features">
-        <div class="features-grid">
-          <!-- Feature Card 1: Real-Time Availability -->
-          <article class="feature-card">
-            <div class="feature-icon"></div>
-            <h3>Real-Time Availability</h3>
-            <p>See which seats are open now across all labs</p>
-          </article>
-
-          <!-- Feature Card 2: Easy Reservations -->
-          <article class="feature-card">
-            <div class="feature-icon"></div>
-            <h3>Easy Reservations</h3>
-            <p>Book 30-min slots up to 7 days ahead</p>
-          </article>
-
-          <!-- Feature Card 3: Multiple Buildings -->
-          <article class="feature-card">
-            <div class="feature-icon"></div>
-            <h3>Multiple Buildings</h3>
-            <p>Gokongwei, Andrew, and Velasco labs</p>
-          </article>
-        </div>
-      </section>
-    </div><!-- End .site-wrapper -->
 
     <!-- ============================================
          JAVASCRIPT LIBRARIES

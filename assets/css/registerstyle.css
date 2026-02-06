@@ -501,11 +501,7 @@ body {
     text-decoration: underline;             /* Add underline on hover */
 }
 
-/* 
-   16. DOT INDICATORS
-   
-   Carousel/slider dot indicators (visual decoration).
-    */
+/* DOT INDICATORS    */
 
 .banner-dots {
     display: flex;                          /* Horizontal layout */
