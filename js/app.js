@@ -27,8 +27,11 @@ function getCurrentUser() {}
 
 /**
  * Logs out the current user by clearing session data from localStorage
- * and redirecting to the login page.
- * Handles path difference between root (index.html) and /pages/ directory.
+ * and redirecting to the homepage.
+ * - Removes 'openlab_user' from localStorage.
+ * - Redirects to index.html (use "../index.html" from /pages/, or "index.html" from root).
+ * - Called by the .signout-btn anchor in dashboard.html via onclick="logout()".
+ *   The anchor's default href (../index.html) acts as a fallback if JS fails.
  *
  * @returns {void}
  */
