@@ -337,7 +337,16 @@ function handleEditReservation() {
  * @todo Fix inconsistent HTML tags — first 4 lab cards use <span>, last uses <article>
  * @returns {void}
  */
-function initLabFilters() {}
+function initLabFilters() {
+      $('.filter-btn').on('click', function () {
+        const building = $('#buildingFilter').val(); // andrew | lasalle | gokongwei | velasco | ''
+        $('.lab-card').each(function () {
+            const cardBuilding = $(this).find('.building-tag').text().toLowerCase();
+            if (!building || cardBuilding.includes(building)) $(this).show();
+            else $(this).hide();
+        });
+    });
+}
 
 
 // =============================================================================
