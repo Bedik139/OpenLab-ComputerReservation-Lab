@@ -23,7 +23,9 @@ function isLoggedIn() {}
  *
  * @returns {Object|null} User object {firstName, lastName, email, studentId, college} or null if not logged in
  */
-function getCurrentUser() {}
+function getCurrentUser() {
+
+}
 
 /**
  * Logs out the current user by clearing session data from localStorage
@@ -225,7 +227,20 @@ function pollAvailability() {}
  *
  * @returns {void}
  */
-function initReservationFilters() {}
+function initReservationFilters() {
+    // This whole block filters the reservation cards based on the data-filter attribute of the clicked tab button
+     $('.tab-btn').on('click', function () {
+        const filter = $(this).data('filter'); // assign the value of the data-filter attribute of the clicked tab button to the filter variable
+        $('.tab-btn').removeClass('active'); // 
+        $(this).addClass('active');
+        $('.reservation-card').each(function () {
+        const status = $(this).data('status');
+        if (filter === 'all' || status === filter) $(this).fadeIn();
+        else $(this).fadeOut();
+    });
+
+    });
+}
 
 /**
  * Handles the cancel button (.action-btn.cancel) on reservation cards.
@@ -236,7 +251,30 @@ function initReservationFilters() {}
  * @todo Fix reservations.html — missing closing </div> for .reservations-list before pagination
  * @returns {void}
  */
-function handleCancelReservation() {}
+function handleCancelReservation() {
+        $('.action-btn.cancel').on('click', function () {
+        const card = $(this).closest('.reservation-card');
+        if (confirm('Are you sure you want to cancel this reservation?')) {
+            // Update the status
+            card.data('status', 'cancelled'); // Update to cancelled
+            // Find the status badge within the card and update its text and classes
+            card.find('.status-badge')
+                .text('Cancelled')
+                .removeClass('upcoming completed')
+                .addClass('cancelled');
+
+            // Toggle buttons
+            $(this).fadeOut();
+            card.find('.action-btn.rebook').fadeIn();
+
+            // Ensure it shows/hides correctly depending on active filter
+            const activeFilter = $('.tab-btn.active').data('filter');
+            if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
+                card.fadeOut();
+            }
+        }
+    });
+}
 
 /**
  * Handles the "Book Again" button (.action-btn.rebook) on completed/cancelled cards.
@@ -292,7 +330,20 @@ function initLabFilters() {}
  *
  * @returns {void}
  */
-function populateProfile() {}
+function populateProfile() {
+    const user = getCurrentUser();
+    if (!user) {
+        return;
+    }
+
+    // Fill the values in the profile header and form fields
+    $('#firstName').val(user.firstName);
+    $('#lastName').val(user.lastName);
+    $('#studentId').val(user.studentId);
+    $('#email').val(user.email);
+    $('#college').val(user.college);
+    $('.profile-avatar').text(user.firstName[0] + user.lastName[0]);
+}
 
 /**
  * Initializes the edit toggle for the Personal Information form.
@@ -404,7 +455,11 @@ function initPublicProfilePage() {}
  *       are hardcoded sample data — need API calls to populate dynamically
  * @returns {void}
  */
-function initDashboard() {}
+function initDashboard() {
+    const user = getCurrentUser();
+    if (user) { $('.welcome-msg').text(`Welcome back, ${user.firstName}!`);
+}
+}
 
 
 // =============================================================================
@@ -423,7 +478,9 @@ function initDashboard() {}
  * @todo Replace with POST /api/reservations/walkin API call
  * @returns {void}
  */
-function initWalkInReservation() {}
+function initWalkInReservation() {
+
+}
 
 /**
  * Handles the removal of a no-show reservation by a lab technician.
