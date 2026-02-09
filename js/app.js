@@ -229,17 +229,23 @@ function pollAvailability() {}
  */
 function initReservationFilters() {
     // This whole block filters the reservation cards based on the data-filter attribute of the clicked tab button
-     $('.tab-btn').on('click', function () {
-        const filter = $(this).data('filter'); // assign the value of the data-filter attribute of the clicked tab button to the filter variable
-        $('.tab-btn').removeClass('active'); // 
+      $('.tab-btn').on('click', function () {
+        const filter = $(this).data('filter');
+        $('.tab-btn').removeClass('active');
         $(this).addClass('active');
+
         $('.reservation-card').each(function () {
-        const status = $(this).data('status');
-        if (filter === 'all' || status === filter) $(this).fadeIn();
-        else $(this).fadeOut();
+            const status = $(this).data('status');
+            if (filter === 'all' || status === filter) {
+                $(this).fadeIn('fast');
+            } else {
+                $(this).fadeOut('fast');
+            }
+        });
     });
 
-    });
+    // Trigger the active tab on page load
+    $('.tab-btn.active').trigger('click');
 }
 
 /**
@@ -252,25 +258,26 @@ function initReservationFilters() {
  * @returns {void}
  */
 function handleCancelReservation() {
-        $('.action-btn.cancel').on('click', function () {
+    $('.action-btn.cancel').on('click', function () {
         const card = $(this).closest('.reservation-card');
         if (confirm('Are you sure you want to cancel this reservation?')) {
             // Update the status
-            card.data('status', 'cancelled'); // Update to cancelled
-            // Find the status badge within the card and update its text and classes
+            card.data('status', 'cancelled');
+
+            // Update the status badge text and classes
             card.find('.status-badge')
                 .text('Cancelled')
                 .removeClass('upcoming completed')
                 .addClass('cancelled');
 
-            // Toggle buttons
-            $(this).fadeOut();
-            card.find('.action-btn.rebook').fadeIn();
+            // Toggle buttons with fade effects
+            $(this).fadeOut('fast');
+            card.find('.action-btn.rebook').fadeIn('fast');
 
             // Ensure it shows/hides correctly depending on active filter
             const activeFilter = $('.tab-btn.active').data('filter');
             if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
-                card.fadeOut();
+                card.fadeOut('fast');
             }
         }
     });
@@ -282,7 +289,14 @@ function handleCancelReservation() {
  *
  * @returns {void}
  */
-function handleRebook() {}
+function handleRebook() {
+      $('.action-btn.rebook').on('click', function () {
+        const card = $(this).closest('.reservation-card');
+        const lab = card.find('.reservation-main h3').text().split(' - ')[0]; // Extract lab code before " - Seat"
+        const resId = card.data('id') || ''; // Optional reservation ID
+        window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
+    });
+}
 
 /**
  * Handles the edit button (.action-btn.edit) on upcoming reservation cards.
@@ -294,7 +308,14 @@ function handleRebook() {}
  * @todo Replace with PUT /api/reservations/:id API call
  * @returns {void}
  */
-function handleEditReservation() {}
+function handleEditReservation() {
+      $('.action-btn.edit').on('click', function () {
+        const card = $(this).closest('.reservation-card');
+        const lab = card.find('.reservation-main h3').text().split(' - ')[0]; // Extract lab code
+        const resId = card.data('id') || ''; // Optional reservation ID
+        window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
+    });
+}
 
 
 // =============================================================================
