@@ -248,6 +248,11 @@ function initReservationFilters() {
     $('.tab-btn.active').trigger('click');
 }
 
+$(document).ready(function() {
+    initReservationFilters();
+});
+
+
 /**
  * Handles the cancel button (.action-btn.cancel) on reservation cards.
  * - Shows a confirm() dialog before proceeding.
@@ -316,6 +321,7 @@ function handleEditReservation() {
         window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
     });
 }
+
 
 
 // =============================================================================
@@ -399,7 +405,10 @@ function initLabFilters() {
     });
 }
 
-
+$(document).ready(function() {
+    console.log("Document ready - calling initLabFilters");
+    initLabFilters();
+});
 
 // =============================================================================
 // PROFILE PAGE (pages/profile.html)
