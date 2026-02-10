@@ -338,15 +338,67 @@ function handleEditReservation() {
  * @returns {void}
  */
 function initLabFilters() {
-      $('.filter-btn').on('click', function () {
-        const building = $('#buildingFilter').val(); // andrew | lasalle | gokongwei | velasco | ''
+
+    /* This defines the buildingMap object that maps 
+     the filter values to the corresponding building names */
+    const buildingMap = {
+        andrew: "andrew building",
+        lasalle: "la salle hall",
+        gokongwei: "gokongwei building",
+        velasco: "velasco building"
+    };
+
+    // When clicked, it will filter the lab cards based on the selected building.
+    $('.filter-btn').on('click', function () {
+
+        // Get the selected value from the Building dropdown
+        const selected = $('#buildingFilter').val();
+
+        /*
+          Loop through every lab card on the page.
+          Each card will be checked if it belongs to the
+          selected building.
+        */
         $('.lab-card').each(function () {
-            const cardBuilding = $(this).find('.building-tag').text().toLowerCase();
-            if (!building || cardBuilding.includes(building)) $(this).show();
-            else $(this).hide();
+
+            /*
+              Get the building name written inside the card.
+              Convert to lowercase and remove extra spaces
+              so it exactly matches our buildingMap values.
+            */
+            const cardBuilding = $(this)
+                .find('.building-tag')
+                .text()
+                .trim() 
+                .toLowerCase();
+
+            /*
+              If "All Buildings" is selected (empty value),
+              simply show all lab cards.
+            */
+            if (!selected) {
+                $(this).show();
+                return;
+            }
+
+            // Get the correct building name from the map
+            const target = buildingMap[selected];
+
+            /*
+              Compare the card's building with the target building.
+              If they match, show the card.
+              Otherwise, hide the card.
+            */
+            if (cardBuilding === target) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+
         });
     });
 }
+
 
 
 // =============================================================================
