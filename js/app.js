@@ -229,7 +229,7 @@ function pollAvailability() {}
  */
 function initReservationFilters() {
     // This whole block filters the reservation cards based on the data-filter attribute of the clicked tab button
-      $('.tab-btn').on('click', function () {
+     $('.tab-btn').on('click', function () {
         const filter = $(this).data('filter');
         $('.tab-btn').removeClass('active');
         $(this).addClass('active');
@@ -237,9 +237,9 @@ function initReservationFilters() {
         $('.reservation-card').each(function () {
             const status = $(this).data('status');
             if (filter === 'all' || status === filter) {
-                $(this).fadeIn('fast');
+                $(this).show();
             } else {
-                $(this).fadeOut('fast');
+                $(this).hide();
             }
         });
     });
