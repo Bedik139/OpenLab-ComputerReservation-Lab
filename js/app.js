@@ -846,7 +846,127 @@ $(document).ready(function() {
      * @todo Replace with PUT /api/users/:id/password API call
      * @returns {void}
      */
-    function handleChangePassword() {}
+    function handleChangePassword() {
+    // Get the Change Password button
+    const changePasswordBtn = document.querySelector('.setting-btn');
+    
+    if (!changePasswordBtn) return;
+    
+    // When button is clicked, show the password change modal
+    changePasswordBtn.addEventListener('click', function() {
+        // Build the modal popup
+        const modalHTML = `
+            <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Password</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="changePasswordForm">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password</label>
+                                    <input type="password" class="form-control" id="currentPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword" required>
+                                    <small class="form-text text-muted">Must be at least 8 characters long</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                </div>
+                                <div id="passwordError" class="alert alert-danger" style="display: none;"></div>
+                                <div id="passwordSuccess" class="alert alert-success" style="display: none;"></div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="savePasswordBtn">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove old modal if it exists
+        $('#changePasswordModal').remove();
+        
+        // Add modal to page
+        $('body').append(modalHTML);
+        
+        // Open the modal
+        $('#changePasswordModal').modal('show');
+        
+        // When Save Changes button is clicked
+        $('#savePasswordBtn').on('click', function() {
+            // Get what the user typed
+            const currentPassword = $('#currentPassword').val();
+            const newPassword = $('#newPassword').val();
+            const confirmPassword = $('#confirmPassword').val();
+            const errorDiv = $('#passwordError');
+            const successDiv = $('#passwordSuccess');
+            
+            // Hide any previous messages
+            errorDiv.hide().text('');
+            successDiv.hide().text('');
+            
+            // Check if all fields are filled
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                errorDiv.text('All fields are required.').show();
+                return;
+            }
+            
+            // Check if new password is long enough
+            if (newPassword.length < 8) {
+                errorDiv.text('New password must be at least 8 characters long.').show();
+                return;
+            }
+            
+            // Check if passwords match
+            if (newPassword !== confirmPassword) {
+                errorDiv.text('New password and confirmation do not match.').show();
+                return;
+            }
+            
+            // Get saved password from browser storage
+            const storedPassword = localStorage.getItem('userPassword');
+            
+            // Check if current password is correct
+            if (storedPassword && storedPassword !== currentPassword) {
+                errorDiv.text('Current password is incorrect.').show();
+                return;
+            }
+            
+            // Save new password to browser storage
+            localStorage.setItem('userPassword', newPassword);
+            
+            // Show success message
+            successDiv.text('Password changed successfully!').show();
+            
+            // Clear the form
+            $('#changePasswordForm')[0].reset();
+            
+            // Close modal after 1.5 seconds
+            setTimeout(function() {
+                $('#changePasswordModal').modal('hide');
+            }, 1500);
+        });
+        
+        // Remove modal from page when closed
+        $('#changePasswordModal').on('hidden.bs.modal', function() {
+            $(this).remove();
+        });
+    });
+}
+
+$(document).ready(function() {
+    handleChangePassword();
+});
 
     /**
      * Handles the Change Photo button (.change-avatar-btn) on the profile page.
