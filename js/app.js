@@ -524,7 +524,7 @@ var USER_KEY = 'openlab_user';
             const status = $(this).data('status');
 
             if (filter === 'all' || status === filter) {
-                // Show the car (using .show() for jQuery Slim compatibility)
+                // Show the card
                 $(this).show();
             } else {
                 // Otherwise, hide it immediately to prevent layout jumps
@@ -596,7 +596,11 @@ var USER_KEY = 'openlab_user';
 
         // Extract the lab name from the card title 
         const fullTitle = card.find('.reservation-main h3').text();
-        const lab = fullTitle.includes(' - ') ? fullTitle.split(' - ')[0] : fullTitle;
+        let lab = fullTitle;
+        if (fullTitle.includes(' - ')) {
+            lab = fullTitle.split(' - ')[0];
+        }
+
 
         // Get the reservation ID 
         const resId = card.data('id') || '';
