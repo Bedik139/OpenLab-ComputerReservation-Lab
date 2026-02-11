@@ -1,678 +1,784 @@
+/* Import Roboto font from Google Fonts with weights 400 (regular), 500 (medium), 700 (bold) */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 
-/* ============================================================
+/*
    SECTION 1: SHARED BASE
-   ============================================================ */
+   Used on: ALL PAGES
+   Global resets, typography, and layout primitives.
+   */
 
 /* CSS RESET & BASE STYLES */
+/* Universal selector: strips default browser margins/padding,
+   border-box makes padding included in element width/height */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    margin: 0;             /* Remove default margin from all elements */
+    padding: 0;            /* Remove default padding from all elements */
+    box-sizing: border-box;/* Width/height includes padding and border */
 }
 
+/* Root typography settings for the entire document */
 body {
-    font-size: 14px;
-    line-height: 1.6;
-    font-family: Roboto, sans-serif;
+    font-size: 14px;                   /* Base font size */
+    line-height: 1.6;                  /* Comfortable line spacing (1.6x font size) */
+    font-family: Roboto, sans-serif;   /* Primary font with generic fallback */
 }
 
 /* SITE GRID LAYOUT */
+/* Three-row grid: header (auto height), main content (fills remaining space), footer (auto height).
+   min-height: 100vh ensures the layout always fills at least the full viewport */
 .site-wrapper {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    grid-template-columns: 1fr;
-    min-height: 100vh;
+    display: grid;                         /* CSS Grid layout */
+    grid-template-rows: auto 1fr auto;     /* Header/Footer auto-size, content stretches */
+    grid-template-columns: 1fr;            /* Single full-width column */
+    min-height: 100vh;                     /* At least full viewport height */
 }
 
 /* NAVIGATION */
+/* Fixed top navbar: semi-transparent black background (80% opacity),
+   pinned to top of viewport, z-index: 1000 keeps it above all page content */
 .topnav {
-    background-color: rgba(0, 0, 0, 0.8);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.8);  /* Semi-transparent dark background */
+    position: fixed;    /* Stays fixed at top while scrolling */
+    top: 0;             /* Anchored to top edge */
+    left: 0;            /* Stretches from left */
+    right: 0;           /* Stretches to right (full width) */
+    z-index: 1000;      /* Highest stacking layer */
 }
 
+/* Nav inner container: flexbox row with items spaced apart and vertically centered.
+   max-width constrains content; margin: 0 auto centers the container */
 .nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    height: 80px;
+    display: flex;                     /* Horizontal flex layout */
+    justify-content: space-between;    /* Logo left, links right */
+    align-items: center;               /* Vertically centered */
+    max-width: 1200px;                 /* Max content width */
+    margin: 0 auto;                    /* Center horizontally */
+    padding: 0 20px;                   /* Side padding */
+    height: 80px;                      /* Fixed navbar height */
 }
 
+/* Logo: white bold text, no underline, vertical padding for clickable area */
 .topnav .logo {
-    color: #ffffff;
-    font-size: 24px;
-    font-weight: bold;
-    text-decoration: none;
-    padding: 15px 0;
+    color: #ffffff;            /* White text */
+    font-size: 24px;           /* Large logo size */
+    font-weight: bold;         /* Bold weight */
+    text-decoration: none;     /* Remove link underline */
+    padding: 15px 0;           /* Vertical padding for click target */
 }
 
+/* Nav links wrapper: horizontal row, vertically centered */
 .nav-links {
-    display: flex;
-    align-items: center;
+    display: flex;             /* Horizontal layout */
+    align-items: center;       /* Vertically centered */
 }
 
+/* Individual nav links: white, no underline, padded for click area.
+   0.5s transition for smooth hover color/background changes */
 .nav-links a {
-    color: #ffffff;
-    text-decoration: none;
-    padding: 15px 20px;
-    font-size: 16px;
-    transition: background-color 0.5s, color 0.5s;
+    color: #ffffff;                                    /* White text */
+    text-decoration: none;                             /* No underline */
+    padding: 15px 20px;                                /*  click area */
+    font-size: 16px;                                   /* Readable nav text size */
+    transition: background-color 0.5s, color 0.5s;     /* Smooth hover transition */
 }
 
+/* Nav link hover: subtle white overlay background */
 .nav-links a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);  /* 10% white overlay on hover */
 }
 
+/* Active nav link: highlighted in brand green to show current page */
 .nav-links a.active {
-    color: #04AA6D;
+    color: #04AA6D;  /* Brand green for active state */
 }
 
 /* SEARCH BAR */
+/* Pill-shaped search container: translucent white background, fully rounded (25px),
+   overflow hidden clips children to rounded shape, subtle white border */
 .search-bar {
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 25px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.5s ease;
+    display: flex;                                     /* Horizontal layout */
+    align-items: center;                               /* Vertically centered */
+    margin-left: 15px;                                 /* Space from nav links */
+    background-color: rgba(255, 255, 255, 0.1);       /* 10% white translucent bg */
+    border-radius: 25px;                               /* Pill shape */
+    overflow: hidden;                                  /* Clip to rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.2);       /* Subtle white border */
+    transition: all 0.5s ease;                         /* Smooth hover transition */
 }
 
+/* Search bar hover/focus-within: brighter background, more visible border,
+   green glow shadow for emphasis */
 .search-bar:hover,
 .search-bar:focus-within {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);
+    background-color: rgba(255, 255, 255, 0.15);      /* Slightly brighter bg */
+    border-color: rgba(255, 255, 255, 0.4);           /* More visible border */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);     /* Green glow effect */
 }
 
+/* Search input: transparent bg blends into bar, white text, no border/outline.
+   Width animates from 150px to 200px on focus */
 .search-bar input {
-    border: none;
-    background: transparent;
-    padding: 10px 15px;
-    color: #ffffff;
-    font-size: 14px;
-    width: 150px;
-    outline: none;
-    transition: width 0.5s ease;
+    border: none;                      /* No border */
+    background: transparent;           /* Transparent to blend with bar */
+    padding: 10px 15px;                /* Inner spacing */
+    color: #ffffff;                    /* White text */
+    font-size: 14px;                   /* Standard text size */
+    width: 150px;                      /* Default width */
+    outline: none;                     /* Remove focus outline */
+    transition: width 0.5s ease;       /* Smooth width expansion on focus */
 }
 
+/* Placeholder text: semi-transparent white, visible but not dominant */
 .search-bar input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.6);  /* 60% white placeholder */
 }
 
+/* On focus: input expands to 200px for more typing room */
 .search-bar input:focus {
-    width: 200px;
+    width: 200px;  /* Expanded width when focused */
 }
 
 
-/* ============================================================
+/*
    SECTION 2: LANDING BANNER (split into modifiers)
-   ============================================================ */
+   Used on: ALL PAGES (--auth for index/login/register/changepassword,
+            --dashboard for dashboard/profile/users/reservations/reserve/cmpslots/walkin)
+   Full-viewport hero sections with background image and overlay.
+   */
 
-/* Shared landing banner properties */
+/* Shared landing banner: full-screen bg image (bg.png), cover-sized, centered.
+   background-attachment: fixed creates a parallax scrolling effect.
+   Flexbox centers content horizontally; min-height: 100vh fills the viewport */
 .landing-banner {
-    background-image: url("../bg.png");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    display: flex;
-    min-height: 100vh;
-    justify-content: center;
-    position: relative;
+    background-image: url("../bg.png");     /* Background image path */
+    background-size: cover;                 /* Scale image to cover entire area */
+    background-position: center;            /* Center the image */
+    background-attachment: fixed;           /* Parallax: bg stays fixed on scroll */
+    display: flex;                          /* Flex layout for centering */
+    min-height: 100vh;                      /* Full viewport height minimum */
+    justify-content: center;               /* Center children horizontally */
+    position: relative;                     /* Positioning context for ::before overlay */
 }
 
-/* Auth pages: index, login, register, changepassword */
+/* Auth pages modifier (index, login, register, changepassword):
+   Centers content vertically, centers text, adds top padding to clear fixed navbar */
 .landing-banner--auth {
-    align-items: center;
-    text-align: center;
-    padding-top: 80px;
+    align-items: center;       /* Vertically center content */
+    text-align: center;        /* Center-align all text */
+    padding-top: 80px;         /* Clear the fixed 80px navbar */
 }
 
+/* Auth overlay: pseudo-element covering the entire banner.
+   Two layered gradients: dark overlay for readability + subtle green brand accent */
 .landing-banner--auth::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;    /* Cover entire parent */
     background:
+        /* Dark semi-transparent overlay: 60% at corners, 40% at center */
         linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.6) 100%),
+        /* Subtle green tint at corners for brand color accent */
         linear-gradient(45deg, rgba(4,170,109,0.1) 0%, rgba(0,0,0,0) 50%, rgba(4,100,80,0.1) 100%);
 }
 
-/* Dashboard pages: users, profile, reservations, reserve, cmpslots, walkin, dashboard */
+/* Dashboard pages modifier (users, profile, reservations, reserve, cmpslots, walkin, dashboard):
+   Content starts at top (flex-start), more top padding for navbar + breathing room */
 .landing-banner--dashboard {
-    align-items: flex-start;
-    padding-top: 100px;
-    padding-bottom: 40px;
+    align-items: flex-start;   /* Content starts at top */
+    padding-top: 100px;        /* Extra clearance above navbar */
+    padding-bottom: 40px;      /* Bottom breathing room */
 }
 
+/* Dashboard overlay: slightly darker than auth (70% vs 60% at corners)
+   to improve readability of dashboard content over the background image */
 .landing-banner--dashboard::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;    /* Cover entire parent */
     background:
+        /* Darker overlay than auth for better dashboard readability */
         linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.7) 100%),
+        /* Same subtle green accent as auth */
         linear-gradient(45deg, rgba(4,170,109,0.1) 0%, rgba(0,0,0,0) 50%, rgba(4,100,80,0.1) 100%);
 }
 
 
-/* ============================================================
+/*
    SECTION 3: SHARED AUTH COMPONENTS
-   ============================================================ */
+   Used on: index.html, login.html, register.html, changepassword.html
+   Banner content wrapper, heading, and paragraph styles.
+   */
 
+/* Banner content wrapper: sits above the ::before overlay (z-index: 1),
+   white text, constrained to 500px for comfortable reading width */
 .banner-content {
-    position: relative;
-    z-index: 1;
-    color: #ffffff;
-    padding: 20px;
-    width: 100%;
-    max-width: 500px;
+    position: relative;        /* Creates stacking context */
+    z-index: 1;                /* Above the ::before overlay */
+    color: #ffffff;            /* White text */
+    padding: 20px;             /* Inner spacing */
+    width: 100%;               /* Full width up to max */
+    max-width: 500px;          /* Constrain width for readability */
 }
 
+/* Banner heading: large 48px bold text with tight line-height for visual impact */
 .banner-content h1 {
-    font-size: 48px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    line-height: 1.2;
+    font-size: 48px;           /* Large hero heading */
+    font-weight: bold;         /* Bold weight */
+    margin-bottom: 20px;       /* Space below heading */
+    line-height: 1.2;          /* Tight line-height for multi-line headings */
 }
 
+/* Banner paragraph: 18px supporting text below heading */
 .banner-content p {
-    font-size: 18px;
-    margin-bottom: 30px;
-    font-weight: 400;
+    font-size: 18px;           /* Slightly larger than body text */
+    margin-bottom: 30px;       /* Space below paragraph */
+    font-weight: 400;          /* Regular weight */
 }
 
 
-/* ============================================================
+/*
    SECTION 4: INDEX PAGE STYLES
-   ============================================================ */
+   Used on: index.html
+   Banner buttons, navigation dots, features grid, login/signup buttons.
+   */
 
 /* LOGIN CARD (base - shared by index and login) */
+/*  card: translucent white bg (15% opacity),
+   backdrop-filter blurs (20px) and saturates (180%) content behind it.
+   Multi-layered box-shadow: dark depth shadow + inner glow + green accent glow */
 .login-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 40px;
+    background: rgba(255, 255, 255, 0.15);                /* 15% white translucent */
+    backdrop-filter: blur(20px) saturate(180%);            /*  blur + saturation */
+    border-radius: 20px;                                   /* Large rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.3);           /* Subtle white border */
+    padding: 40px;                                         /*  inner padding */
     box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 0 80px rgba(255, 255, 255, 0.05),
-        0 0 20px rgba(4, 170, 109, 0.1);
-    width: 100%;
-    margin: 0 auto;
-    transition: all 0.3s ease;
+        0 8px 32px rgba(0, 0, 0, 0.4),                    /* Dark shadow for depth */
+        inset 0 0 80px rgba(255, 255, 255, 0.05),         /* Inner glow for glass effect */
+        0 0 20px rgba(4, 170, 109, 0.1);                  /* Green accent glow */
+    width: 100%;                                           /* Full width of parent */
+    margin: 0 auto;                                        /* Center horizontally */
+    transition: all 0.3s ease;                             /* Smooth hover transitions */
 }
 
 /* BANNER BUTTONS */
+/* Horizontal button group: centered with 20px gap between items */
 .banner-buttons {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 40px;
+    display: flex;                 /* Horizontal layout */
+    gap: 20px;                     /* Space between buttons */
+    justify-content: center;       /* Center buttons */
+    margin-bottom: 40px;           /* Space below button group */
 }
 
+/* Shared button base: bold text, rounded corners, glass blur effect */
 .banner-buttons .btn {
-    padding: 16px 35px;
-    font-size: 16px;
-    font-weight: 700;
-    text-decoration: none;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    padding: 16px 35px;            /*  click area */
+    font-size: 16px;               /* Button text size */
+    font-weight: 700;              /* Bold text */
+    text-decoration: none;         /* Remove link underline */
+    border-radius: 10px;           /* Rounded corners */
+    transition: all 0.3s ease;     /* Smooth hover animation */
+    backdrop-filter: blur(10px);           /* Glass blur effect */
 }
 
+/* Primary button: green gradient bg (brand green to darker green),
+   white text, translucent border, green glow + inset top highlight */
 .banner-buttons .btn-primary {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow:
-        0 4px 15px rgba(4, 170, 109, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 4px 15px rgba(4, 170, 109, 0.3),            /* Green glow shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);       /* Top inset highlight */
 }
 
+/* Primary hover: brighter gradient, lifts 2px, stronger glow */
 .banner-buttons .btn-primary:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
     border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
+    transform: translateY(-2px);                        /* Lift effect */
     box-shadow:
-        0 6px 20px rgba(4, 170, 109, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        0 6px 20px rgba(4, 170, 109, 0.4),            /* Stronger glow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);       /* Brighter highlight */
 }
 
+/* Outline/ghost button: mostly transparent bg, white text + border */
 .banner-buttons .btn-outline {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.08);             /* Nearly transparent */
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); /* Subtle top highlight */
 }
 
+/* Outline hover: brighter bg, more visible border, lifts 2px */
 .banner-buttons .btn-outline:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-2px);
+    transform: translateY(-2px);                        /* Lift effect */
     box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 8px 20px rgba(0, 0, 0, 0.2),                /* Dark depth shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);       /* Top highlight */
 }
 
 /* BANNER DOTS */
+/* Carousel indicator dots: horizontal centered row */
 .banner-dots {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 35px;
+    display: flex;                 /* Horizontal layout */
+    gap: 12px;                     /* Space between dots */
+    justify-content: center;       /* Center dots */
+    margin-top: 35px;              /* Space above dots */
 }
 
+/* Individual dot: 12px circle, translucent white with glass blur,
+   clickable cursor, smooth transitions for hover/active states */
 .banner-dots .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
+    width: 12px;                                       /* Dot width */
+    height: 12px;                                      /* Dot height */
+    border-radius: 50%;                                /* Perfect circle */
+    background-color: rgba(255, 255, 255, 0.3);       /* 30% white fill */
+    backdrop-filter: blur(5px);                        /* Slight glass blur */
+    border: 1px solid rgba(255, 255, 255, 0.2);       /* Subtle border */
+    cursor: pointer;                                   /* Clickable cursor */
+    transition: all 0.3s ease;                         /* Smooth transitions */
 }
 
+/* Dot hover: brighter fill, slight scale-up for emphasis */
 .banner-dots .dot:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.5);   /* Brighter on hover */
+    transform: scale(1.1);                         /* Slight enlarge */
 }
 
+/* Active dot: filled with brand green, green border, green glow
+   to indicate the currently active slide */
 .banner-dots .dot.active {
-    background-color: rgba(4, 170, 109, 0.9);
-    border-color: rgba(4, 170, 109, 0.5);
-    box-shadow: 0 0 15px rgba(4, 170, 109, 0.6);
+    background-color: rgba(4, 170, 109, 0.9);     /* Green fill */
+    border-color: rgba(4, 170, 109, 0.5);         /* Green border */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.6);  /* Green glow */
 }
 
 /* FEATURES SECTION */
+/* Full-width section with dark navy gradient background.
+   overflow: hidden clips any decorative elements */
 .features {
-    padding: 80px 20px;
-    background: linear-gradient(180deg,
+    padding: 80px 20px;                        /*  vertical padding */
+    background: linear-gradient(180deg,        /* Vertical gradient: dark navy tones */
         rgba(20, 20, 35, 1) 0%,
         rgba(25, 25, 45, 1) 50%,
         rgba(20, 20, 35, 1) 100%);
-    position: relative;
-    overflow: hidden;
+    position: relative;                        /* Positioning context */
+    overflow: hidden;                          /* Clip overflowing content */
 }
 
+/* Features grid: 3-column equal layout, centered, max 1200px wide */
 .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
+    display: grid;                             /* Grid layout */
+    grid-template-columns: repeat(3, 1fr);     /* 3 equal columns */
+    gap: 30px;                                 /* Space between cards */
+    max-width: 1200px;                         /* Max content width */
+    margin: 0 auto;                            /* Center the grid */
+    position: relative;                        /* Stacking context */
+    z-index: 1;                                /* Above background decorations */
 }
 
+/* Feature card:  style, centered text, multi-layered shadow */
 .feature-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    padding: 40px 30px;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);                /* Translucent white bg */
+    backdrop-filter: blur(20px) saturate(180%);            /* Glass blur + saturation */
+    padding: 40px 30px;                                    /* Inner padding */
+    border-radius: 20px;                                   /* Large rounded corners */
+    text-align: center;                                    /* Center text */
+    border: 1px solid rgba(255, 255, 255, 0.3);           /* Subtle white border */
     box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 0 80px rgba(255, 255, 255, 0.05),
-        0 0 20px rgba(4, 170, 109, 0.1);
-    transition: all 0.3s ease;
+        0 8px 32px rgba(0, 0, 0, 0.4),                    /* Dark depth shadow */
+        inset 0 0 80px rgba(255, 255, 255, 0.05),         /* Inner glass glow */
+        0 0 20px rgba(4, 170, 109, 0.1);                  /* Green accent glow */
+    transition: all 0.3s ease;                             /* Smooth hover */
 }
 
+/* Feature card hover: lifts 5px, intensifies all shadows */
 .feature-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px);                           /* Lift effect */
     box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.5),
-        inset 0 0 80px rgba(255, 255, 255, 0.08),
-        0 0 30px rgba(4, 170, 109, 0.15);
+        0 12px 40px rgba(0, 0, 0, 0.5),                   /* Deeper shadow */
+        inset 0 0 80px rgba(255, 255, 255, 0.08),         /* Brighter inner glow */
+        0 0 30px rgba(4, 170, 109, 0.15);                 /* Stronger green glow */
 }
 
+/* Feature icon container: 70px green-tinted circle, centers icon inside */
 .feature-icon {
-    font-size: 48px;
-    margin-bottom: 20px;
-    width: 70px;
-    height: 70px;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(4, 170, 109, 0.2);
-    border-radius: 50%;
-    border: 1px solid rgba(4, 170, 109, 0.3);
+    font-size: 48px;                                   /* Large icon size */
+    margin-bottom: 20px;                               /* Space below icon */
+    width: 70px;                                       /* Circle width */
+    height: 70px;                                      /* Circle height */
+    margin-left: auto;                                 /* Center horizontally */
+    margin-right: auto;                                /* Center horizontally */
+    display: flex;                                     /* Flex for centering */
+    align-items: center;                               /* Vertically center icon */
+    justify-content: center;                           /* Horizontally center icon */
+    background: rgba(4, 170, 109, 0.2);               /* Green-tinted bg */
+    border-radius: 50%;                                /* Perfect circle */
+    border: 1px solid rgba(4, 170, 109, 0.3);         /* Green border */
 }
 
+/* Feature card title: white bold text with subtle depth shadow */
 .feature-card h3 {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #ffffff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    font-size: 20px;                                   /* Title size */
+    font-weight: bold;                                 /* Bold weight */
+    margin-bottom: 15px;                               /* Space below title */
+    color: #ffffff;                                    /* White text */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);       /* Subtle depth shadow */
 }
 
+/* Feature card description: lighter white (75% opacity) for secondary text */
 .feature-card p {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.75);
-    font-weight: 400;
-    line-height: 1.6;
+    font-size: 14px;                                   /* Body text size */
+    color: rgba(255, 255, 255, 0.75);                  /* Semi-transparent white */
+    font-weight: 400;                                  /* Regular weight */
+    line-height: 1.6;                                  /* Comfortable line spacing */
 }
 
 /* LOGIN/SIGNUP BUTTONS */
+/* Horizontal button group on index page, centered with 30px gap */
 .login-buttons {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
-    margin-bottom: 40px;
+    display: flex;                 /* Horizontal layout */
+    gap: 30px;                     /* Space between buttons */
+    justify-content: center;       /* Center buttons */
+    margin-bottom: 40px;           /* Space below */
 }
 
+/* Shared button style: bold text, small rounded corners, 0.5s transition */
 .login-buttons .btn {
-    padding: 15px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: all 0.5s;
+    padding: 15px 30px;            /* Click area */
+    font-size: 16px;               /* Button text size */
+    font-weight: bold;             /* Bold text */
+    text-decoration: none;         /* No underline */
+    border-radius: 5px;            /* Slightly rounded corners */
+    transition: all 0.5s;          /* Smooth hover transition */
 }
 
+/* Primary button: solid brand green bg + border, fixed dimensions */
 .login-buttons .btn-primary {
-    background-color: #04AA6D;
-    color: #ffffff;
-    border: 2px solid #04AA6D;
-    width: 100px;
-    height: 50px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    background-color: #04AA6D;                     /* Solid brand green */
+    color: #ffffff;                                /* White text */
+    border: 2px solid #04AA6D;                     /* Matching green border */
+    width: 100px;                                  /* Fixed width */
+    height: 50px;                                  /* Fixed height */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);    /* Subtle shadow */
 }
 
+/* Primary hover: darkens the green */
 .login-buttons .btn-primary:hover {
-    background-color: #038a58;
-    border-color: #038a58;
+    background-color: #038a58;     /* Darker green */
+    border-color: #038a58;         /* Matching darker border */
 }
 
 
-/* ============================================================
+/*
    SECTION 5: LOGIN PAGE STYLES
-   ============================================================ */
+   Used on: login.html
+   Login card, form inputs, remember-me, forgot password, login button, divider.
+   */
 
+/* Login card hover: intensifies shadows, lifts card 2px for raised effect */
 .login-card:hover {
     box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.5),
-        inset 0 0 80px rgba(255, 255, 255, 0.08),
-        0 0 30px rgba(4, 170, 109, 0.15);
-    transform: translateY(-2px);
+        0 12px 40px rgba(0, 0, 0, 0.5),                   /* Deeper shadow */
+        inset 0 0 80px rgba(255, 255, 255, 0.08),         /* Brighter inner glow */
+        0 0 30px rgba(4, 170, 109, 0.15);                 /* Stronger green glow */
+    transform: translateY(-2px);                           /* Lift effect */
 }
 
+/* Login card heading: large white bold text with letter-spacing and depth shadow */
 .login-card h2 {
-    font-size: 30px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: #ffffff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    letter-spacing: 0.5px;
+    font-size: 30px;                                   /* Large heading */
+    font-weight: 700;                                  /* Bold */
+    margin-bottom: 10px;                               /* Space below */
+    color: #ffffff;                                    /* White text */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);       /* Depth shadow */
+    letter-spacing: 0.5px;                             /* Slight letter spacing */
 }
 
+/* Login card subtitle: smaller semi-transparent white text below heading */
 .login-card .subtitle {
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.75);
-    margin-bottom: 35px;
-    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    font-size: 15px;                                   /* Subtitle size */
+    color: rgba(255, 255, 255, 0.75);                  /* 75% white */
+    margin-bottom: 35px;                               /* Space below */
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);        /* Light depth shadow */
 }
 
 /* LOGIN FORM */
+/* Vertical flex column layout for form fields */
 .login-form {
-    display: flex;
-    flex-direction: column;
+    display: flex;                 /* Flex layout */
+    flex-direction: column;        /* Stack fields vertically */
 }
 
-/* Form labels */
-.login-card .form-group > label,
-.login-form .form-group > label {
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 5px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    letter-spacing: 0.3px;
-    display: block;
+/* Form labels: medium weight, nearly white, subtle shadow for readability */
+.login-card .form-group label,
+.login-form .form-group label {
+    font-size: 14px;                                   /* Label text size */
+    font-weight: 500;                                  /* Medium weight */
+    color: rgba(255, 255, 255, 0.9);                   /* Nearly white */
+    margin-bottom: 5px;                                /* Space below label */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);        /* Subtle depth shadow */
+    letter-spacing: 0.3px;                             /* Slight letter spacing */
+    display: block;                                    /* Block-level for full width */
 }
 
-/* Form inputs */
+/* Form inputs:  style with translucent bg, blur, rounded corners.
+   !important overrides any framework/library default styles */
 .login-form .form-group input,
 .login-card .form-group input {
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    border-radius: 12px !important;
-    padding: 15px 18px !important;
-    font-size: 14px;
-    color: #ffffff !important;
-    outline: none !important;
-    transition: all 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    height: auto;
+    background: rgba(255, 255, 255, 0.1) !important;          /* Translucent white bg */
+    backdrop-filter: blur(5px);                                /* Slight glass blur */
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;   /* Subtle white border */
+    border-radius: 12px !important;                            /* Rounded corners */
+    padding: 15px 18px !important;                             /* Inner spacing */
+    font-size: 14px;                                           /* Text size */
+    color: #ffffff !important;                                 /* White text */
+    outline: none !important;                                  /* Remove focus outline */
+    transition: all 0.3s ease;                                 /* Smooth transitions */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);          /* Inner shadow for depth */
+    width: 100%;                                               /* Full width */
+    height: auto;                                              /* Auto height */
 }
 
+/* Input placeholder: semi-transparent white */
 .login-form .form-group input::placeholder,
 .login-card .form-group input::placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgba(255, 255, 255, 0.5) !important;    /* 50% white placeholder */
 }
 
+/* Input focus state: green border, green glow shadow, slightly brighter bg */
 .login-form .form-group input:focus,
 .login-card .form-group input:focus {
-    border-color: rgba(4, 170, 109, 0.8) !important;
+    border-color: rgba(4, 170, 109, 0.8) !important;          /* Green border on focus */
     box-shadow:
-        0 0 20px rgba(4, 170, 109, 0.4),
-        inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-    background: rgba(255, 255, 255, 0.18) !important;
+        0 0 20px rgba(4, 170, 109, 0.4),                      /* Green outer glow */
+        inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;       /* Keep inner shadow */
+    background: rgba(255, 255, 255, 0.18) !important;         /* Slightly brighter bg */
 }
 
 /* FORM OPTIONS ROW */
+/* Flex row: "Remember me" on left, "Forgot password" on right */
 .form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
+    display: flex;                     /* Horizontal layout */
+    justify-content: space-between;    /* Items at opposite ends */
+    align-items: center;               /* Vertically centered */
+    font-size: 14px;                   /* Text size */
 }
 
+/* Remember me label: flex row with gap, clickable cursor */
 .remember-me {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: rgba(255, 255, 255, 0.85);
-    cursor: pointer;
-    font-size: 14px;
+    display: flex;                                 /* Horizontal layout */
+    align-items: center;                           /* Vertically centered */
+    gap: 10px;                                     /* Space between checkbox and text */
+    color: rgba(255, 255, 255, 0.85);              /* Nearly white text */
+    cursor: pointer;                               /* Clickable cursor */
+    font-size: 14px;                               /* Text size */
 }
 
+/* Custom checkbox: removes default appearance, creates a translucent
+   18x18 square with rounded corners and custom styling */
 .remember-me input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #04AA6D;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    position: relative;
-    transition: all 0.2s ease;
+    width: 18px;                                   /* Checkbox width */
+    height: 18px;                                  /* Checkbox height */
+    accent-color: #04AA6D;                         /* Fallback accent color */
+    cursor: pointer;                               /* Clickable */
+    appearance: none;                              /* Remove default checkbox */
+    background: rgba(255, 255, 255, 0.1);          /* Translucent bg */
+    border: 1px solid rgba(255, 255, 255, 0.3);   /* White border */
+    border-radius: 4px;                            /* Slightly rounded */
+    position: relative;                            /* For ::after checkmark */
+    transition: all 0.2s ease;                     /* Smooth state change */
 }
 
+/* Checked state: green background and border */
 .remember-me input[type="checkbox"]:checked {
-    background: rgba(4, 170, 109, 0.8);
-    border-color: rgba(4, 170, 109, 0.9);
+    background: rgba(4, 170, 109, 0.8);           /* Green fill when checked */
+    border-color: rgba(4, 170, 109, 0.9);         /* Green border */
 }
 
+/* Checkmark: white L-shaped border rotated 45deg to form a check icon */
 .remember-me input[type="checkbox"]:checked::after {
     content: '';
     position: absolute;
-    left: 5px;
+    left: 5px;                                     /* Position checkmark */
     top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+    width: 5px;                                    /* Checkmark width */
+    height: 10px;                                  /* Checkmark height */
+    border: solid white;                           /* White lines */
+    border-width: 0 2px 2px 0;                    /* Only right and bottom borders */
+    transform: rotate(45deg);                      /* Rotate to form checkmark */
 }
 
+/* Checkbox hover: brighter border and background */
 .remember-me input[type="checkbox"]:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);        /* Brighter border */
+    background: rgba(255, 255, 255, 0.15);         /* Brighter bg */
 }
 
 /* FORGOT PASSWORD */
+/* Green-tinted link for forgot password action */
 .forgot-password {
-    color: rgba(4, 200, 130, 0.9);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    color: rgba(4, 200, 130, 0.9);    /* Light green text */
+    text-decoration: none;             /* No underline */
+    transition: all 0.3s ease;         /* Smooth hover */
+    font-size: 14px;                   /* Text size */
 }
 
+/* Forgot password hover: brighter green, underline, green glow */
 .forgot-password:hover {
-    color: #06d68a;
-    text-decoration: underline;
-    text-shadow: 0 0 10px rgba(4, 170, 109, 0.5);
+    color: #06d68a;                                    /* Brighter green */
+    text-decoration: underline;                        /* Add underline */
+    text-shadow: 0 0 10px rgba(4, 170, 109, 0.5);     /* Green text glow */
 }
 
 /* LOGIN BUTTON */
+/* Full-width green gradient button with glass blur, rounded corners, bold text.
+   Green glow shadow + inset top highlight for raised glass appearance */
 .login-btn {
-    width: 100%;
-    padding: 16px;
+    width: 100%;                                               /* Full width */
+    padding: 16px;                                             /*  padding */
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
+    backdrop-filter: blur(10px);                               /* Glass blur */
+    color: #ffffff;                                            /* White text */
+    border: 1px solid rgba(255, 255, 255, 0.2);               /* Translucent border */
+    border-radius: 12px;                                       /* Rounded corners */
+    font-size: 16px;                                           /* Text size */
+    font-weight: 700;                                          /* Bold */
+    cursor: pointer;                                           /* Clickable */
+    transition: all 0.3s ease;                                 /* Smooth hover */
+    margin-top: 10px;                                          /* Space above */
     box-shadow:
-        0 4px 15px rgba(4, 170, 109, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 4px 15px rgba(4, 170, 109, 0.4),                    /* Green glow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);               /* Top inset highlight */
 }
 
+/* Login button hover: brighter gradient, lifts 3px, stronger glow */
 .login-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
-    transform: translateY(-3px);
+    transform: translateY(-3px);                               /* Lift effect */
     box-shadow:
-        0 8px 25px rgba(4, 170, 109, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.3);
+        0 8px 25px rgba(4, 170, 109, 0.5),                    /* Stronger glow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);               /* Brighter highlight */
+    border-color: rgba(255, 255, 255, 0.3);                    /* More visible border */
 }
 
+/* Login button active/pressed: returns to original position, subtle pressed shadow */
 .login-btn:active {
-    transform: translateY(0);
+    transform: translateY(0);                                  /* Back to original */
     box-shadow:
-        0 2px 10px rgba(4, 170, 109, 0.3),
-        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        0 2px 10px rgba(4, 170, 109, 0.3),                    /* Reduced glow */
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);                   /* Pressed-in shadow */
 }
 
 /* DIVIDER (scoped under .login-card) */
+/* Horizontal divider with gradient lines on each side of text (e.g., "OR") */
 .login-card .divider {
-    display: flex;
-    align-items: center;
-    margin: 30px 0;
+    display: flex;                 /* Flex row: line - text - line */
+    align-items: center;           /* Vertically centered */
+    margin: 30px 0;               /* Vertical spacing */
 }
 
+/* Left and right divider lines: gradient from transparent to white,
+   flex: 1 makes them fill available space equally */
 .login-card .divider::before,
 .login-card .divider::after {
     content: '';
-    flex: 1;
-    height: 1px;
+    flex: 1;                       /* Fill remaining space */
+    height: 1px;                   /* Thin line */
     background: linear-gradient(90deg,
         rgba(255, 255, 255, 0.1) 0%,
         rgba(255, 255, 255, 0.4) 50%,
         rgba(255, 255, 255, 0.1) 100%);
 }
 
+/* Left line: fades from transparent to white (left to right) */
 .login-card .divider::before {
     background: linear-gradient(90deg,
         rgba(255, 255, 255, 0.1) 0%,
         rgba(255, 255, 255, 0.4) 100%);
 }
 
+/* Right line: fades from white to transparent (left to right) */
 .login-card .divider::after {
     background: linear-gradient(90deg,
         rgba(255, 255, 255, 0.4) 0%,
         rgba(255, 255, 255, 0.1) 100%);
 }
 
+/* Divider text (e.g., "OR"): uppercase, letter-spaced, padded on sides */
 .login-card .divider span {
-    padding: 0 20px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 500;
+    padding: 0 20px;                               /* Horizontal padding */
+    color: rgba(255, 255, 255, 0.7);               /* Semi-transparent white */
+    font-size: 13px;                               /* Small text */
+    text-transform: uppercase;                     /* Uppercase letters */
+    letter-spacing: 1px;                           /* Spaced out letters */
+    font-weight: 500;                              /* Medium weight */
 }
 
 /* REGISTER LINK */
+/* "Don't have an account?" text at bottom of login card,
+   separated by a thin top border */
 .register-link {
-    margin-top: 30px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.75);
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 30px;                                      /* Space above */
+    font-size: 14px;                                       /* Text size */
+    color: rgba(255, 255, 255, 0.75);                      /* Semi-white text */
+    padding-top: 20px;                                     /* Space above text */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);       /* Thin separator line */
 }
 
+/* Register link anchor: green text, bold, smooth transitions */
 .register-link a {
-    color: rgba(4, 200, 130, 0.95);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    color: rgba(4, 200, 130, 0.95);       /* Light green */
+    text-decoration: none;                 /* No underline */
+    font-weight: 600;                      /* Semi-bold */
+    transition: all 0.3s ease;             /* Smooth hover */
 }
 
+/* Register link hover: brighter green, underline, green text glow */
 .register-link a:hover {
-    color: #06d68a;
-    text-decoration: underline;
-    text-shadow: 0 0 15px rgba(4, 170, 109, 0.6);
+    color: #06d68a;                                        /* Brighter green */
+    text-decoration: underline;                            /* Add underline */
+    text-shadow: 0 0 15px rgba(4, 170, 109, 0.6);         /* Green glow */
 }
 
 
-/* ============================================================
+/*
    SECTION 6: REGISTER PAGE STYLES
-   ============================================================ */
+   Used on: register.html
+   Registration card, form inputs, select, name row, register button, social login.
+   */
 
 /* REGISTER CARD */
+/*  card identical to login-card: translucent bg, blur, rounded corners */
 .register-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 40px;
+    background: rgba(255, 255, 255, 0.15);                /* Translucent white bg */
+    backdrop-filter: blur(20px) saturate(180%);            /* Glass blur + saturation */
+    border-radius: 20px;                                   /* Rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.3);           /* Subtle white border */
+    padding: 40px;                                         /* Inner padding */
     box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 0 80px rgba(255, 255, 255, 0.05),
-        0 0 20px rgba(4, 170, 109, 0.1);
-    width: 100%;
-    margin: 0 auto;
-    transition: all 0.3s ease;
+        0 8px 32px rgba(0, 0, 0, 0.4),                    /* Dark depth shadow */
+        inset 0 0 80px rgba(255, 255, 255, 0.05),         /* Inner glass glow */
+        0 0 20px rgba(4, 170, 109, 0.1);                  /* Green accent glow */
+    width: 100%;                                           /* Full width */
+    margin: 0 auto;                                        /* Center */
+    transition: all 0.3s ease;                             /* Smooth hover */
 }
 
+/* Register card hover: intensified shadows, 2px lift */
 .register-card:hover {
     box-shadow:
         0 12px 40px rgba(0, 0, 0, 0.5),
         inset 0 0 80px rgba(255, 255, 255, 0.08),
         0 0 30px rgba(4, 170, 109, 0.15);
-    transform: translateY(-2px);
+    transform: translateY(-2px);                           /* Lift effect */
 }
 
+/* Register card heading: white bold text with depth shadow */
 .register-card h2 {
     font-size: 30px;
     font-weight: 700;
@@ -682,6 +788,7 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* Register card subtitle: semi-transparent white text */
 .register-card .subtitle {
     font-size: 15px;
     color: rgba(255, 255, 255, 0.75);
@@ -690,18 +797,21 @@ body {
 }
 
 /* REGISTER FORM */
+/* Vertical flex layout for stacking form fields */
 .register-form {
     display: flex;
     flex-direction: column;
 }
 
 /* SCOPED: .form-group under register */
+/* Left-aligned vertical flex group for label + input pairs */
 .register-card .form-group {
     display: flex;
     flex-direction: column;
     text-align: left;
 }
 
+/* Form labels: medium weight, nearly white */
 .register-card .form-group label {
     font-size: 14px;
     font-weight: 500;
@@ -709,6 +819,7 @@ body {
     margin-bottom: 8px;
 }
 
+/* Form inputs and selects: translucent bg, rounded, white text */
 .register-card .form-group input,
 .register-card .form-group select {
     background: rgba(255, 255, 255, 0.1);
@@ -721,24 +832,29 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Custom select dropdown: removes native appearance, adds custom white
+   downward-arrow SVG icon positioned at the right side */
 .register-card .form-group select {
-    cursor: pointer;
-    appearance: none;
+    cursor: pointer;                           /* Clickable cursor */
+    appearance: none;                          /* Remove native dropdown arrow */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    padding-right: 40px;
+    background-repeat: no-repeat;              /* Don't tile the arrow icon */
+    background-position: right 15px center;    /* Position arrow at right */
+    padding-right: 40px;                       /* Space for the arrow icon */
 }
 
+/* Select dropdown options: dark bg for readability */
 .register-card .form-group select option {
     background-color: #333;
     color: #ffffff;
 }
 
+/* Placeholder text: semi-transparent white */
 .register-card .form-group input::placeholder {
     color: rgba(255, 255, 255, 0.5);
 }
 
+/* Input/select focus: green border with green glow */
 .register-card .form-group input:focus,
 .register-card .form-group select:focus {
     border-color: rgba(4, 170, 109, 0.8);
@@ -747,53 +863,60 @@ body {
 }
 
 /* NAME ROW */
+/* Two-column grid for first name + last name side by side */
 .name-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: grid;                         /* Grid layout */
+    grid-template-columns: 1fr 1fr;        /* Two equal columns */
+    gap: 10px;                             /* Space between columns */
 }
 
 /* REGISTER BUTTON */
+/* Full-width solid green button with green glow shadow */
 .register-btn {
-    width: 100%;
-    padding: 15px;
-    background-color: #04AA6D;
-    color: #ffffff;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
+    width: 100%;                                       /* Full width */
+    padding: 15px;                                     /*  padding */
+    background-color: #04AA6D;                         /* Solid brand green */
+    color: #ffffff;                                    /* White text */
+    border: none;                                      /* No border */
+    border-radius: 10px;                               /* Rounded corners */
+    font-size: 16px;                                   /* Text size */
+    font-weight: 700;                                  /* Bold */
+    cursor: pointer;                                   /* Clickable */
+    transition: all 0.3s ease;                         /* Smooth hover */
+    margin-top: 10px;                                  /* Space above */
+    box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);    /* Green glow */
 }
 
+/* Register hover: darker green, lifts 2px, stronger glow */
 .register-btn:hover {
-    background-color: #038a58;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(4, 170, 109, 0.4);
+    background-color: #038a58;                         /* Darker green */
+    transform: translateY(-2px);                       /* Lift effect */
+    box-shadow: 0 6px 20px rgba(4, 170, 109, 0.4);    /* Stronger glow */
 }
 
+/* Register active/pressed: returns to original, reduced shadow */
 .register-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(4, 170, 109, 0.3);
+    transform: translateY(0);                          /* Back to original */
+    box-shadow: 0 2px 10px rgba(4, 170, 109, 0.3);    /* Reduced glow */
 }
 
+/* Register disabled: faded green, no pointer, no transform/shadow */
 .register-btn:disabled {
-    background-color: rgba(4, 170, 109, 0.5);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    background-color: rgba(4, 170, 109, 0.5);     /* 50% opacity green */
+    cursor: not-allowed;                           /* Disabled cursor */
+    transform: none;                               /* No transform */
+    box-shadow: none;                              /* No shadow */
 }
 
 /* DIVIDER (scoped under .register-card) */
+/* Horizontal line with centered text (e.g., "OR") */
 .register-card .divider {
     display: flex;
     align-items: center;
     margin: 25px 0;
 }
 
+/* Divider lines: thin white lines filling space on each side of text */
 .register-card .divider::before,
 .register-card .divider::after {
     content: '';
@@ -802,6 +925,7 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* Divider text: padded, semi-transparent white */
 .register-card .divider span {
     padding: 0 15px;
     color: rgba(255, 255, 255, 0.6);
@@ -809,59 +933,69 @@ body {
 }
 
 /* SOCIAL BUTTON */
+/* Full-width social login button (e.g., Google): translucent bg,
+   flex row with icon + text centered, rounded corners */
 .social-btn {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    width: 100%;                                       /* Full width */
+    padding: 12px;                                     /* Inner padding */
+    background: rgba(255, 255, 255, 0.1);              /* Translucent bg */
+    border: 1px solid rgba(255, 255, 255, 0.3);       /* White border */
+    border-radius: 10px;                               /* Rounded corners */
+    color: #ffffff;                                    /* White text */
+    font-size: 14px;                                   /* Text size */
+    font-weight: 500;                                  /* Medium weight */
+    cursor: pointer;                                   /* Clickable */
+    transition: all 0.3s ease;                         /* Smooth hover */
+    display: flex;                                     /* Flex row */
+    align-items: center;                               /* Vertically centered */
+    justify-content: center;                           /* Horizontally centered */
+    gap: 10px;                                         /* Space between icon and text */
 }
 
+/* Social button hover: brighter bg, more visible border, lifts 2px */
 .social-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.2);              /* Brighter bg */
+    border-color: rgba(255, 255, 255, 0.5);            /* More visible border */
+    transform: translateY(-2px);                       /* Lift effect */
 }
 
+/* Social button icon (e.g., Google logo): 20x20px */
 .social-btn img {
-    width: 20px;
-    height: 20px;
+    width: 20px;                   /* Icon width */
+    height: 20px;                  /* Icon height */
 }
 
 /* LOGIN LINK */
+/* "Already have an account?" redirect text at bottom of register card */
 .login-link {
-    margin-top: 25px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    margin-top: 25px;                              /* Space above */
+    font-size: 14px;                               /* Text size */
+    color: rgba(255, 255, 255, 0.7);               /* Semi-transparent white */
 }
 
+/* Login link anchor: brand green, semi-bold */
 .login-link a {
-    color: #04AA6D;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
+    color: #04AA6D;                /* Brand green */
+    text-decoration: none;         /* No underline */
+    font-weight: 600;              /* Semi-bold */
+    transition: color 0.3s ease;   /* Smooth color change */
 }
 
+/* Login link hover: brighter green, underline */
 .login-link a:hover {
-    color: #06d68a;
-    text-decoration: underline;
+    color: #06d68a;                /* Brighter green */
+    text-decoration: underline;    /* Add underline */
 }
 
 
-/* ============================================================
+/*
    SECTION 7: CHANGE PASSWORD PAGE STYLES
-   ============================================================ */
+   Used on: changepassword.html
+   Password change card, form inputs, and submit button.
+   */
 
 /* PWD CARD */
+/*  card for change-password form (same pattern as login/register cards) */
 .pwd-card {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px) saturate(180%);
@@ -878,6 +1012,7 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Password card hover: intensified shadows, 2px lift */
 .pwd-card:hover {
     box-shadow:
         0 12px 40px rgba(0, 0, 0, 0.5),
@@ -886,6 +1021,7 @@ body {
     transform: translateY(-2px);
 }
 
+/* Password card heading: white bold text with depth shadow */
 .pwd-card h2 {
     font-size: 30px;
     font-weight: 700;
@@ -895,6 +1031,7 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* Password card subtitle: semi-transparent white */
 .pwd-card .subtitle {
     font-size: 15px;
     color: rgba(255, 255, 255, 0.75);
@@ -915,6 +1052,7 @@ body {
 }
 
 /* PWD FORM INPUTS */
+/*  inputs: translucent bg, blur, rounded. !important overrides Bootstrap */
 .pwd-form .form-group input,
 .pwd-card .form-group input {
     background: rgba(255, 255, 255, 0.1) !important;
@@ -932,11 +1070,13 @@ body {
     height: auto;
 }
 
+/* Placeholder: semi-transparent white */
 .pwd-form .form-group input::placeholder,
 .pwd-card .form-group input::placeholder {
     color: rgba(255, 255, 255, 0.5) !important;
 }
 
+/* Focus: green border with green glow */
 .pwd-form .form-group input:focus,
 .pwd-card .form-group input:focus {
     border-color: rgba(4, 170, 109, 0.8) !important;
@@ -947,6 +1087,7 @@ body {
 }
 
 /* PWD BUTTON */
+/* Full-width green gradient submit button */
 .pwd-btn {
     width: 100%;
     padding: 16px;
@@ -966,6 +1107,7 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
+/* Hover: brighter gradient, lifts 3px, stronger glow */
 .pwd-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
     transform: translateY(-3px);
@@ -975,6 +1117,7 @@ body {
     border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Active/pressed: returns to original position */
 .pwd-btn:active {
     transform: translateY(0);
     box-shadow:
@@ -983,11 +1126,14 @@ body {
 }
 
 
-/* ============================================================
+/*
    SECTION 8: USERS PAGE STYLES
-   ============================================================ */
+   Used on: users.html
+   Search/filter bar, users grid, user cards, avatars, college badges, pagination.
+   */
 
 /* USERS CONTAINER */
+/* Main wrapper: relative for z-index stacking, max 1100px wide */
 .users-container {
     position: relative;
     z-index: 1;
@@ -997,11 +1143,13 @@ body {
 }
 
 /* SCOPED: .page-header under users */
+/* Page title section: centered heading + description */
 .users-container .page-header {
     text-align: center;
     margin-bottom: 30px;
 }
 
+/* Page title: white bold text */
 .users-container .page-header h1 {
     font-size: 32px;
     font-weight: 700;
@@ -1010,16 +1158,19 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Page subtitle: semi-transparent white */
 .users-container .page-header p {
     font-size: 15px;
     color: rgba(255, 255, 255, 0.7);
 }
 
 /* SEARCH SECTION */
+/* Container for the search/filter bar */
 .search-section {
     margin-bottom: 30px;
 }
 
+/*  card wrapping the search inputs */
 .search-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -1030,6 +1181,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* Flex row for search input + filter dropdown + button */
 .search-row {
     display: flex;
     gap: 15px;
@@ -1037,11 +1189,13 @@ body {
     flex-wrap: wrap;
 }
 
+/* Search input wrapper: takes 2x space, min 200px */
 .search-input-group {
     flex: 2;
     min-width: 200px;
 }
 
+/* Search text input: translucent bg, rounded, white text */
 .search-input-group input {
     width: 100%;
     background: rgba(255, 255, 255, 0.1);
@@ -1054,21 +1208,25 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Focus: green border with green glow */
 .search-input-group input:focus {
     border-color: rgba(4, 170, 109, 0.8);
     box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);
 }
 
+/* Placeholder: semi-transparent white */
 .search-input-group input::placeholder {
     color: rgba(255, 255, 255, 0.5);
 }
 
 /* FILTER GROUP (users search) */
+/* Dropdown filter wrapper: takes 1x space, min 180px */
 .filter-group {
     flex: 1;
     min-width: 180px;
 }
 
+/* Filter dropdown: translucent bg, rounded, white text */
 .filter-group select {
     width: 100%;
     background: rgba(255, 255, 255, 0.1);
@@ -1082,15 +1240,18 @@ body {
     cursor: pointer;
 }
 
+/* Focus: green border */
 .filter-group select:focus {
     border-color: rgba(4, 170, 109, 0.8);
 }
 
+/* Dropdown options: dark bg for readability */
 .filter-group select option {
     background: #1a1a2e;
     color: #ffffff;
 }
 
+/* Search button: green gradient with glow */
 .search-btn {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
     color: #ffffff;
@@ -1104,20 +1265,24 @@ body {
     box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
 }
 
+/* Hover: brighter gradient, lifts 2px */
 .search-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
     transform: translateY(-2px);
 }
 
 /* USERS GRID */
+/* Responsive grid: auto-fills columns at min 250px wide, max 1fr.
+   Automatically wraps to new rows as viewport shrinks */
 .users-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+    display: grid;                                                 /* Grid layout */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));  /* Responsive columns */
+    gap: 20px;                                                     /* Space between cards */
+    margin-bottom: 30px;                                           /* Space below grid */
 }
 
 /* USER CARD */
+/*  card for each user: centered text, hover lift */
 .user-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -1130,6 +1295,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
+/* Hover: lifts 5px, green border accent */
 .user-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
@@ -1137,52 +1303,61 @@ body {
 }
 
 /* USER AVATAR */
+/* 70px circle with green gradient, centered initials, white border + glow.
+   Color variants below change the gradient and glow for visual variety */
 .user-avatar {
-    width: 70px;
+    width: 70px;                                                                           /* Avatar size */
     height: 70px;
-    background: linear-gradient(135deg, rgba(4, 170, 109, 0.8) 0%, rgba(3, 138, 88, 0.9) 100%);
-    border-radius: 50%;
-    display: flex;
+    background: linear-gradient(135deg, rgba(4, 170, 109, 0.8) 0%, rgba(3, 138, 88, 0.9) 100%); /* Default green gradient */
+    border-radius: 50%;                                                                    /* Perfect circle */
+    display: flex;                                                                         /* Center initials */
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 24px;
-    font-weight: 700;
-    color: #ffffff;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 15px rgba(4, 170, 109, 0.4);
+    margin: 0 auto 15px;                                                                   /* Center + bottom spacing */
+    font-size: 24px;                                                                       /* Initials text size */
+    font-weight: 700;                                                                      /* Bold initials */
+    color: #ffffff;                                                                        /* White text */
+    border: 2px solid rgba(255, 255, 255, 0.3);                                           /* White border ring */
+    box-shadow: 0 4px 15px rgba(4, 170, 109, 0.4);                                        /* Green glow */
 }
 
+/* Avatar color variant: orange gradient + orange glow */
 .user-avatar.orange {
     background: linear-gradient(135deg, rgba(255, 152, 0, 0.8) 0%, rgba(230, 126, 0, 0.9) 100%);
     box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
 }
 
+/* Avatar color variant: purple gradient + purple glow */
 .user-avatar.purple {
     background: linear-gradient(135deg, rgba(156, 39, 176, 0.8) 0%, rgba(123, 31, 139, 0.9) 100%);
     box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
 }
 
+/* Avatar color variant: blue gradient + blue glow */
 .user-avatar.blue {
     background: linear-gradient(135deg, rgba(33, 150, 243, 0.8) 0%, rgba(25, 118, 191, 0.9) 100%);
     box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
 }
 
+/* Avatar color variant: pink gradient + pink glow */
 .user-avatar.pink {
     background: linear-gradient(135deg, rgba(233, 30, 99, 0.8) 0%, rgba(183, 24, 78, 0.9) 100%);
     box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
 }
 
+/* Avatar color variant: teal gradient + teal glow */
 .user-avatar.teal {
     background: linear-gradient(135deg, rgba(0, 150, 136, 0.8) 0%, rgba(0, 119, 108, 0.9) 100%);
     box-shadow: 0 4px 15px rgba(0, 150, 136, 0.4);
 }
 
 /* USER INFO */
+/* Name and ID section within user card */
 .user-info {
     margin-bottom: 15px;
 }
 
+/* User name: white semi-bold */
 .user-info h3 {
     font-size: 16px;
     font-weight: 600;
@@ -1190,29 +1365,34 @@ body {
     margin-bottom: 5px;
 }
 
+/* User ID: small, semi-transparent */
 .user-info .user-id {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 10px;
 }
 
+/* College badge: small pill-shaped tag showing the user's college.
+   Default green, with color variants for each college */
 .college-badge {
-    display: inline-block;
-    background: rgba(4, 170, 109, 0.2);
-    color: #04AA6D;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
-    border: 1px solid rgba(4, 170, 109, 0.4);
+    display: inline-block;                             /* Inline pill */
+    background: rgba(4, 170, 109, 0.2);               /* Green-tinted bg (default) */
+    color: #04AA6D;                                    /* Green text */
+    padding: 4px 12px;                                 /* Pill padding */
+    border-radius: 20px;                               /* Pill shape */
+    font-size: 11px;                                   /* Small text */
+    font-weight: 500;                                  /* Medium weight */
+    border: 1px solid rgba(4, 170, 109, 0.4);         /* Green border */
 }
 
+/* College badge: CLA (College of Liberal Arts) - blue variant */
 .college-badge.cla {
     background: rgba(33, 150, 243, 0.2);
     color: #64b5f6;
     border-color: rgba(33, 150, 243, 0.4);
 }
 
+/* College badge: COE/GCOE (College of Engineering) - orange variant */
 .college-badge.coe,
 .college-badge.gcoe {
     background: rgba(255, 152, 0, 0.2);
@@ -1220,12 +1400,14 @@ body {
     border-color: rgba(255, 152, 0, 0.4);
 }
 
+/* College badge: COB (College of Business) - pink variant */
 .college-badge.cob {
     background: rgba(233, 30, 99, 0.2);
     color: #f48fb1;
     border-color: rgba(233, 30, 99, 0.4);
 }
 
+/* College badge: COS (College of Science) - teal variant */
 .college-badge.cos {
     background: rgba(0, 150, 136, 0.2);
     color: #4db6ac;
@@ -1233,6 +1415,7 @@ body {
 }
 
 /* USER STATS */
+/* Centered stat row with top/bottom borders */
 .user-stats {
     display: flex;
     justify-content: center;
@@ -1242,10 +1425,12 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Individual stat: centered text */
 .user-stats .stat {
     text-align: center;
 }
 
+/* Stat value: large green number */
 .user-stats .value {
     display: block;
     font-size: 22px;
@@ -1253,12 +1438,14 @@ body {
     color: #04AA6D;
 }
 
+/* Stat label: small, semi-transparent */
 .user-stats .label {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.6);
 }
 
 /* VIEW PROFILE BUTTON */
+/* Full-width translucent link button at bottom of user card */
 .view-profile-btn {
     display: block;
     width: 100%;
@@ -1273,6 +1460,7 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: green-tinted bg and text */
 .view-profile-btn:hover {
     background: rgba(4, 170, 109, 0.2);
     border-color: rgba(4, 170, 109, 0.4);
@@ -1281,6 +1469,7 @@ body {
 }
 
 /* PAGINATION (users) */
+/* Centered pagination row: prev/next buttons + page numbers */
 .pagination {
     display: flex;
     justify-content: center;
@@ -1289,6 +1478,7 @@ body {
     margin-top: 10px;
 }
 
+/* Prev/Next button: translucent bg, rounded */
 .page-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1300,22 +1490,26 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter bg (only when enabled) */
 .page-btn:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
 }
 
+/* Disabled: faded, no pointer */
 .page-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
+/* Page number row container */
 .page-numbers {
     display: flex;
     gap: 8px;
     align-items: center;
 }
 
+/* Individual page number: 36px square button */
 .page-num {
     width: 36px;
     height: 36px;
@@ -1331,27 +1525,33 @@ body {
     justify-content: center;
 }
 
+/* Hover: brighter bg */
 .page-num:hover {
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* Active page: green-tinted bg and text */
 .page-num.active {
     background: rgba(4, 170, 109, 0.3);
     border-color: rgba(4, 170, 109, 0.5);
     color: #04AA6D;
 }
 
+/* Ellipsis dots between page numbers */
 .page-dots {
     color: rgba(255, 255, 255, 0.5);
     padding: 0 5px;
 }
 
 
-/* ============================================================
+/*
    SECTION 9: PROFILE PAGE STYLES
-   ============================================================ */
+   Used on: profile.html, public-profile.html
+   Profile header, avatar, badges, info cards, settings, toggle, stats, danger zone.
+   */
 
 /* PROFILE CONTAINER */
+/* Main wrapper: positioned above overlay, max 900px for comfortable reading */
 .profile-container {
     position: relative;
     z-index: 1;
@@ -1361,6 +1561,7 @@ body {
 }
 
 /* PROFILE HEADER */
+/*  card: flex row with avatar + user info side by side */
 .profile-header {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -1375,6 +1576,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* Avatar column: avatar image + change button stacked */
 .avatar-section {
     display: flex;
     flex-direction: column;
@@ -1382,6 +1584,7 @@ body {
     gap: 12px;
 }
 
+/* Avatar circle: 100px green gradient with centered initials */
 .avatar {
     width: 100px;
     height: 100px;
@@ -1397,6 +1600,7 @@ body {
     box-shadow: 0 4px 20px rgba(4, 170, 109, 0.4);
 }
 
+/* Change avatar pill button: small, translucent */
 .change-avatar-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1408,11 +1612,13 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter bg */
 .change-avatar-btn:hover {
     background: rgba(255, 255, 255, 0.2);
     color: #ffffff;
 }
 
+/* User display name: large white bold */
 .header-info h1 {
     font-size: 28px;
     font-weight: 700;
@@ -1421,17 +1627,20 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* User email: semi-transparent white */
 .header-info .email {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.7);
     margin-bottom: 12px;
 }
 
+/* Badge row: horizontal flex with gap */
 .badges {
     display: flex;
     gap: 10px;
 }
 
+/* Badge base: small pill shape */
 .badge {
     padding: 4px 12px;
     border-radius: 20px;
@@ -1439,18 +1648,21 @@ body {
     font-weight: 500;
 }
 
+/* Badge: Student role - blue */
 .badge.student {
     background: rgba(33, 150, 243, 0.2);
     color: #64b5f6;
     border: 1px solid rgba(33, 150, 243, 0.4);
 }
 
+/* Badge: College - purple */
 .badge.college {
     background: rgba(156, 39, 176, 0.2);
     color: #ce93d8;
     border: 1px solid rgba(156, 39, 176, 0.4);
 }
 
+/* Badge: Active status - green */
 .badge.active {
     background: rgba(4, 170, 109, 0.2);
     color: #04AA6D;
@@ -1458,6 +1670,7 @@ body {
 }
 
 /* PROFILE GRID */
+/* Vertical stack of profile info cards */
 .profile-grid {
     display: flex;
     flex-direction: column;
@@ -1465,6 +1678,7 @@ body {
 }
 
 /* PROFILE CARD */
+/*  card for each profile section (info, settings, stats) */
 .profile-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -1477,6 +1691,7 @@ body {
 }
 
 /* CARD HEADER (shared by profile and dashboard) */
+/* Flex row: title on left, action button on right */
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -1484,12 +1699,14 @@ body {
     margin-bottom: 20px;
 }
 
+/* Card section title: white bold */
 .card-header h3 {
     font-size: 18px;
     font-weight: 700;
     color: #ffffff;
 }
 
+/* Edit button: translucent bg, green text */
 .edit-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1501,18 +1718,21 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: green-tinted bg and border */
 .edit-btn:hover {
     background: rgba(4, 170, 109, 0.2);
     border-color: rgba(4, 170, 109, 0.4);
 }
 
 /* PROFILE FORM */
+/* Vertical stack of form fields */
 .profile-form {
     display: flex;
     flex-direction: column;
     gap: 18px;
 }
 
+/* Two-column row for side-by-side fields (e.g., first/last name) */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1520,11 +1740,13 @@ body {
 }
 
 /* SCOPED: .form-group under profile */
+/* Vertical flex group for label + input */
 .profile-card .form-group {
     display: flex;
     flex-direction: column;
 }
 
+/* Form label: small, semi-transparent white */
 .profile-card .form-group label {
     font-size: 13px;
     font-weight: 500;
@@ -1532,6 +1754,7 @@ body {
     margin-bottom: 8px;
 }
 
+/* Form inputs/selects: translucent bg, rounded */
 .profile-card .form-group input,
 .profile-card .form-group select {
     background: rgba(255, 255, 255, 0.08);
@@ -1544,6 +1767,7 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Disabled state: darker bg, faded text, no-pointer */
 .profile-card .form-group input:disabled,
 .profile-card .form-group select:disabled {
     background: rgba(255, 255, 255, 0.05);
@@ -1551,6 +1775,7 @@ body {
     cursor: not-allowed;
 }
 
+/* Focus (enabled only): green border with glow */
 .profile-card .form-group input:not(:disabled):focus,
 .profile-card .form-group select:not(:disabled):focus {
     border-color: rgba(4, 170, 109, 0.8);
@@ -1558,12 +1783,14 @@ body {
     background: rgba(255, 255, 255, 0.12);
 }
 
+/* Dropdown options: dark bg */
 .profile-card .form-group select option {
     background: #1a1a2e;
     color: #ffffff;
 }
 
 /* FORM ACTIONS */
+/* Right-aligned button row for Cancel/Save */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -1571,10 +1798,12 @@ body {
     margin-top: 10px;
 }
 
+/* Hidden state: hides buttons when form is not in edit mode */
 .form-actions.hidden {
     display: none;
 }
 
+/* Cancel button: translucent, neutral */
 .cancel-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1586,10 +1815,12 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter bg */
 .cancel-btn:hover {
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* Save button: green gradient */
 .save-btn {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1602,17 +1833,20 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter gradient */
 .save-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
 }
 
 /* SETTINGS LIST */
+/* Vertical stack of setting rows */
 .settings-list {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
+/* Individual setting: label on left, action on right */
 .setting-item {
     display: flex;
     justify-content: space-between;
@@ -1622,6 +1856,7 @@ body {
     border-radius: 12px;
 }
 
+/* Setting title: white semi-bold */
 .setting-info h4 {
     font-size: 14px;
     font-weight: 600;
@@ -1629,11 +1864,13 @@ body {
     margin-bottom: 3px;
 }
 
+/* Setting description: small, semi-transparent */
 .setting-info p {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* Setting action button: translucent, rounded */
 .setting-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1645,58 +1882,67 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter bg */
 .setting-btn:hover {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
 }
 
 /* TOGGLE SWITCH */
+/* Custom on/off toggle: 50x26px container, hides the native checkbox,
+   uses a sliding circle (::before pseudo-element) on a pill-shaped track */
 .toggle {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
+    position: relative;            /* Positioning context for slider */
+    display: inline-block;         /* Inline element */
+    width: 50px;                   /* Toggle width */
+    height: 26px;                  /* Toggle height */
 }
 
+/* Hidden native checkbox: invisible but still accessible */
 .toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+    opacity: 0;                    /* Invisible */
+    width: 0;                      /* No space */
+    height: 0;                     /* No space */
 }
 
+/* Toggle track: pill-shaped translucent white background */
 .toggle-slider {
-    position: absolute;
-    cursor: pointer;
+    position: absolute;                                /* Fill parent */
+    cursor: pointer;                                   /* Clickable */
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 26px;
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.2);              /* Translucent track */
+    border-radius: 26px;                               /* Pill shape */
+    transition: all 0.3s ease;                         /* Smooth toggle */
 }
 
+/* Toggle circle/knob: white 20px circle positioned at left */
 .toggle-slider::before {
     position: absolute;
     content: '';
-    height: 20px;
+    height: 20px;                  /* Knob size */
     width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background: #ffffff;
-    border-radius: 50%;
-    transition: all 0.3s ease;
+    left: 3px;                     /* Left position (off state) */
+    bottom: 3px;                   /* Vertically centered */
+    background: #ffffff;           /* White knob */
+    border-radius: 50%;            /* Perfect circle */
+    transition: all 0.3s ease;     /* Smooth slide */
 }
 
+/* Toggle ON state: track turns green */
 .toggle input:checked + .toggle-slider {
-    background: rgba(4, 170, 109, 0.8);
+    background: rgba(4, 170, 109, 0.8);    /* Green track when on */
 }
 
+/* Toggle ON state: knob slides 24px to the right */
 .toggle input:checked + .toggle-slider::before {
-    transform: translateX(24px);
+    transform: translateX(24px);           /* Slide knob to right */
 }
 
 /* STATS GRID (profile) */
+/* 3-column grid for profile stat items */
 .stats-card .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1704,6 +1950,7 @@ body {
     margin-bottom: 20px;
 }
 
+/* Individual stat box: centered, subtle bg */
 .stat-item {
     text-align: center;
     padding: 15px;
@@ -1726,30 +1973,36 @@ body {
 }
 
 /* MEMBER SINCE */
+/* Centered text below stats, separated by top border */
 .member-since {
     text-align: center;
     padding-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Label text: small, semi-transparent */
 .member-since p {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* Date text: brighter white */
 .member-since strong {
     color: rgba(255, 255, 255, 0.9);
 }
 
 /* DANGER ZONE */
+/* Red-bordered card for destructive actions (delete account, etc.) */
 .danger-card {
     border-color: rgba(255, 107, 107, 0.3);
 }
 
+/* Danger card title: red text */
 .danger-card .card-header h3 {
     color: #ff6b6b;
 }
 
+/* Danger action row: label on left, button on right, red-tinted bg */
 .danger-item {
     display: flex;
     justify-content: space-between;
@@ -1760,6 +2013,7 @@ body {
     border: 1px solid rgba(255, 107, 107, 0.2);
 }
 
+/* Danger item title: red text */
 .danger-info h4 {
     font-size: 14px;
     font-weight: 600;
@@ -1767,11 +2021,13 @@ body {
     margin-bottom: 3px;
 }
 
+/* Danger item description: small, semi-transparent */
 .danger-info p {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* Danger button: red-tinted bg, red text and border */
 .danger-btn {
     background: rgba(255, 107, 107, 0.2);
     border: 1px solid rgba(255, 107, 107, 0.4);
@@ -1784,16 +2040,20 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter red bg */
 .danger-btn:hover {
     background: rgba(255, 107, 107, 0.3);
 }
 
 
-/* ============================================================
+/*
    SECTION 10: RESERVATIONS PAGE STYLES
-   ============================================================ */
+   Used on: reservations.html
+   Page header, filter tabs, reservation cards, status badges, actions, pagination.
+   */
 
 /* RESERVATIONS CONTAINER */
+/* Main wrapper: above overlay, max 900px wide */
 .reservations-container {
     position: relative;
     z-index: 1;
@@ -1803,6 +2063,7 @@ body {
 }
 
 /* SCOPED: .page-header under reservations */
+/* Flex row: title on left, "New Reservation" button on right */
 .reservations-container .page-header {
     display: flex;
     justify-content: space-between;
@@ -1812,6 +2073,7 @@ body {
     gap: 15px;
 }
 
+/* Page title: white bold */
 .header-content h1 {
     font-size: 32px;
     font-weight: 700;
@@ -1820,11 +2082,13 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Page subtitle: semi-transparent white */
 .header-content p {
     font-size: 15px;
     color: rgba(255, 255, 255, 0.7);
 }
 
+/* "New Reservation" button: green gradient */
 .new-btn {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
     color: #ffffff;
@@ -1838,6 +2102,7 @@ body {
     box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
 }
 
+/* Hover: brighter, lifts 2px */
 .new-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
     transform: translateY(-2px);
@@ -1846,6 +2111,7 @@ body {
 }
 
 /* FILTER TABS */
+/* Horizontal row of pill-shaped filter buttons (All, Upcoming, Completed, Cancelled) */
 .filter-tabs {
     display: flex;
     gap: 10px;
@@ -1853,6 +2119,7 @@ body {
     flex-wrap: wrap;
 }
 
+/* Tab button: translucent pill shape */
 .tab-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1864,11 +2131,13 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter bg */
 .tab-btn:hover {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
 }
 
+/* Active tab: green-tinted bg and text */
 .tab-btn.active {
     background: rgba(4, 170, 109, 0.2);
     border-color: rgba(4, 170, 109, 0.5);
@@ -1876,6 +2145,7 @@ body {
 }
 
 /* RESERVATIONS LIST */
+/* Vertical stack of reservation cards */
 .reservations-list {
     display: flex;
     flex-direction: column;
@@ -1884,6 +2154,7 @@ body {
 }
 
 /* RESERVATION CARD */
+/*  card: flex row with date sidebar + content + actions */
 .reservation-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -1896,25 +2167,30 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: lifts 3px with shadow */
 .reservation-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
+/* Upcoming reservations: blue left accent border */
 .reservation-card.upcoming {
-    border-left: 4px solid #2196F3;
+    border-left: 4px solid #2196F3;        /* Blue indicator */
 }
 
+/* Completed reservations: green left accent border */
 .reservation-card.completed {
-    border-left: 4px solid #04AA6D;
+    border-left: 4px solid #04AA6D;        /* Green indicator */
 }
 
+/* Cancelled reservations: red left accent border, slightly faded */
 .reservation-card.cancelled {
-    border-left: 4px solid #ff6b6b;
-    opacity: 0.8;
+    border-left: 4px solid #ff6b6b;        /* Red indicator */
+    opacity: 0.8;                          /* Slightly faded to indicate inactive */
 }
 
 /* CARD DATE */
+/* Left sidebar showing day/month/year stacked vertically */
 .card-date {
     background: rgba(255, 255, 255, 0.05);
     padding: 20px;
@@ -1926,6 +2202,7 @@ body {
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Day number: large bold white */
 .card-date .day {
     font-size: 32px;
     font-weight: 700;
@@ -1933,6 +2210,7 @@ body {
     line-height: 1;
 }
 
+/* Month: uppercase, small */
 .card-date .month {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.8);
@@ -1940,12 +2218,14 @@ body {
     margin-top: 5px;
 }
 
+/* Year: small, faded */
 .card-date .year {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.5);
 }
 
 /* CARD CONTENT */
+/* Middle section: reservation details + meta, flex row */
 .card-content {
     flex: 1;
     padding: 20px;
@@ -1956,6 +2236,7 @@ body {
     flex-wrap: wrap;
 }
 
+/* Reservation title: white semi-bold */
 .reservation-main h3 {
     font-size: 17px;
     font-weight: 600;
@@ -1963,12 +2244,14 @@ body {
     margin-bottom: 5px;
 }
 
+/* Location text: small, semi-transparent */
 .reservation-main .location {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 8px;
 }
 
+/* Time slot pill: green-tinted bg with green text */
 .time-slot .time {
     background: rgba(4, 170, 109, 0.15);
     color: rgba(4, 200, 130, 0.95);
@@ -1978,6 +2261,7 @@ body {
     font-weight: 500;
 }
 
+/* Right-aligned column: status badge + booking date */
 .reservation-meta {
     display: flex;
     flex-direction: column;
@@ -1985,6 +2269,7 @@ body {
     gap: 8px;
 }
 
+/* Status badge base: small pill shape */
 .status-badge {
     padding: 5px 14px;
     border-radius: 20px;
@@ -1992,30 +2277,35 @@ body {
     font-weight: 500;
 }
 
+/* Status: Upcoming - blue */
 .status-badge.upcoming {
     background: rgba(33, 150, 243, 0.2);
     color: #64b5f6;
     border: 1px solid rgba(33, 150, 243, 0.4);
 }
 
+/* Status: Completed - green */
 .status-badge.completed {
     background: rgba(4, 170, 109, 0.2);
     color: #04AA6D;
     border: 1px solid rgba(4, 170, 109, 0.4);
 }
 
+/* Status: Cancelled - red */
 .status-badge.cancelled {
     background: rgba(255, 107, 107, 0.2);
     color: #ff6b6b;
     border: 1px solid rgba(255, 107, 107, 0.4);
 }
 
+/* Booking date text: small, faded */
 .booked-date {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.5);
 }
 
 /* CARD ACTIONS */
+/* Right sidebar: stacked action buttons with subtle left border */
 .card-actions {
     display: flex;
     flex-direction: column;
@@ -2025,6 +2315,7 @@ body {
     border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Action button base: rounded, min 100px wide */
 .action-btn {
     padding: 8px 16px;
     border-radius: 8px;
@@ -2036,38 +2327,45 @@ body {
     min-width: 100px;
 }
 
+/* Edit action: neutral translucent */
 .action-btn.edit {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.8);
 }
 
+/* Edit hover: brighter */
 .action-btn.edit:hover {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
 }
 
+/* Cancel action: red-tinted */
 .action-btn.cancel {
     background: rgba(255, 107, 107, 0.1);
     border-color: rgba(255, 107, 107, 0.3);
     color: #ff6b6b;
 }
 
+/* Cancel hover: brighter red */
 .action-btn.cancel:hover {
     background: rgba(255, 107, 107, 0.2);
 }
 
+/* Rebook action: green-tinted */
 .action-btn.rebook {
     background: rgba(4, 170, 109, 0.15);
     border-color: rgba(4, 170, 109, 0.3);
     color: #04AA6D;
 }
 
+/* Rebook hover: brighter green */
 .action-btn.rebook:hover {
     background: rgba(4, 170, 109, 0.25);
 }
 
 /* SCOPED: pagination under reservations */
+/* Centered pagination: prev + page info + next */
 .reservations-container .pagination {
     display: flex;
     justify-content: center;
@@ -2075,6 +2373,7 @@ body {
     gap: 20px;
 }
 
+/* Prev/Next button: translucent, rounded */
 .reservations-container .page-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2086,27 +2385,33 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover (enabled only): brighter */
 .reservations-container .page-btn:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
 }
 
+/* Disabled: faded, no pointer */
 .reservations-container .page-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
+/* Page counter text (e.g., "Page 1 of 3") */
 .page-info {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.7);
 }
 
 
-/* ============================================================
+/*
    SECTION 11: RESERVE PAGE STYLES
-   ============================================================ */
+   Used on: reserve.html, walkin.html
+   Two-column layout, seat map grid, time selection, booking summary, confirm button.
+   */
 
 /* RESERVE CONTAINER */
+/* Main wrapper: above overlay, max 1200px wide */
 .reserve-container {
     position: relative;
     z-index: 1;
@@ -2116,12 +2421,14 @@ body {
 }
 
 /* SCOPED: .page-header under reserve */
+/* Centered page title and description */
 .reserve-container .page-header {
     text-align: center;
     margin-bottom: 30px;
     color: #ffffff;
 }
 
+/* Page title: large white bold */
 .reserve-container .page-header h1 {
     font-size: 36px;
     font-weight: 700;
@@ -2129,12 +2436,14 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Page subtitle */
 .reserve-container .page-header p {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.8);
 }
 
 /* RESERVE LAYOUT */
+/* Two-column grid: seat map (flexible) + booking summary (350px sidebar) */
 .reserve-layout {
     display: grid;
     grid-template-columns: 1fr 350px;
@@ -2142,6 +2451,7 @@ body {
 }
 
 /* PANEL CARD */
+/*  card used for seat map and booking summary panels */
 .panel-card {
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(20px) saturate(180%);
@@ -2152,6 +2462,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* Panel header: title + availability badge row */
 .panel-header {
     display: flex;
     justify-content: space-between;
@@ -2161,6 +2472,7 @@ body {
     gap: 10px;
 }
 
+/* Panel title: large white bold */
 .panel-header h3 {
     font-size: 22px;
     font-weight: 700;
@@ -2168,6 +2480,7 @@ body {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Availability count pill: green-tinted */
 .availability-badge {
     background: rgba(4, 170, 109, 0.2);
     color: #04AA6D;
@@ -2179,10 +2492,12 @@ body {
 }
 
 /* TIME SELECTION */
+/* Date/time picker section above the seat map */
 .time-selection {
     margin-bottom: 25px;
 }
 
+/* Time label: block-level, nearly white */
 .time-selection label {
     display: block;
     font-size: 14px;
@@ -2191,11 +2506,13 @@ body {
     margin-bottom: 10px;
 }
 
+/* Time inputs row: side-by-side date and time fields */
 .time-row {
     display: flex;
     gap: 15px;
 }
 
+/* Time inputs/selects: translucent bg, equal width */
 .time-row input,
 .time-row select {
     flex: 1;
@@ -2209,18 +2526,21 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Focus: green border with glow */
 .time-row input:focus,
 .time-row select:focus {
     border-color: rgba(4, 170, 109, 0.8);
     box-shadow: 0 0 15px rgba(4, 170, 109, 0.3);
 }
 
+/* Dropdown options: dark bg */
 .time-row select option {
     background: #1a1a2e;
     color: #ffffff;
 }
 
 /* SEAT MAP */
+/* Dark container for the seat grid layout */
 .seat-map-container {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 15px;
@@ -2228,6 +2548,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Instructor desk label: centered bar above the seat grid */
 .instructor-desk {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2240,65 +2561,73 @@ body {
 }
 
 /* SEAT GRID */
+/* 11-column grid for the computer lab seat map layout */
 .seat-grid {
-    display: grid;
-    grid-template-columns: repeat(11, 1fr);
-    gap: 8px;
-    margin-bottom: 20px;
+    display: grid;                                 /* Grid layout */
+    grid-template-columns: repeat(11, 1fr);        /* 11 equal columns */
+    gap: 8px;                                      /* Space between seats */
+    margin-bottom: 20px;                           /* Space below grid */
 }
 
+/* Individual seat: square (aspect-ratio: 1), centered label, clickable */
 .seat {
-    aspect-ratio: 1;
-    display: flex;
+    aspect-ratio: 1;               /* Square shape */
+    display: flex;                 /* Center content */
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 40px;
+    border-radius: 8px;            /* Rounded corners */
+    font-size: 11px;               /* Small seat label */
+    font-weight: 600;              /* Semi-bold */
+    cursor: pointer;               /* Clickable */
+    transition: all 0.2s ease;     /* Quick hover transition */
+    min-width: 40px;               /* Minimum seat size */
 }
 
+/* Available seat: green-tinted, clickable, scales up on hover with green glow */
 .seat.available {
-    background: rgba(4, 170, 109, 0.3);
-    border: 1px solid rgba(4, 170, 109, 0.5);
-    color: #04AA6D;
+    background: rgba(4, 170, 109, 0.3);           /* Green-tinted bg */
+    border: 1px solid rgba(4, 170, 109, 0.5);     /* Green border */
+    color: #04AA6D;                                /* Green text */
 }
 
 .seat.available:hover {
-    background: rgba(4, 170, 109, 0.5);
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(4, 170, 109, 0.5);
+    background: rgba(4, 170, 109, 0.5);           /* Brighter green on hover */
+    transform: scale(1.1);                         /* Scale up slightly */
+    box-shadow: 0 0 15px rgba(4, 170, 109, 0.5);  /* Green glow */
 }
 
+/* Occupied seat: red-tinted, not clickable */
 .seat.occupied {
-    background: rgba(255, 107, 107, 0.3);
-    border: 1px solid rgba(255, 107, 107, 0.5);
-    color: #ff6b6b;
-    cursor: not-allowed;
+    background: rgba(255, 107, 107, 0.3);         /* Red-tinted bg */
+    border: 1px solid rgba(255, 107, 107, 0.5);   /* Red border */
+    color: #ff6b6b;                                /* Red text */
+    cursor: not-allowed;                           /* Not clickable */
 }
 
+/* Reserved seat: yellow-tinted, not clickable */
 .seat.reserved {
-    background: rgba(255, 193, 7, 0.3);
-    border: 1px solid rgba(255, 193, 7, 0.5);
-    color: #ffc107;
-    cursor: not-allowed;
+    background: rgba(255, 193, 7, 0.3);           /* Yellow-tinted bg */
+    border: 1px solid rgba(255, 193, 7, 0.5);     /* Yellow border */
+    color: #ffc107;                                /* Yellow text */
+    cursor: not-allowed;                           /* Not clickable */
 }
 
+/* Selected seat: blue highlight with glow, scaled up. !important overrides other states */
 .seat.selected {
-    background: rgba(33, 150, 243, 0.6) !important;
-    border: 2px solid #2196F3 !important;
-    color: #ffffff !important;
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(33, 150, 243, 0.6);
+    background: rgba(33, 150, 243, 0.6) !important;   /* Blue bg */
+    border: 2px solid #2196F3 !important;              /* Blue border */
+    color: #ffffff !important;                         /* White text */
+    transform: scale(1.1);                             /* Scaled up */
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.6);     /* Blue glow */
 }
 
+/* Empty spacer for aisle gaps between seat columns */
 .seat-gap {
     width: 20px;
 }
 
 /* SEAT LEGEND */
+/* Centered row of color-coded legend items below the seat grid */
 .seat-legend {
     display: flex;
     justify-content: center;
@@ -2308,6 +2637,7 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Legend item: color swatch + label */
 .legend-item {
     display: flex;
     align-items: center;
@@ -2316,39 +2646,46 @@ body {
     font-size: 12px;
 }
 
+/* Legend color swatch: small rounded square */
 .legend-seat {
     width: 24px;
     height: 24px;
     border-radius: 5px;
 }
 
+/* Legend: Available - green */
 .legend-seat.available {
     background: rgba(4, 170, 109, 0.3);
     border: 1px solid rgba(4, 170, 109, 0.5);
 }
 
+/* Legend: Occupied - red */
 .legend-seat.occupied {
     background: rgba(255, 107, 107, 0.3);
     border: 1px solid rgba(255, 107, 107, 0.5);
 }
 
+/* Legend: Reserved - yellow */
 .legend-seat.reserved {
     background: rgba(255, 193, 7, 0.3);
     border: 1px solid rgba(255, 193, 7, 0.5);
 }
 
+/* Legend: Selected - blue */
 .legend-seat.selected {
     background: rgba(33, 150, 243, 0.6);
     border: 1px solid #2196F3;
 }
 
 /* BOOKING SUMMARY */
+/* Right sidebar: stacked summary cards */
 .booking-summary-panel {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
+/* Summary card title */
 .summary-card h3 {
     font-size: 20px;
     font-weight: 700;
@@ -2357,23 +2694,27 @@ body {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Summary detail rows: stacked label-value pairs */
 .summary-details {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
+/* Single detail row: label on left, value on right */
 .summary-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* Detail label: semi-transparent */
 .summary-item .label {
     color: rgba(255, 255, 255, 0.7);
     font-size: 13px;
 }
 
+/* Detail value: white, medium weight */
 .summary-item .value {
     color: #ffffff;
     font-weight: 500;
@@ -2381,6 +2722,7 @@ body {
     padding-left: 5%;
 }
 
+/* Detail paragraph fallback */
 .summary-item p {
     color: #ffffff;
 }
@@ -2474,6 +2816,7 @@ body {
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* Reserve helper text: small, semi-transparent */
 .reserve-text {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
@@ -2528,6 +2871,7 @@ body {
 }
 
 /* USER CARD (reserve context) */
+/* User info card title in booking summary */
 .reserve-container .user-card h4 {
     font-size: 14px;
     font-weight: 500;
@@ -2535,12 +2879,14 @@ body {
     margin-bottom: 15px;
 }
 
+/* User info row: avatar + details side by side */
 .reserve-container .user-info {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
+/* Smaller avatar for reserve context: 50px, no border/shadow */
 .reserve-container .user-avatar {
     width: 50px;
     height: 50px;
@@ -2550,34 +2896,41 @@ body {
     box-shadow: none;
 }
 
+/* User details: stacked name, ID, college */
 .user-details {
     display: flex;
     flex-direction: column;
     text-align: left;
 }
 
+/* User display name: white semi-bold */
 .user-name {
     font-size: 15px;
     font-weight: 600;
     color: #ffffff;
 }
 
+/* User ID: small, faded */
 .user-id {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* User college: small, green text */
 .user-college {
     font-size: 11px;
     color: rgba(4, 200, 130, 0.9);
 }
 
 
-/* ============================================================
+/*
    SECTION 12: COMPUTER SLOTS PAGE STYLES
-   ============================================================ */
+   Used on: cmpslots.html
+   Filter bar, labs grid, lab cards, availability stats, reserve buttons, legend.
+   */
 
 /* SLOTS CONTAINER */
+/* Main wrapper: above overlay, max 1200px wide */
 .slots-container {
     position: relative;
     z-index: 1;
@@ -2587,12 +2940,14 @@ body {
 }
 
 /* SCOPED: .page-header under slots */
+/* Centered page title and description */
 .slots-container .page-header {
     text-align: center;
     margin-bottom: 30px;
     color: #ffffff;
 }
 
+/* Page title: large white bold */
 .slots-container .page-header h1 {
     font-size: 36px;
     font-weight: 700;
@@ -2600,16 +2955,19 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Page subtitle */
 .slots-container .page-header p {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.8);
 }
 
 /* FILTER SECTION (cmpslots) */
+/* Container for the filter bar */
 .filter-section {
     margin-bottom: 30px;
 }
 
+/*  card wrapping filter inputs */
 .filter-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -2620,6 +2978,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* Filter inputs row: date, time, building side by side */
 .filter-row {
     display: flex;
     gap: 20px;
@@ -2627,7 +2986,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* Cmpslots filter-group (extends the users filter-group) */
+/* Cmpslots filter-group: vertical label + input, equal width */
 .filter-row .filter-group {
     display: flex;
     flex-direction: column;
@@ -2635,6 +2994,7 @@ body {
     min-width: 150px;
 }
 
+/* Filter label: small, nearly white */
 .filter-group label {
     font-size: 13px;
     font-weight: 500;
@@ -2642,6 +3002,7 @@ body {
     margin-bottom: 8px;
 }
 
+/* Filter inputs/selects: translucent bg, rounded */
 .filter-group input,
 .filter-group select {
     background: rgba(255, 255, 255, 0.1);
@@ -2654,6 +3015,7 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Focus: green border with glow */
 .filter-group input:focus,
 .filter-group select:focus {
     border-color: rgba(4, 170, 109, 0.8);
@@ -2661,11 +3023,13 @@ body {
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* Dropdown options: dark bg */
 .filter-group select option {
     background: #1a1a2e;
     color: #ffffff;
 }
 
+/* Filter submit button: green gradient */
 .filter-btn {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
     color: #ffffff;
@@ -2679,6 +3043,7 @@ body {
     box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
 }
 
+/* Hover: brighter, lifts 2px */
 .filter-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
     transform: translateY(-2px);
@@ -2686,14 +3051,16 @@ body {
 }
 
 /* LABS GRID */
+/* Responsive grid: auto-fills columns at min 340px, wraps to new rows */
 .labs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
+    display: grid;                                                 /* Grid layout */
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));  /* Responsive columns */
+    gap: 25px;                                                     /* Space between cards */
+    margin-bottom: 30px;                                           /* Space below grid */
 }
 
 /* LAB CARD */
+/*  card for each lab: hover lifts with green border */
 .lab-card {
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(20px) saturate(180%);
@@ -2707,6 +3074,7 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: lifts 5px, green glow border */
 .lab-card:hover {
     transform: translateY(-5px);
     box-shadow:
@@ -2716,6 +3084,7 @@ body {
     border-color: rgba(4, 170, 109, 0.3);
 }
 
+/* Lab header: lab name + building tag row */
 .lab-header {
     display: flex;
     justify-content: space-between;
@@ -2723,6 +3092,7 @@ body {
     margin-bottom: 20px;
 }
 
+/* Lab name: large white bold */
 .lab-header h3 {
     font-size: 24px;
     font-weight: 700;
@@ -2730,6 +3100,7 @@ body {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Building name pill: green-tinted */
 .building-tag {
     background: rgba(4, 170, 109, 0.2);
     color: rgba(4, 200, 130, 0.95);
@@ -2741,6 +3112,7 @@ body {
 }
 
 /* LAB STATS */
+/* Available/Occupied/Total stats row with top/bottom borders */
 .lab-stats {
     display: flex;
     justify-content: space-around;
@@ -2750,11 +3122,12 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* SCOPED: stat under lab-stats */
+/* Individual stat: centered */
 .lab-stats .stat {
     text-align: center;
 }
 
+/* Stat number: large bold (color set by variant classes below) */
 .lab-stats .stat-number {
     display: block;
     font-size: 28px;
@@ -2762,20 +3135,24 @@ body {
     margin-bottom: 5px;
 }
 
+/* Available count: green text with green glow */
 .stat-number.available {
-    color: #04AA6D;
-    text-shadow: 0 0 15px rgba(4, 170, 109, 0.5);
+    color: #04AA6D;                                        /* Green */
+    text-shadow: 0 0 15px rgba(4, 170, 109, 0.5);         /* Green glow */
 }
 
+/* Occupied count: red text with red glow */
 .stat-number.occupied {
-    color: #ff6b6b;
-    text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+    color: #ff6b6b;                                        /* Red */
+    text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);       /* Red glow */
 }
 
+/* Total count: plain white text */
 .stat-number.total {
     color: #ffffff;
 }
 
+/* Stat label: uppercase, small, semi-transparent */
 .lab-stats .stat-label {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
@@ -2784,21 +3161,25 @@ body {
 }
 
 /* LAB INFO (cmpslots) */
+/* Additional lab details (floor, hours, etc.) */
 .slots-container .lab-info {
     margin-bottom: 20px;
 }
 
+/* Info text: small, semi-transparent */
 .slots-container .lab-info p {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.8);
     margin-bottom: 5px;
 }
 
+/* Info bold labels: brighter white */
 .slots-container .lab-info strong {
     color: rgba(255, 255, 255, 0.95);
 }
 
 /* RESERVE BUTTON (cmpslots) */
+/* Full-width green gradient link button at bottom of lab card */
 .reserve-btn {
     display: block;
     width: 100%;
@@ -2815,6 +3196,7 @@ body {
     box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
 }
 
+/* Hover: brighter, lifts 2px */
 .reserve-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
     transform: translateY(-2px);
@@ -2824,10 +3206,12 @@ body {
 }
 
 /* LEGEND SECTION */
+/* Container for the color-coded legend below labs grid */
 .legend-section {
     margin-top: 20px;
 }
 
+/*  card for the legend */
 .legend-card {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(20px) saturate(180%);
@@ -2837,6 +3221,7 @@ body {
     padding: 20px 25px;
 }
 
+/* Legend title */
 .legend-card h4 {
     color: #ffffff;
     font-size: 16px;
@@ -2844,6 +3229,7 @@ body {
     margin-bottom: 15px;
 }
 
+/* Legend items row: wrapping flex with gap */
 .legend-items {
     display: flex;
     gap: 30px;
@@ -2851,6 +3237,7 @@ body {
 }
 
 /* SCOPED: legend-item for cmpslots */
+/* Color swatch + label pair */
 .legend-items .legend-item {
     display: flex;
     align-items: center;
@@ -2859,67 +3246,80 @@ body {
     font-size: 13px;
 }
 
+/* Color swatch: small rounded square */
 .legend-color {
     width: 20px;
     height: 20px;
     border-radius: 5px;
 }
 
+/* Available: green with glow */
 .legend-color.available {
     background: #04AA6D;
     box-shadow: 0 0 10px rgba(4, 170, 109, 0.5);
 }
 
+/* Occupied: red with glow */
 .legend-color.occupied {
     background: #ff6b6b;
     box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
 }
 
+/* Reserved: yellow with glow */
 .legend-color.reserved {
     background: #ffc107;
     box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
 
-/* ============================================================
+/*
    SECTION 13: WALK-IN PAGE STYLES (unique additions)
-   ============================================================ */
+   Used on: walkin.html
+   Adds red "Remove" button on top of reserve page styles.
+   */
 
 /* REMOVE BUTTON */
+/* Full-width red gradient button for removing/canceling a walk-in reservation.
+   Uses red gradient instead of green, with red glow shadow */
 .remove-btn {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, rgba(189, 19, 19, 0.9) 0%, rgba(175, 19, 19, 0.95) 100%);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 20px;
-    box-shadow: 0 4px 15px rgba(106, 2, 2, 0.3);
+    width: 100%;                                                                           /* Full width */
+    padding: 16px;                                                                         /* padding */
+    background: linear-gradient(135deg, rgba(189, 19, 19, 0.9) 0%, rgba(175, 19, 19, 0.95) 100%); /* Red gradient */
+    color: #ffffff;                                                                        /* White text */
+    border: 1px solid rgba(255, 255, 255, 0.2);                                           /* Translucent border */
+    border-radius: 12px;                                                                   /* Rounded corners */
+    font-size: 16px;                                                                       /* Text size */
+    font-weight: 700;                                                                      /* Bold */
+    cursor: pointer;                                                                       /* Clickable */
+    transition: all 0.3s ease;                                                             /* Smooth hover */
+    margin-top: 20px;                                                                      /* Space above */
+    box-shadow: 0 4px 15px rgba(106, 2, 2, 0.3);                                          /* Red glow */
 }
 
+/* Remove hover: brighter red, lifts 2px, stronger red glow */
 .remove-btn:hover:not(:disabled) {
     background: linear-gradient(135deg, rgba(235, 3, 3, 0.95) 0%, rgb(209, 18, 18) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(170, 4, 4, 0.4);
+    transform: translateY(-2px);                           /* Lift effect */
+    box-shadow: 0 6px 20px rgba(170, 4, 4, 0.4);          /* Stronger red glow */
 }
 
+/* Remove disabled: grey bg, faded text, no pointer/shadow */
 .remove-btn:disabled {
-    background: rgba(109, 109, 109, 0.1);
-    color: rgba(250, 250, 250, 0.79);
-    cursor: not-allowed;
-    box-shadow: none;
+    background: rgba(109, 109, 109, 0.1);                 /* Grey bg */
+    color: rgba(250, 250, 250, 0.79);                     /* Faded text */
+    cursor: not-allowed;                                   /* Disabled cursor */
+    box-shadow: none;                                      /* No shadow */
 }
 
 
-/* ============================================================
+/*
    SECTION 14: DASHBOARD PAGE STYLES
-   ============================================================ */
+   Used on: dashboard.html
+   Welcome header, stats grid, reservations list, quick actions, activity feed, lab list.
+   */
 
 /* DASHBOARD CONTAINER */
+/* Main wrapper: positioned above overlay, max 1200px wide */
 .dashboard-container {
     position: relative;
     z-index: 1;
@@ -2929,6 +3329,7 @@ body {
 }
 
 /* WELCOME HEADER */
+/* Top row: greeting text on left, action buttons on right */
 .welcome-header {
     display: flex;
     justify-content: space-between;
@@ -2938,6 +3339,7 @@ body {
     gap: 20px;
 }
 
+/* Greeting heading: "Welcome back, [name]" */
 .welcome-text h1 {
     font-size: 32px;
     font-weight: 700;
@@ -2946,11 +3348,13 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Subtitle text: date or description */
 .welcome-text p {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.7);
 }
 
+/* New reservation button: green gradient */
 .new-reservation-btn {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
     color: #ffffff;
@@ -2965,6 +3369,7 @@ body {
     margin-left: 43%;
 }
 
+/* Hover: brighter, lifts 2px */
 .new-reservation-btn:hover {
     background: linear-gradient(135deg, rgba(4, 180, 115, 0.95) 0%, rgba(3, 150, 95, 1) 100%);
     transform: translateY(-2px);
@@ -2973,6 +3378,7 @@ body {
     text-decoration: none;
 }
 
+/* Sign out button: red gradient */
 .signout-btn {
     background: linear-gradient(135deg, rgba(170, 4, 4, 0.9) 0%, rgba(138, 3, 3, 0.95) 100%);
     color: #ffffff;
@@ -2986,6 +3392,7 @@ body {
     box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
 }
 
+/* Hover: brighter red, lifts 2px */
 .signout-btn:hover {
     background: linear-gradient(135deg, rgba(180, 4, 4, 0.95) 0%, rgb(150, 3, 3) 100%);
     transform: translateY(-2px);
@@ -2995,13 +3402,15 @@ body {
 }
 
 /* STATS GRID (dashboard) */
+/* 4-column grid for stat summary cards (Upcoming, Completed, Hours, Streak) */
 .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
+    display: grid;                             /* Grid layout */
+    grid-template-columns: repeat(4, 1fr);     /* 4 equal columns */
+    gap: 20px;                                 /* Space between cards */
+    margin-bottom: 30px;                       /* Space below */
 }
 
+/* Individual stat card: icon + number/label side by side */
 .stat-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -3015,11 +3424,13 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: lifts 3px */
 .stat-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
+/* Stat icon container: 50px rounded square */
 .stat-icon {
     width: 50px;
     height: 50px;
@@ -3029,51 +3440,57 @@ body {
     justify-content: center;
 }
 
+/* Stat icon color variants: each stat type gets a unique color */
 .stat-icon.upcoming {
-    background: rgba(33, 150, 243, 0.2);
-    border: 1px solid rgba(33, 150, 243, 0.4);
+    background: rgba(33, 150, 243, 0.2);               /* Blue bg */
+    border: 1px solid rgba(33, 150, 243, 0.4);         /* Blue border */
 }
 
 .stat-icon.completed {
-    background: rgba(4, 170, 109, 0.2);
-    border: 1px solid rgba(4, 170, 109, 0.4);
+    background: rgba(4, 170, 109, 0.2);                /* Green bg */
+    border: 1px solid rgba(4, 170, 109, 0.4);          /* Green border */
 }
 
 .stat-icon.hours {
-    background: rgba(156, 39, 176, 0.2);
-    border: 1px solid rgba(156, 39, 176, 0.4);
+    background: rgba(156, 39, 176, 0.2);               /* Purple bg */
+    border: 1px solid rgba(156, 39, 176, 0.4);         /* Purple border */
 }
 
 .stat-icon.streak {
-    background: rgba(255, 152, 0, 0.2);
-    border: 1px solid rgba(255, 152, 0, 0.4);
+    background: rgba(255, 152, 0, 0.2);                /* Orange bg */
+    border: 1px solid rgba(255, 152, 0, 0.4);          /* Orange border */
 }
 
+/* Stat text: number above label */
 .stat-content {
     display: flex;
     flex-direction: column;
 }
 
 /* SCOPED: stat-number, stat-label under dashboard */
+/* Large white number */
 .stat-content .stat-number {
     font-size: 28px;
     font-weight: 700;
     color: #ffffff;
 }
 
+/* Small label below the number */
 .stat-content .stat-label {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
 }
 
 /* DASHBOARD GRID */
+/* Two-column grid for dashboard content panels (reservations + actions, activity + labs) */
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
+    display: grid;                             /* Grid layout */
+    grid-template-columns: 1fr 1fr;            /* Two equal columns */
+    gap: 25px;                                 /* Space between panels */
 }
 
 /* DASHBOARD CARD */
+/*  card for each dashboard section */
 .dashboard-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
@@ -3084,6 +3501,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* "View All" link: green text in card headers */
 .view-all {
     color: rgba(4, 200, 130, 0.9);
     text-decoration: none;
@@ -3091,12 +3509,14 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter green with underline */
 .view-all:hover {
     color: #06d68a;
     text-decoration: underline;
 }
 
 /* RESERVATION ITEM (dashboard) */
+/* Single reservation row: date + details + status */
 .reservation-item {
     display: flex;
     align-items: center;
@@ -3108,14 +3528,17 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: brighter bg */
 .reservation-item:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Last item: no bottom margin */
 .reservation-item:last-child {
     margin-bottom: 0;
 }
 
+/* Date badge: green gradient, centered day/month */
 .reservation-date {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.3) 0%, rgba(3, 138, 88, 0.4) 100%);
     border-radius: 10px;
@@ -3124,6 +3547,7 @@ body {
     min-width: 60px;
 }
 
+/* Day number: large white bold */
 .reservation-date .day {
     display: block;
     font-size: 24px;
@@ -3132,6 +3556,7 @@ body {
     line-height: 1;
 }
 
+/* Month: uppercase, small */
 .reservation-date .month {
     display: block;
     font-size: 11px;
@@ -3139,10 +3564,12 @@ body {
     text-transform: uppercase;
 }
 
+/* Reservation details: fills remaining space */
 .reservation-details {
     flex: 1;
 }
 
+/* Lab/room name: white semi-bold */
 .reservation-details h4 {
     font-size: 15px;
     font-weight: 600;
@@ -3150,17 +3577,20 @@ body {
     margin-bottom: 3px;
 }
 
+/* Seat/location info: small, semi-transparent */
 .reservation-details p {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 3px;
 }
 
+/* Time text: green */
 .reservation-details .time {
     font-size: 12px;
     color: rgba(4, 200, 130, 0.9);
 }
 
+/* Status pill badge */
 .reservation-status {
     padding: 5px 12px;
     border-radius: 20px;
@@ -3168,6 +3598,7 @@ body {
     font-weight: 500;
 }
 
+/* Upcoming status: blue */
 .reservation-status.upcoming {
     background: rgba(33, 150, 243, 0.2);
     color: #64b5f6;
@@ -3175,12 +3606,14 @@ body {
 }
 
 /* QUICK ACTIONS */
+/* 2x2 grid for quick action shortcuts (Reserve, Manage, Profile, Search) */
 .action-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    display: grid;                             /* Grid layout */
+    grid-template-columns: repeat(2, 1fr);     /* Two equal columns */
+    gap: 15px;                                 /* Space between items */
 }
 
+/* Action shortcut: centered icon + label, clickable card */
 .action-item {
     display: flex;
     flex-direction: column;
@@ -3193,12 +3626,14 @@ body {
     border: 1px solid transparent;
 }
 
+/* Hover: brighter bg, green border, lifts 2px */
 .action-item:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(4, 170, 109, 0.3);
     transform: translateY(-2px);
 }
 
+/* Action icon container: 45px rounded square */
 .action-icon {
     width: 45px;
     height: 45px;
@@ -3206,26 +3641,31 @@ body {
     margin-bottom: 10px;
 }
 
+/* Reserve action icon: green */
 .action-icon.reserve {
     background: rgba(4, 170, 109, 0.2);
     border: 1px solid rgba(4, 170, 109, 0.4);
 }
 
+/* Manage action icon: blue */
 .action-icon.manage {
     background: rgba(33, 150, 243, 0.2);
     border: 1px solid rgba(33, 150, 243, 0.4);
 }
 
+/* Profile action icon: purple */
 .action-icon.profile {
     background: rgba(156, 39, 176, 0.2);
     border: 1px solid rgba(156, 39, 176, 0.4);
 }
 
+/* Search action icon: orange */
 .action-icon.search {
     background: rgba(255, 152, 0, 0.2);
     border: 1px solid rgba(255, 152, 0, 0.4);
 }
 
+/* Action label text */
 .action-item span {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.9);
@@ -3233,12 +3673,14 @@ body {
 }
 
 /* ACTIVITY LIST */
+/* Vertical list of recent activity items (bookings, completions, cancellations) */
 .activity-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: flex;                 /* Flex layout */
+    flex-direction: column;        /* Vertical stack */
+    gap: 12px;                     /* Space between items */
 }
 
+/* Single activity row: colored dot + details */
 .activity-item {
     display: flex;
     align-items: flex-start;
@@ -3248,10 +3690,12 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Hover: subtle bg */
 .activity-item:hover {
     background: rgba(255, 255, 255, 0.05);
 }
 
+/* Status dot: 10px circle, color set by variant classes */
 .activity-indicator {
     width: 10px;
     height: 10px;
@@ -3259,43 +3703,49 @@ body {
     margin-top: 5px;
 }
 
+/* Activity indicator colors: color-coded dots with matching glow */
 .activity-indicator.completed {
-    background: #04AA6D;
-    box-shadow: 0 0 8px rgba(4, 170, 109, 0.5);
+    background: #04AA6D;                                   /* Green dot */
+    box-shadow: 0 0 8px rgba(4, 170, 109, 0.5);           /* Green glow */
 }
 
 .activity-indicator.booked {
-    background: #2196F3;
-    box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+    background: #2196F3;                                   /* Blue dot */
+    box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);          /* Blue glow */
 }
 
 .activity-indicator.cancelled {
-    background: #ff6b6b;
-    box-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+    background: #ff6b6b;                                   /* Red dot */
+    box-shadow: 0 0 8px rgba(255, 107, 107, 0.5);         /* Red glow */
 }
 
+/* Activity description text */
 .activity-details p {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.9);
     margin-bottom: 3px;
 }
 
+/* Bold text within activity description */
 .activity-details strong {
     color: #ffffff;
 }
 
+/* Activity timestamp: small, faded */
 .activity-time {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.5);
 }
 
 /* LAB LIST (dashboard) */
+/* Vertical list of lab availability items with hover slide-right effect */
 .lab-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: flex;                 /* Flex layout */
+    flex-direction: column;        /* Vertical stack */
+    gap: 12px;                     /* Space between items */
 }
 
+/* Individual lab row: name + usage count, clickable */
 .lab-item {
     display: flex;
     justify-content: space-between;
@@ -3307,12 +3757,14 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Lab item hover: brighter bg, slides 5px right for interactive feedback */
 .lab-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.1);     /* Brighter bg */
+    transform: translateX(5px);                /* Slide right effect */
 }
 
 /* LAB INFO (dashboard - scoped) */
+/* Lab name: white semi-bold */
 .dashboard-container .lab-info h4 {
     font-size: 15px;
     font-weight: 600;
@@ -3320,15 +3772,17 @@ body {
     margin-bottom: 3px;
 }
 
+/* Lab building/floor text: small, semi-transparent */
 .dashboard-container .lab-info p {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* Usage count pill: small green badge showing number of times a lab was used */
 .usage-count {
-    font-size: 12px;
-    color: rgba(4, 200, 130, 0.9);
-    background: rgba(4, 170, 109, 0.15);
-    padding: 5px 12px;
-    border-radius: 20px;
+    font-size: 12px;                                   /* Small text */
+    color: rgba(4, 200, 130, 0.9);                    /* Light green text */
+    background: rgba(4, 170, 109, 0.15);              /* Green-tinted bg */
+    padding: 5px 12px;                                 /* Pill padding */
+    border-radius: 20px;                               /* Pill shape */
 }
