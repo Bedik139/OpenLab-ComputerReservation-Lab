@@ -413,10 +413,26 @@ function populateUserCard() {
  */
 function initAnonymousToggle() {
     $('#anonymousToggle').change(function() {
-        if($(this).is(':checked')) {
-            console.log("Anonymous mode ON");
+        var isAnon = $(this).is(':checked');
+
+        // Find or create a status element in the booking summary
+        var $summaryStatus = $('#summaryAnonStatus');
+
+        if ($summaryStatus.length === 0) {
+            // Create it if it doesn't exist (append to summary details)
+            $('.summary-details').append(
+                '<div class="summary-item" id="summaryAnonStatus">' +
+                '<span class="label">Mode</span>' +
+                '<span class="value"></span></div>'
+            );
+            $summaryStatus = $('#summaryAnonStatus');
+        }
+
+        // Update the text
+        if (isAnon) {
+            $summaryStatus.find('.value').text("Anonymous");
         } else {
-            console.log("Anonymous mode OFF");
+            $summaryStatus.find('.value').text("Public");
         }
     });
 }
@@ -449,10 +465,19 @@ function showSeatReservee() {
  * @returns {void}
  */
 function pollAvailability() {
-    setInterval(function() {
+    var intervalId = setInterval(function() {
+        console.log("Polling for seat updates...");
+
+        // Mock updating the badge count
         var count = Math.floor(Math.random() * 10) + 15;
         $('.availability-badge').text(count + " seats available");
-    }, 5000);
+
+    }, 30000);
+
+    // Clears the interval when the user navigates away (cleanup)
+    $(window).on('unload', function() {
+        clearInterval(intervalId);
+    });
 }
 
 
