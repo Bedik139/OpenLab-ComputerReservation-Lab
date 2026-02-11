@@ -49,23 +49,26 @@ OpenLab allows students to view real-time computer lab availability and reserve 
 
 ```
 OpenLab-ComputerReservation-Lab/
-├── index.html              # Landing page / Homepage
+├── index.html                    # Landing page / Homepage
 ├── pages/
-│   ├── register.html       # User registration
-│   ├── dashboard.html      # User dashboard
-│   ├── reservations.html   # View/manage reservations
-│   ├── computers.html      # Computer/slot availability
-│   └── users.html          # User profiles
+│   ├── login.html                # User login
+│   ├── register.html             # User registration
+│   ├── dashboard.html            # User dashboard with stats & quick actions
+│   ├── cmpslots.html             # Browse available lab slots
+│   ├── reserve.html              # Seat selection & reservation
+│   ├── reservations.html         # View/manage reservations
+│   ├── profile.html              # User profile & settings
+│   ├── public-profile.html       # Public view of other users
+│   ├── users.html                # Search & browse users
+│   ├── walkin.html               # Walk-in reservations (technicians)
+│   └── changepassword.html       # Change password
 ├── assets/
 │   ├── css/
-│   │   └── styles.css      # Custom stylesheets
-│   ├── jquery/
-│   │   └── jquery-4.0.0.min.js
-│   ├── logo.png
-│   └── bg.png
+│   │   └── style.css             # Custom stylesheets (glassmorphism, dark theme)
+│   └── bg.png                    # Background image
 ├── js/
-│   └── app.js              # Application JavaScript
-├── specs/                  # Project specification documents
+│   └── app.js                    # Auth guards, session management
+├── AI_Prompts_Documentation.txt  # AI prompts used during development
 └── README.md
 ```
 
@@ -107,6 +110,10 @@ OpenLab-ComputerReservation-Lab/
 - At least 3 computer labs
 - At least 5 sample reservations
 - Life-like data (no lorem ipsum)
+
+## AI Prompts Documentation
+
+The [`AI_Prompts_Documentation.txt`](AI_Prompts_Documentation.txt) file contains all the AI prompts used as design direction guides throughout development. These cover Bootstrap setup, navigation structure, glassmorphism card styling, page layouts, and responsive design. The prompts are written as suggestions — not direct solution requests.
 
 ## Contributors
 
