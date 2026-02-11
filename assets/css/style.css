@@ -3641,6 +3641,13 @@ body {
     transform: translateY(-2px);
 }
 
+/* Hover: brighter bg, green border, lifts 2px */
+.action-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(4, 170, 109, 0.3);
+    transform: translateY(-2px);
+}
+
 /* Action icon container: 45px rounded square */
 .action-icon {
     width: 45px;
