@@ -524,10 +524,11 @@ var USER_KEY = 'openlab_user';
             const status = $(this).data('status');
 
             if (filter === 'all' || status === filter) {
-                $(this).fadeIn(300);
+                // Show the card (using .show() for jQuery Slim compatibility)
+                $(this).show();
             } else {
-                // Otherwise, hide it with a fade-out effect
-                $(this).fadeOut(300);
+                // Otherwise, hide it immediately to prevent layout jumps
+                $(this).hide();
             }
         });
 
@@ -593,20 +594,20 @@ var USER_KEY = 'openlab_user';
         // Get the reservation card this button belongs to
         const card = $(this).closest('.reservation-card');
 
-        // Extract the lab name from the card title
-        const lab = card.find('.reservation-main h3')
-                        .text()
-                        .split(' - ')[0];
+        // Extract the lab name from the card title 
+        const fullTitle = card.find('.reservation-main h3').text();
+        const lab = fullTitle.includes(' - ') ? fullTitle.split(' - ')[0] : fullTitle;
 
         // Get the reservation ID 
         const resId = card.data('id') || '';
 
         // Redirect to the reservation page 
-        window.location.href = 
-            `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
+        if (lab) {
+            window.location.href = 
+                `reserve.html?lab=${encodeURIComponent(lab.trim())}&edit=${encodeURIComponent(resId)}`;
+        }
     });
 }
-
 
     /**
      * Handles the edit button (.action-btn.edit) on upcoming reservation cards.
@@ -810,7 +811,7 @@ var USER_KEY = 'openlab_user';
             email,
             college: $('#college').val()
         };
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
 
         // Update header and avatar
         $('.header-info h1').text(firstName + ' ' + lastName);
@@ -841,7 +842,7 @@ var USER_KEY = 'openlab_user';
         $('.danger-card .danger-btn').on('click', function () {
         if (confirm('Are you sure you want to delete your account?')) {
              // Remove user data
-            localStorage.removeItem('currentUser');
+            localStorage.removeItem(USER_KEY);
 
             // Redirect home
             window.location.href = '../index.html';
