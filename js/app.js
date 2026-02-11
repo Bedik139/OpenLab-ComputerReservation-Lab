@@ -524,7 +524,7 @@ var USER_KEY = 'openlab_user';
             const status = $(this).data('status');
 
             if (filter === 'all' || status === filter) {
-                // Show the card (using .show() for jQuery Slim compatibility)
+                // Show the car (using .show() for jQuery Slim compatibility)
                 $(this).show();
             } else {
                 // Otherwise, hide it immediately to prevent layout jumps
