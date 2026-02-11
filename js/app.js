@@ -859,6 +859,50 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleChangeAvatar() {
+    const $fileInput = $('<input>', {
+        type: 'file',
+        accept: 'image/png, image/jpeg, image/gif',
+        style: 'display:none'
+    }).appendTo('body');
+
+    $('.change-avatar-btn').on('click', function() {
+        $fileInput.click();
+    });
+
+
+    $fileInput.on('change', function() {
+        const file = this.files[0];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (!file) return;
+
+        // Validation
+        if (file.size > maxSize) {
+            alert("File too large! Max 2MB.");
+            return;
+        }
+
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const imageData = e.target.result;
+
+
+            const $newImg = $('<img>').attr({
+                'src': imageData,
+                'style': 'width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'
+            });
+
+            $('.avatar').empty().append($newImg);
+
+            // Save to localStorage (temporary, until backend is ready)
+            const user = JSON.parse(localStorage.getItem('currentUser')) || {};
+            user.profilePic = imageData;
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        };
+
+        reader.readAsDataURL(file);
+    });
         
     }
 
@@ -872,30 +916,23 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleNotificationToggle() {
-       // 1. Find the checkbox
-    const toggleInput = document.querySelector('.setting-item .toggle input[type="checkbox"]');
+        $('.setting-item .toggle input[type="checkbox"]').on('change', function () {
+        const enabled = $(this).is(':checked');
 
-    if (toggleInput) {
-        // 2. Add the "change" listener
-        toggleInput.addEventListener('change', function() {
-            const isEnabled = this.checked;
+        // Save preference in localStorage
+        const user = JSON.parse(localStorage.getItem('currentUser')) || {};
+        user.notifications = enabled;
+        localStorage.setItem('currentUser', JSON.stringify(user));
 
-            // 3. Save to LocalStorage
-            const userData = JSON.parse(localStorage.getItem('currentUser')) || {};
-            userData.notifications = isEnabled;
-            localStorage.setItem('currentUser', JSON.stringify(userData));
-
-            // 4. Feedback
-            console.log("Preference saved:", isEnabled);
-            alert(`Notifications ${isEnabled ? 'turned on' : 'turned off'}`);
-        });
-    }
+        alert(`Email notifications ${enabled ? 'enabled' : 'disabled'}`);
+    });
     }
 
     $(document).ready(function () {
     populateProfile();
     initProfileEdit();
     handleNotificationToggle();
+    handleChangeAvatar();
 });
 
 
