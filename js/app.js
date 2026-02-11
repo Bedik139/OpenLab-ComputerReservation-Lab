@@ -502,19 +502,21 @@ $(document).ready(function() {
         // This whole block filters the reservation cards based on the data-filter attribute of the clicked tab button
         $('.tab-btn').on('click', function () {
             const filter = $(this).data('filter');
+
+            // Toggle active tab
             $('.tab-btn').removeClass('active');
             $(this).addClass('active');
 
+            // Show/hide cards with fade
             $('.reservation-card').each(function () {
                 const status = $(this).data('status');
                 if (filter === 'all' || status === filter) {
-                    $(this).show();
+                    $(this).fadeIn(300); // fade in over 300ms
                 } else {
-                    $(this).hide();
+                    $(this).fadeOut(300); // fade out over 300ms
                 }
             });
         });
-
         // Trigger the active tab on page load
         $('.tab-btn.active').trigger('click');
     }
@@ -546,11 +548,10 @@ $(document).ready(function() {
                     .removeClass('upcoming completed')
                     .addClass('cancelled');
 
-                // Toggle buttons with fade effects
+                // Hide the cancel button 
                 $(this).fadeOut('fast');
-                card.find('.action-btn.rebook').fadeIn('fast');
 
-                // Ensure it shows/hides correctly depending on active filter
+                // Hide card if current filter is not 'all' or 'cancelled'
                 const activeFilter = $('.tab-btn.active').data('filter');
                 if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
                     card.fadeOut('fast');
@@ -558,6 +559,12 @@ $(document).ready(function() {
             }
         });
     }
+
+
+    $(document).ready(function () {
+    handleCancelReservation();
+});
+
 
     /**
      * Handles the "Book Again" button (.action-btn.rebook) on completed/cancelled cards.
@@ -573,6 +580,10 @@ $(document).ready(function() {
             window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
         });
     }
+
+    $(document).ready(function () {
+    handleRebook();
+});
 
     /**
      * Handles the edit button (.action-btn.edit) on upcoming reservation cards.
@@ -592,6 +603,11 @@ $(document).ready(function() {
             window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
         });
     }
+
+    $(document).ready(function () {
+    handleEditReservation();
+});
+
 
 
 
@@ -677,7 +693,6 @@ $(document).ready(function() {
     }
 
     $(document).ready(function() {
-        console.log("Document ready - calling initLabFilters");
         initLabFilters();
     });
 
@@ -704,8 +719,9 @@ $(document).ready(function() {
         $('#studentId').val(user.studentId);
         $('#email').val(user.email);
         $('#college').val(user.college);
-        $('.profile-avatar').text(user.firstName[0] + user.lastName[0]);
+        $('.avatar span').text(user.firstName[0] + user.lastName[0]);
     }
+
 
     /**
      * Initializes the edit toggle for the Personal Information form.
@@ -717,7 +733,89 @@ $(document).ready(function() {
      * @todo Replace localStorage update with PUT /api/users/:id API call
      * @returns {void}
      */
-    function initProfileEdit() {}
+    function initProfileEdit() {
+        const $editBtn = $('#editPersonalBtn');
+    const $form = $('#personalForm');
+    const $inputs = $form.find('input, select');
+    const $actions = $('#personalActions');
+    const $cancelBtn = $actions.find('.cancel-btn');
+    const $saveBtn = $actions.find('.save-btn');
+
+    // Store original values
+    let originalValues = {};
+
+    $editBtn.on('click', function() {
+        // Enable inputs
+        $inputs.prop('disabled', false);
+
+        // Show Save/Cancel
+        $actions.removeClass('hidden');
+
+        // Hide Edit button
+        $editBtn.hide();
+
+        // Save original values
+        originalValues = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            studentId: $('#studentId').val(),
+            email: $('#email').val(),
+            college: $('#college').val()
+        };
+    });
+
+    $cancelBtn.on('click', function() {
+        // Revert to original values
+        $('#firstName').val(originalValues.firstName);
+        $('#lastName').val(originalValues.lastName);
+        $('#studentId').val(originalValues.studentId);
+        $('#email').val(originalValues.email);
+        $('#college').val(originalValues.college);
+
+        // Disable inputs
+        $inputs.prop('disabled', true);
+
+        // Hide Save/Cancel, show Edit
+        $actions.addClass('hidden');
+        $editBtn.show();
+    });
+
+    $saveBtn.on('click', function(e) {
+        e.preventDefault(); // Prevent form submission
+
+        // Simple validation
+        const firstName = $('#firstName').val().trim();
+        const lastName = $('#lastName').val().trim();
+        const email = $('#email').val().trim();
+
+        if (!firstName || !lastName || !email) {
+            alert('Please fill out all required fields.');
+            return;
+        }
+
+        // Save to localStorage (temporary, until backend is ready)
+        const updatedUser = {
+            firstName,
+            lastName,
+            studentId: $('#studentId').val(),
+            email,
+            college: $('#college').val()
+        };
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+        // Update header & avatar
+        $('.header-info h1').text(firstName + ' ' + lastName);
+        $('.header-info .email').text(email);
+        $('.avatar span').text(firstName[0] + lastName[0]);
+
+        // Disable inputs & restore buttons
+        $inputs.prop('disabled', true);
+        $actions.addClass('hidden');
+        $editBtn.show();
+
+        alert('Profile updated!');
+    });
+    }
 
     /**
      * Handles the Delete Account button in the Danger Zone.
@@ -729,7 +827,14 @@ $(document).ready(function() {
      * @todo Implement Email Notifications toggle persistence
      * @returns {void}
      */
-    function handleDeleteAccount() {}
+    function handleDeleteAccount() {
+        $('.danger-card .danger-btn').on('click', function () {
+        if (confirm('Are you sure you want to delete your account?')) {
+            localStorage.removeItem('currentUser');
+            window.location.href = '../index.html';
+        }
+    });
+    }
 
     /**
      * Handles the Change Password button (.setting-btn) in Account Settings.
@@ -753,7 +858,9 @@ $(document).ready(function() {
      * @todo Replace with POST /api/users/:id/avatar multipart upload API call
      * @returns {void}
      */
-    function handleChangeAvatar() {}
+    function handleChangeAvatar() {
+        
+    }
 
     /**
      * Handles the Email Notifications toggle in Account Settings.
@@ -764,7 +871,32 @@ $(document).ready(function() {
      * @todo Replace with PUT /api/users/:id/settings API call
      * @returns {void}
      */
-    function handleNotificationToggle() {}
+    function handleNotificationToggle() {
+       // 1. Find the checkbox
+    const toggleInput = document.querySelector('.setting-item .toggle input[type="checkbox"]');
+
+    if (toggleInput) {
+        // 2. Add the "change" listener
+        toggleInput.addEventListener('change', function() {
+            const isEnabled = this.checked;
+
+            // 3. Save to LocalStorage
+            const userData = JSON.parse(localStorage.getItem('currentUser')) || {};
+            userData.notifications = isEnabled;
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+
+            // 4. Feedback
+            console.log("Preference saved:", isEnabled);
+            alert(`Notifications ${isEnabled ? 'turned on' : 'turned off'}`);
+        });
+    }
+    }
+
+    $(document).ready(function () {
+    populateProfile();
+    initProfileEdit();
+    handleNotificationToggle();
+});
 
 
 // =============================================================================
