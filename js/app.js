@@ -16,7 +16,9 @@
  *
  * @returns {boolean} true if user session exists, false otherwise
  */
-function isLoggedIn() {}
+function isLoggedIn() {
+    return localStorage.getItem('openlab_user') !== null;
+}
 
 /**
  * Retrieves the currently logged-in user's data from localStorage.
@@ -24,7 +26,11 @@ function isLoggedIn() {}
  * @returns {Object|null} User object {firstName, lastName, email, studentId, college} or null if not logged in
  */
 function getCurrentUser() {
-
+    var userStr = localStorage.getItem('openlab_user');
+    if (userStr) {
+        return JSON.parse(userStr);
+    }
+    return null;
 }
 
 /**
@@ -37,7 +43,17 @@ function getCurrentUser() {
  *
  * @returns {void}
  */
-function logout() {}
+function logout() {
+    localStorage.removeItem('openlab_user');
+
+    // Check if we are inside the 'pages' folder
+    var path = window.location.pathname;
+    if (path.indexOf("/pages/") > -1) {
+        window.location.href = "../index.html";
+    } else {
+        window.location.href = "index.html";
+    }
+}
 
 /**
  * Auth guard that runs on every page load.
@@ -47,7 +63,33 @@ function logout() {}
  *
  * @returns {void}
  */
-function authGuard() {}
+function authGuard() {
+    var path = window.location.pathname;
+    var loggedIn = isLoggedIn();
+
+    // List of pages that require login
+    var isProtected = (path.indexOf("dashboard.html") > -1) ||
+        (path.indexOf("reservations.html") > -1) ||
+        (path.indexOf("reserve.html") > -1) ||
+        (path.indexOf("profile.html") > -1);
+
+    // List of pages you shouldn't see if already logged in
+    var isAuthPage = (path.indexOf("login.html") > -1) ||
+        (path.indexOf("register.html") > -1);
+
+    if (isProtected && !loggedIn) {
+        // If page is protected and user is NOT logged in, send to login
+        // Handle path correctly if we are in root or pages folder
+        if (path.indexOf("/pages/") > -1) {
+            window.location.href = "login.html";
+        } else {
+            window.location.href = "pages/login.html";
+        }
+    } else if (isAuthPage && loggedIn) {
+        // If user is already logged in, send them to dashboard
+        window.location.href = "dashboard.html";
+    }
+}
 
 
 // =============================================================================
@@ -62,7 +104,46 @@ function authGuard() {}
  *
  * @returns {void}
  */
-function updateNavbar() {}
+function updateNavbar() {
+    var user = getCurrentUser();
+    var path = window.location.pathname;
+    var inPages = path.indexOf("/pages/") > -1;
+
+    // Determine correct paths for links
+    var profilePath = inPages ? "profile.html" : "pages/profile.html";
+    var loginPath = inPages ? "login.html" : "pages/login.html";
+
+    if (user) {
+        // User IS logged in
+        // 1. Remove Login/Register links
+        $('.nav-links a[href*="login.html"]').remove();
+        $('.nav-links a[href*="register.html"]').remove();
+
+        // 2. Add Profile Link if missing
+        if ($('.nav-links a:contains("Profile")').length === 0) {
+            $('<a href="' + profilePath + '">Profile</a>').insertBefore('.search-bar');
+        }
+
+        // 3. Add Logout Link if missing
+        if ($('#nav-logout').length === 0) {
+            $('<a href="#" id="nav-logout">Logout</a>').insertBefore('.search-bar');
+
+            $('#nav-logout').click(function(e) {
+                e.preventDefault();
+                logout();
+            });
+        }
+    } else {
+        // User is NOT logged in
+        $('.nav-links a:contains("Profile")').remove();
+        $('#nav-logout').remove();
+
+        // Ensure login link exists
+        if ($('.nav-links a[href*="login.html"]').length === 0) {
+            $('<a href="' + loginPath + '">Login</a>').insertBefore('.search-bar');
+        }
+    }
+}
 
 
 // =============================================================================
@@ -79,7 +160,29 @@ function updateNavbar() {}
  * @todo Replace localStorage mock with POST /api/login API call
  * @returns {void}
  */
-function initLoginPage() {}
+function initLoginPage() {
+    $('.login-form').submit(function(e) {
+        e.preventDefault();
+
+        var email = $('#email').val();
+        var password = $('#password').val();
+
+        if (email && password) {
+            // Mock Login
+            var mockUser = {
+                firstName: "Benedict",
+                lastName: "Santos",
+                email: email,
+                studentId: "12467676",
+                college: "CCS"
+            };
+            localStorage.setItem(USER_KEY, JSON.stringify(mockUser));
+            window.location.href = "dashboard.html";
+        } else {
+            alert("Please fill in all fields.");
+        }
+    });
+}
 
 /**
  * Handles the "Forgot password?" link (.forgot-password) on the login page.
@@ -91,7 +194,15 @@ function initLoginPage() {}
  * @todo Replace with POST /api/auth/forgot-password API call
  * @returns {void}
  */
-function handleForgotPassword() {}
+function handleForgotPassword() {
+    $('.forgot-password').click(function(e) {
+        e.preventDefault();
+        var email = prompt("Enter your DLSU email:");
+        if (email) {
+            alert("Reset link sent to " + email);
+        }
+    });
+}
 
 
 // =============================================================================
@@ -113,7 +224,47 @@ function handleForgotPassword() {}
  * @todo Fix register.html line 117 — unclosed div for password form-group
  * @returns {void}
  */
-function initRegisterPage() {}
+function initRegisterPage() {
+    $('.register-form').submit(function(e) {
+        e.preventDefault();
+
+        var pass = $('#password').val();
+        var confirmPass = $('#confirmPassword').val();
+        var studentId = $('#studentId').val();
+
+        // 1. Validate Password Match
+        if (pass !== confirmPass) {
+            alert("Passwords do not match.");
+            return;
+        }
+
+        // 2. Validate Password Length
+        if (pass.length < 8) {
+            alert("Password must be at least 8 characters.");
+            return;
+        }
+
+        // 3. Validate ID (Simple regex check)
+        var idRegex = /^[0-9]{8}$/;
+        if (!idRegex.test(studentId)) {
+            alert("Student ID must be exactly 8 digits.");
+            return;
+        }
+
+        // Save User
+        var newUser = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            studentId: studentId,
+            email: $('#email').val(),
+            college: $('#college').val()
+        };
+
+        localStorage.setItem(USER_KEY, JSON.stringify(newUser));
+        alert("Registration successful!");
+        window.location.href = "dashboard.html";
+    });
+}
 
 
 // =============================================================================
@@ -135,7 +286,31 @@ function initRegisterPage() {}
  * @todo Currently hardcoded to GK101A — this function fixes that
  * @returns {void}
  */
-function loadLabFromURL() {}
+function loadLabFromURL() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var labCode = urlParams.get('lab');
+    if (!labCode) labCode = "GK101A"; // Default
+
+    // Dictionary for building names
+    var buildings = {
+        'AG1010': 'Andrew Building',
+        'LS313': 'La Salle Hall',
+        'GK101A': 'Gokongwei Building',
+        'GK101B': 'Gokongwei Building',
+        'GK304': 'Gokongwei Building'
+    };
+    var bldg = buildings[labCode] || "Gokongwei Building";
+
+    // Update Text
+    $('.panel-header h3').text(labCode + " - " + bldg);
+
+    // Update Summary Lab/Building
+    $('.summary-item').each(function() {
+        var label = $(this).find('.label').text();
+        if (label === 'Lab') $(this).find('.value').text(labCode);
+        if (label === 'Building') $(this).find('.value').text(bldg);
+    });
+}
 
 /**
  * Handles seat selection on the seat map grid.
@@ -146,7 +321,22 @@ function loadLabFromURL() {}
  *
  * @returns {void}
  */
-function initSeatSelection() {}
+function initSeatSelection() {
+    $('.seat-grid').on('click', '.seat.available', function() {
+        // Remove 'selected' from others
+        $('.seat.selected').removeClass('selected').addClass('available');
+
+        // Add 'selected' to clicked
+        $(this).removeClass('available').addClass('selected');
+
+        // Update Summary
+        var seatId = $(this).attr('data-seat');
+        $('#summarySeat').text(seatId);
+
+        // Enable Button
+        $('#confirmBtn').prop('disabled', false).text("Confirm Reservation");
+    });
+}
 
 /**
  * Attaches change listeners to #reserveDate and #timeSlot inputs.
@@ -155,7 +345,16 @@ function initSeatSelection() {}
  *
  * @returns {void}
  */
-function initDateTimeSync() {}
+function initDateTimeSync() {
+    $('#reserveDate').change(function() {
+        $('#summaryDate').text($(this).val());
+    });
+
+    $('#timeSlot').change(function() {
+        var text = $(this).find('option:selected').text();
+        $('#summaryTime').text(text);
+    });
+}
 
 /**
  * Handles the confirm reservation button (#confirmBtn) click.
@@ -166,7 +365,22 @@ function initDateTimeSync() {}
  * @todo Replace with POST /api/reservations API call (send lab, seat, date, time, userId)
  * @returns {void}
  */
-function handleConfirmReservation() {}
+function handleConfirmReservation() {
+    if (!isLoggedIn()) {
+        alert("You must login first.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    var seat = $('.seat.selected').attr('data-seat');
+    if (!seat) {
+        alert("Please select a seat.");
+        return;
+    }
+
+    alert("Reservation confirmed for " + seat);
+    window.location.href = "reservations.html";
+}
 
 /**
  * Populates the "Reserving as" user info card with data from getCurrentUser().
@@ -174,7 +388,17 @@ function handleConfirmReservation() {}
  *
  * @returns {void}
  */
-function populateUserCard() {}
+function populateUserCard() {
+    var user = getCurrentUser();
+    if (user) {
+        $('.user-name').text(user.firstName + " " + user.lastName);
+        $('.user-id').text("ID: " + user.studentId);
+        $('.user-college').text(user.college);
+
+        var initials = user.firstName.charAt(0) + user.lastName.charAt(0);
+        $('.user-avatar').text(initials);
+    }
+}
 
 /**
  * Initializes the anonymous reservation toggle on the reserve page.
@@ -187,7 +411,15 @@ function populateUserCard() {}
  * @todo Persist anonymous flag when sending POST /api/reservations
  * @returns {void}
  */
-function initAnonymousToggle() {}
+function initAnonymousToggle() {
+    $('#anonymousToggle').change(function() {
+        if($(this).is(':checked')) {
+            console.log("Anonymous mode ON");
+        } else {
+            console.log("Anonymous mode OFF");
+        }
+    });
+}
 
 /**
  * Displays reservee information on occupied and reserved seats in the seat map.
@@ -199,7 +431,12 @@ function initAnonymousToggle() {}
  * @todo Requires GET /api/reservations/seat/:seatId to fetch reservee data
  * @returns {void}
  */
-function showSeatReservee() {}
+function showSeatReservee() {
+    $('.seat.occupied, .seat.reserved').hover(function() {
+        var status = $(this).hasClass('occupied') ? "Occupied" : "Reserved";
+        $(this).attr('title', status + " by another student");
+    });
+}
 
 /**
  * Periodically polls for updated seat availability data on the reserve page.
@@ -211,7 +448,12 @@ function showSeatReservee() {}
  * @todo Requires GET /api/labs/:labId/availability endpoint
  * @returns {void}
  */
-function pollAvailability() {}
+function pollAvailability() {
+    setInterval(function() {
+        var count = Math.floor(Math.random() * 10) + 15;
+        $('.availability-badge').text(count + " seats available");
+    }, 5000);
+}
 
 
 // =============================================================================
@@ -654,4 +896,105 @@ function initGlobalSearch() {}
  *
  * @returns {void}
  */
-function init() {}
+function init() {
+    console.log("Initializing OpenLab...");
+
+    // =========================================================================
+    // 1. GLOBAL CALLS (Run on every page)
+    // =========================================================================
+
+    // Check if user is allowed to be on this page
+    authGuard();
+
+    // Update the top navigation bar (Login vs Profile)
+    updateNavbar();
+
+    // Initialize Global Search (if it exists in your partner's code)
+    if (typeof initGlobalSearch === 'function') {
+        initGlobalSearch();
+    }
+
+    // Initialize Pagination (if it exists in your partner's code)
+    if ($('.pagination').length > 0 && typeof initPagination === 'function') {
+        initPagination();
+    }
+
+    // =========================================================================
+    // 2. PAGE SPECIFIC CALLS
+    // =========================================================================
+
+    var path = window.location.pathname;
+
+    // --- LOGIN PAGE ----------------------------------------------------------
+    if (path.indexOf("login.html") > -1) {
+        initLoginPage();
+        handleForgotPassword();
+    }
+
+    // --- REGISTER PAGE -------------------------------------------------------
+    else if (path.indexOf("register.html") > -1) {
+        initRegisterPage();
+    }
+
+    // --- RESERVE PAGE --------------------------------------------------------
+    else if (path.indexOf("reserve.html") > -1) {
+        // Load lab name from URL
+        loadLabFromURL();
+
+        // Enable clicking on seats
+        initSeatSelection();
+
+        // Sync date/time inputs with the summary box
+        initDateTimeSync();
+
+        // Populate the "Reserving as..." card
+        populateUserCard();
+
+        // Listen for the "Anonymous" checkbox
+        initAnonymousToggle();
+
+        // Add tooltips to occupied seats
+        showSeatReservee();
+
+        // Start checking for seat updates
+        pollAvailability();
+
+        // Bind the Confirm button click
+        $('#confirmBtn').click(function() {
+            handleConfirmReservation();
+        });
+    }
+
+    // --- Chris's Functions (Placeholders) --------------------------------------
+
+    else if (path.indexOf("reservations.html") > -1) {
+        // initReservationFilters();
+        // handleCancelReservation();
+        // handleRebook();
+        // handleEditReservation();
+    }
+    else if (path.indexOf("cmpslots.html") > -1) {
+        // initLabFilters();
+    }
+    else if (path.indexOf("profile.html") > -1) {
+        // populateProfile();
+        // initProfileEdit();
+        // handleDeleteAccount();
+        // handleChangePassword();
+        // handleChangeAvatar();
+        // handleNotificationToggle();
+    }
+    else if (path.indexOf("users.html") > -1) {
+        // initUserSearch();
+    }
+    else if (path.indexOf("public-profile.html") > -1) {
+        // initPublicProfilePage();
+    }
+    else if (path.indexOf("dashboard.html") > -1) {
+        // initDashboard();
+    }
+    else if (path.indexOf("walkin.html") > -1) {
+        // initWalkInReservation();
+        // handleRemoveNoShow();
+    }
+}
