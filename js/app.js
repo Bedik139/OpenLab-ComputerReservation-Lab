@@ -5,6 +5,8 @@
  *              Include in all pages: index.html uses "js/app.js", pages/*.html use "../js/app.js"
  */
 
+var USER_KEY = 'openlab_user'; 
+
 /**
  * Checks whether a user is currently logged in.
  * Looks for 'openlab_user' key in localStorage.
@@ -12,9 +14,7 @@
  * @returns {boolean} true if user session exists, false otherwise
  */
 
-$(document).ready(function() {
 
-    var USER_KEY = 'openlab_user';
 
     // =============================================================================
     // AUTH & SESSION
@@ -37,6 +37,7 @@ $(document).ready(function() {
         return null;
     }
 
+
     /**
      * Logs out the current user by clearing session data from localStorage
      * and redirecting to the homepage.
@@ -58,6 +59,7 @@ $(document).ready(function() {
             window.location.href = "index.html";
         }
     }
+    
 
     /**
      * Auth guard that runs on every page load.
@@ -188,6 +190,7 @@ $(document).ready(function() {
         });
     }
 
+
     /**
      * Handles the "Forgot password?" link (.forgot-password) on the login page.
      * - Attaches a click listener to .forgot-password, prevents default navigation.
@@ -316,6 +319,7 @@ $(document).ready(function() {
         });
     }
 
+
     /**
      * Handles seat selection on the seat map grid.
      * - Adds click listeners to .seat.available elements only (not .occupied or .reserved).
@@ -342,6 +346,7 @@ $(document).ready(function() {
         });
     }
 
+
     /**
      * Attaches change listeners to #reserveDate and #timeSlot inputs.
      * - When date changes: formats the date and updates #summaryDate text.
@@ -359,6 +364,7 @@ $(document).ready(function() {
             $('#summaryTime').text(text);
         });
     }
+
 
     /**
      * Handles the confirm reservation button (#confirmBtn) click.
@@ -386,6 +392,7 @@ $(document).ready(function() {
         window.location.href = "reservations.html";
     }
 
+
     /**
      * Populates the "Reserving as" user info card with data from getCurrentUser().
      * Updates .user-name, .user-id, .user-college, and .user-avatar elements.
@@ -403,6 +410,7 @@ $(document).ready(function() {
             $('.user-avatar').text(initials);
         }
     }
+
 
     /**
      * Initializes the anonymous reservation toggle on the reserve page.
@@ -441,6 +449,7 @@ $(document).ready(function() {
         });
     }
 
+
     /**
      * Displays reservee information on occupied and reserved seats in the seat map.
      * - Adds hover/click listeners to .seat.occupied and .seat.reserved elements.
@@ -457,6 +466,7 @@ $(document).ready(function() {
             $(this).attr('title', status + " by another student");
         });
     }
+
 
     /**
      * Periodically polls for updated seat availability data on the reserve page.
@@ -499,24 +509,20 @@ $(document).ready(function() {
      * @returns {void}
      */
     function initReservationFilters() {
-
     // When a filter tab (All, Upcoming, Completed, Cancelled) is clicked
     $('.tab-btn').on('click', function () {
-
         // Get the filter value from the clicked button 
         const filter = $(this).data('filter');
 
-        // Remove the active class from all tabs,then add it only to the one that was clicked
+        // Remove the active class from all tabs, then add it only to the one that was clicked
         $('.tab-btn').removeClass('active');
         $(this).addClass('active');
 
         // Loop through every reservation card
         $('.reservation-card').each(function () {
-
             // Get the status of the current card 
             const status = $(this).data('status');
 
-            
             if (filter === 'all' || status === filter) {
                 $(this).fadeIn(300);
             } else {
@@ -536,11 +542,6 @@ $(document).ready(function() {
 }
 
 
-    $(document).ready(function() {
-        initReservationFilters();
-    });
-
-
     /**
      * Handles the cancel button (.action-btn.cancel) on reservation cards.
      * - Shows a confirm() dialog before proceeding.
@@ -550,17 +551,14 @@ $(document).ready(function() {
      * @todo Fix reservations.html — missing closing </div> for .reservations-list before pagination
      * @returns {void}
      */
-    function handleCancelReservation() {
-
+   function handleCancelReservation() {
     // When the cancel button is clicked
     $('.action-btn.cancel').on('click', function () {
-
         // Get the reservation card this button belongs to
         const card = $(this).closest('.reservation-card');
 
         // Ask the user to confirm cancellation
         if (confirm('Are you sure you want to cancel this reservation?')) {
-
             // Update the card's status data attribute
             card.data('status', 'cancelled');
 
@@ -573,7 +571,7 @@ $(document).ready(function() {
             // Hide the cancel button since it's no longer needed
             $(this).fadeOut('fast');
 
-            // If the current filter doesn't include cancelled items,hide the card from view
+            // If the current filter doesn't include cancelled items, hide the card from view
             const activeFilter = $('.tab-btn.active').data('filter');
             if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
                 card.fadeOut('fast');
@@ -581,10 +579,6 @@ $(document).ready(function() {
         }
     });
 }
-
-    $(document).ready(function () {
-    handleCancelReservation();
-});
 
 
     /**
@@ -596,7 +590,6 @@ $(document).ready(function() {
     function handleRebook() {
     // When the "Book Again" button is clicked
     $('.action-btn.rebook').on('click', function () {
-
         // Get the reservation card this button belongs to
         const card = $(this).closest('.reservation-card');
 
@@ -613,9 +606,7 @@ $(document).ready(function() {
             `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
     });
 }
-    $(document).ready(function () {
-    handleRebook();
-});
+
 
     /**
      * Handles the edit button (.action-btn.edit) on upcoming reservation cards.
@@ -628,10 +619,8 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleEditReservation() {
-       
     // When the edit button is clicked
     $('.action-btn.edit').on('click', function () {
-
         // Get the reservation card this button belongs to
         const card = $(this).closest('.reservation-card');
 
@@ -647,13 +636,7 @@ $(document).ready(function() {
         window.location.href =
             `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
     });
-    }
-
-    $(document).ready(function () {
-    handleEditReservation();
-});
-
-
+}
 
 
 // =============================================================================
@@ -720,9 +703,6 @@ $(document).ready(function() {
     });
     }
 
-    $(document).ready(function() {
-        initLabFilters();
-    });
 
 // =============================================================================
 // PROFILE PAGE (pages/profile.html)
@@ -846,6 +826,7 @@ $(document).ready(function() {
     });
 }
 
+
     /**
      * Handles the Delete Account button in the Danger Zone.
      * - Shows a confirm() dialog warning that deletion is permanent.
@@ -867,6 +848,7 @@ $(document).ready(function() {
         }
     });
     }
+
 
     /**
      * Handles the Change Password button (.setting-btn) in Account Settings.
@@ -937,10 +919,6 @@ $(document).ready(function() {
     }
 }
 
-$(document).ready(function() {
-    handleChangePassword();
-});
-
 
     /**
      * Handles the Change Photo button (.change-avatar-btn) on the profile page.
@@ -999,6 +977,7 @@ $(document).ready(function() {
     });
 }
 
+
     /**
      * Handles the Email Notifications toggle in Account Settings.
      * - Attaches a change listener to the .toggle input[type="checkbox"].
@@ -1027,13 +1006,6 @@ $(document).ready(function() {
         alert(message);
     });
 }
-
-    $(document).ready(function () {
-    populateProfile();
-    initProfileEdit();
-    handleNotificationToggle();
-    handleChangeAvatar();
-});
 
 
 // =============================================================================
@@ -1117,7 +1089,6 @@ $(document).ready(function() {
   filterCards();
 }
 
-$(document).ready(initUserSearch);
 
 // =============================================================================
 // PUBLIC PROFILE PAGE (pages/public-profile.html)
@@ -1549,37 +1520,38 @@ $(document).ready(initUserSearch);
         // --- Chris's Functions (Placeholders) --------------------------------------
 
         else if (path.indexOf("reservations.html") > -1) {
-            // initReservationFilters();
-            // handleCancelReservation();
-            // handleRebook();
-            // handleEditReservation();
+             initReservationFilters();
+             handleCancelReservation();
+             handleRebook();
+             handleEditReservation();
         }
         else if (path.indexOf("cmpslots.html") > -1) {
-            // initLabFilters();
+            initLabFilters();
         }
         else if (path.indexOf("profile.html") > -1) {
-            // populateProfile();
-            // initProfileEdit();
-            // handleDeleteAccount();
-            // handleChangePassword();
-            // handleChangeAvatar();
-            // handleNotificationToggle();
+             populateProfile();
+             initProfileEdit();
+             handleDeleteAccount();
+             handleChangePassword();
+             handleChangeAvatar();
+             handleNotificationToggle();
         }
         else if (path.indexOf("users.html") > -1) {
-            // initUserSearch();
+             initUserSearch();
         }
         else if (path.indexOf("public-profile.html") > -1) {
-            // initPublicProfilePage();
+             initPublicProfilePage();
         }
         else if (path.indexOf("dashboard.html") > -1) {
-            // initDashboard();
+             initDashboard();
         }
         else if (path.indexOf("walkin.html") > -1) {
-            // initWalkInReservation();
-            // handleRemoveNoShow();
+             initWalkInReservation();
+             handleRemoveNoShow();
         }
     }
 
-    init();
 
-});
+$(document).ready(init);
+
+
