@@ -1040,8 +1040,8 @@ body {
 }
 
 /* PWD FORM LABELS */
-.pwd-card .form-group > label,
-.pwd-form .form-group > label {
+.pwd-card .form-group label,
+.pwd-form .form-group label {
     font-size: 14px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.9);
