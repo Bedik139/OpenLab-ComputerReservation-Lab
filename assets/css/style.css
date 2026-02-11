@@ -1820,6 +1820,14 @@ body {
     background: rgba(255, 255, 255, 0.15);
 }
 
+.bio{
+    font-size: 14px;                                   /* Body text size */
+    color: rgba(255, 255, 255, 0.75);                  /* Semi-transparent white */
+    font-weight: 400;                                  /* Regular weight */
+    line-height: 1.6;                                  /* Comfortable line spacing */
+    margin-top: 3%;
+}
+
 /* Save button: green gradient */
 .save-btn {
     background: linear-gradient(135deg, rgba(4, 170, 109, 0.9) 0%, rgba(3, 138, 88, 0.95) 100%);
@@ -3366,7 +3374,7 @@ body {
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 15px rgba(4, 170, 109, 0.3);
-    margin-left: 43%;
+    margin-left: 38%;
 }
 
 /* Hover: brighter, lifts 2px */

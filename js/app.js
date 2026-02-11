@@ -118,6 +118,7 @@ var USER_KEY = 'openlab_user';
         // Determine correct paths for links
         var profilePath = inPages ? "profile.html" : "pages/profile.html";
         var loginPath = inPages ? "login.html" : "pages/login.html";
+        var usersPath = inPages ? "users.html" : "pages/users.html";
 
         if (user) {
             // User IS logged in
@@ -130,18 +131,14 @@ var USER_KEY = 'openlab_user';
                 $('<a href="' + profilePath + '">Profile</a>').insertBefore('.search-bar');
             }
 
-            // 3. Add Logout Link if missing
-            if ($('#nav-logout').length === 0) {
-                $('<a href="#" id="nav-logout">Logout</a>').insertBefore('.search-bar');
-
-                $('#nav-logout').click(function(e) {
-                    e.preventDefault();
-                    logout();
-                });
+            // 3. Add Find Users Link if missing
+            if ($('.nav-links a:contains("Find Users")').length === 0) {
+                $('<a href="' + usersPath + '">Find Users</a>').insertBefore('.search-bar');
             }
         } else {
             // User is NOT logged in
             $('.nav-links a:contains("Profile")').remove();
+            $('.nav-links a:contains("Find Users")').remove();
             $('#nav-logout').remove();
 
             // Ensure login link exists
@@ -180,7 +177,8 @@ var USER_KEY = 'openlab_user';
                     lastName: "Santos",
                     email: email,
                     studentId: "12467676",
-                    college: "CCS"
+                    college: "CCS",
+                    bio: "CCS student | Likes to code in the Gokongwei labs"
                 };
                 localStorage.setItem(USER_KEY, JSON.stringify(mockUser));
                 window.location.href = "dashboard.html";
@@ -721,7 +719,7 @@ var USER_KEY = 'openlab_user';
      * @returns {void}
      */
     function populateProfile() {
-    // Get the current user object 
+    // Get the current user object
     const user = getCurrentUser();
 
     // If no user is found, exit early
@@ -735,6 +733,11 @@ var USER_KEY = 'openlab_user';
     $('#studentId').val(user.studentId);
     $('#email').val(user.email);
     $('#college').val(user.college);
+    $('#bio').val(user.bio || '');
+
+    // Update the profile header with user's actual name and email
+    $('.header-info h1').text(user.firstName + ' ' + user.lastName);
+    $('.header-info .email').text(user.email);
 
     // Set avatar initials using first letters of first and last name
     $('.avatar span').text(user.firstName[0] + user.lastName[0]);
@@ -754,7 +757,7 @@ var USER_KEY = 'openlab_user';
     function initProfileEdit() {
     const $editBtn = $('#editPersonalBtn');
     const $form = $('#personalForm');
-    const $inputs = $form.find('input, select');
+    const $inputs = $form.find('input, select, textarea');
     const $actions = $('#personalActions');
     const $cancelBtn = $actions.find('.cancel-btn');
     const $saveBtn = $actions.find('.save-btn');
@@ -774,7 +777,8 @@ var USER_KEY = 'openlab_user';
             lastName: $('#lastName').val(),
             studentId: $('#studentId').val(),
             email: $('#email').val(),
-            college: $('#college').val()
+            college: $('#college').val(),
+            bio: $('#bio').val()
         };
     });
 
@@ -786,6 +790,7 @@ var USER_KEY = 'openlab_user';
         $('#studentId').val(originalValues.studentId);
         $('#email').val(originalValues.email);
         $('#college').val(originalValues.college);
+        $('#bio').val(originalValues.bio);
 
         $inputs.prop('disabled', true);  // Disable inputs
         $actions.addClass('hidden');      // Hide Save/Cancel
@@ -807,13 +812,14 @@ var USER_KEY = 'openlab_user';
             return;
         }
 
-        // Save updated data 
+        // Save updated data
         const updatedUser = {
             firstName,
             lastName,
             studentId: $('#studentId').val(),
             email,
-            college: $('#college').val()
+            college: $('#college').val(),
+            bio: $('#bio').val().trim()
         };
         localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
 
@@ -915,11 +921,9 @@ var USER_KEY = 'openlab_user';
             // Save new password
             localStorage.setItem('userPassword', newPassword);
 
-            // Show success message and redirect to profile
-            successDiv.text('Password changed successfully! Redirecting...').show();
-            setTimeout(function() {
-                window.location.href = 'profile.html';
-            }, 2000);
+            // Show pop-up and redirect to profile
+            alert('Password changed successfully!');
+            window.location.href = 'profile.html';
         });
     }
 }
@@ -1112,23 +1116,164 @@ var USER_KEY = 'openlab_user';
      * @returns {void}
      */
     function initPublicProfilePage() {
-         // Parse the URL query parameters
+        // Parse the URL query parameters
         const urlParams = new URLSearchParams(window.location.search);
 
         // Extract the 'id' parameter to identify which user's profile to show
         const userId = urlParams.get('id');
 
-        // If no user ID is provided in the URL, exit 
+        // If no user ID is provided in the URL, exit
         if (!userId) {
             console.log('No user ID provided');
             return;
         }
 
-        // Log the ID for debugging purposes
-        console.log('Public profile page initialized for user ID:', userId);
-    
-    // TODO: Fetch user data from API
-    // TODO: Populate profile with user data
+        // Mock user database for Phase 1 (hardcoded sample data)
+        // @todo Replace with GET /api/users/:id/public API call
+        var mockUsers = {
+            '12340001': {
+                firstName: 'Maria Clara',
+                lastName: 'Santos',
+                email: 'maria_santos@dlsu.edu.ph',
+                college: 'CCS',
+                bio: 'CCS sophomore | Usually found at GK101A grinding CCAPDEV projects',
+                totalSessions: 32,
+                completed: 28,
+                cancelled: 2,
+                hoursUsed: 16,
+                memberSince: 'August 2024',
+                reservations: [
+                    { lab: 'GK101A - Seat C7', datetime: 'Feb 11, 2025 | 10:00 AM - 10:30 AM' },
+                    { lab: 'LS313 - Seat A3', datetime: 'Feb 13, 2025 | 02:00 PM - 02:30 PM' },
+                    { lab: 'AG1010 - Seat B2', datetime: 'Feb 14, 2025 | 09:00 AM - 09:30 AM' }
+                ]
+            },
+            '12340002': {
+                firstName: 'Jose Rizal',
+                lastName: 'Jr.',
+                email: 'jose_rizal@dlsu.edu.ph',
+                college: 'CLA',
+                bio: 'CLA student | History enthusiast and lab regular',
+                totalSessions: 28,
+                completed: 25,
+                cancelled: 1,
+                hoursUsed: 14,
+                memberSince: 'September 2024',
+                reservations: [
+                    { lab: 'LS313 - Seat B4', datetime: 'Feb 12, 2025 | 09:00 AM - 09:30 AM' },
+                    { lab: 'AG1010 - Seat A1', datetime: 'Feb 15, 2025 | 01:00 PM - 01:30 PM' }
+                ]
+            },
+            '12340003': {
+                firstName: 'Ana Garcia',
+                lastName: 'Lopez',
+                email: 'ana_lopez@dlsu.edu.ph',
+                college: 'GCOE',
+                bio: 'Engineering student | Prefers the quiet hours at GK304',
+                totalSessions: 45,
+                completed: 40,
+                cancelled: 3,
+                hoursUsed: 22.5,
+                memberSince: 'June 2024',
+                reservations: [
+                    { lab: 'GK304 - Seat D2', datetime: 'Feb 10, 2025 | 08:00 AM - 08:30 AM' },
+                    { lab: 'GK101B - Seat C5', datetime: 'Feb 11, 2025 | 03:00 PM - 03:30 PM' },
+                    { lab: 'GK304 - Seat D2', datetime: 'Feb 13, 2025 | 08:00 AM - 08:30 AM' }
+                ]
+            },
+            '12340004': {
+                firstName: 'Karl Reyes',
+                lastName: 'Mendoza',
+                email: 'karl_mendoza@dlsu.edu.ph',
+                college: 'COB',
+                bio: 'Business student | Uses labs for group projects and presentations',
+                totalSessions: 19,
+                completed: 17,
+                cancelled: 1,
+                hoursUsed: 9.5,
+                memberSince: 'October 2024',
+                reservations: [
+                    { lab: 'AG1010 - Seat A5', datetime: 'Feb 14, 2025 | 11:00 AM - 11:30 AM' }
+                ]
+            },
+            '12340005': {
+                firstName: 'Lea Domingo',
+                lastName: 'Cruz',
+                email: 'lea_cruz@dlsu.edu.ph',
+                college: 'COS',
+                bio: 'Science major | Data analysis and research computing',
+                totalSessions: 37,
+                completed: 34,
+                cancelled: 2,
+                hoursUsed: 18.5,
+                memberSince: 'July 2024',
+                reservations: [
+                    { lab: 'GK101A - Seat B8', datetime: 'Feb 10, 2025 | 02:00 PM - 02:30 PM' },
+                    { lab: 'GK101A - Seat B8', datetime: 'Feb 12, 2025 | 02:00 PM - 02:30 PM' }
+                ]
+            }
+        };
+
+        // Look up the user by their student ID
+        var user = mockUsers[userId];
+
+        // If user not found, show a message and exit
+        if (!user) {
+            $('.profile-container').html(
+                '<div class="page-header" style="text-align:center;color:#fff;">' +
+                '<h1>User Not Found</h1>' +
+                '<p>No user exists with ID: ' + userId + '</p>' +
+                '<a href="users.html" class="back-link">Back to Find Users</a>' +
+                '</div>'
+            );
+            return;
+        }
+
+        // Update avatar initials
+        var initials = user.firstName.charAt(0) + user.lastName.charAt(0);
+        $('.avatar span').text(initials);
+
+        // Update header info
+        $('.header-info h1').text(user.firstName + ' ' + user.lastName);
+        $('.header-info .email').text(user.email);
+        $('.badge.college').text(user.college);
+        $('.header-info .bio').text(user.bio);
+
+        // Update page title
+        document.title = user.firstName + ' ' + user.lastName + ' - OpenLab';
+
+        // Build reservations list
+        var $reservationsList = $('.settings-list');
+        $reservationsList.empty();
+
+        if (user.reservations.length === 0) {
+            $reservationsList.html(
+                '<div class="setting-item">' +
+                '<div class="setting-info"><p>No current reservations</p></div>' +
+                '</div>'
+            );
+        } else {
+            for (var i = 0; i < user.reservations.length; i++) {
+                var res = user.reservations[i];
+                $reservationsList.append(
+                    '<div class="setting-item">' +
+                    '<div class="setting-info">' +
+                    '<h4>' + res.lab + '</h4>' +
+                    '<p>' + res.datetime + '</p>' +
+                    '</div></div>'
+                );
+            }
+        }
+
+        // Update statistics
+        var $statValues = $('.stats-grid .stat-item .stat-value');
+        $statValues.eq(0).text(user.totalSessions);
+        $statValues.eq(1).text(user.completed);
+        $statValues.eq(2).text(user.cancelled);
+        $statValues.eq(3).text(user.hoursUsed);
+
+        // Update member since
+        $('.member-since strong').text(user.memberSince);
     }
 
 
@@ -1146,7 +1291,10 @@ var USER_KEY = 'openlab_user';
      */
     function initDashboard() {
         const user = getCurrentUser();
-        if (user) { $('.welcome-msg').text(`Welcome back, ${user.firstName}!`);
+        if (user) {
+            // Update welcome heading with user's first name
+            $('.welcome-text h1').text('Welcome back, ' + user.firstName + '!');
+            $('.welcome-text p').text("Here's an overview of your lab reservations");
         }
     }
 
