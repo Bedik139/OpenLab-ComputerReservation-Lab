@@ -515,10 +515,6 @@ function initReservationFilters() {
     $('.tab-btn.active').trigger('click');
 }
 
-$(document).ready(function() {
-    initReservationFilters();
-});
-
 
 /**
  * Handles the cancel button (.action-btn.cancel) on reservation cards.
@@ -555,6 +551,7 @@ function handleCancelReservation() {
     });
 }
 
+
 /**
  * Handles the "Book Again" button (.action-btn.rebook) on completed/cancelled cards.
  * Redirects to reserve.html?lab=LABNAME using the lab name from the card content.
@@ -569,6 +566,8 @@ function handleRebook() {
         window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
     });
 }
+
+
 
 /**
  * Handles the edit button (.action-btn.edit) on upcoming reservation cards.
@@ -588,6 +587,12 @@ function handleEditReservation() {
         window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
     });
 }
+
+$(document).ready(function() {
+    initReservationFilters();
+    handleRebook();
+    handleEditReservation(); 
+});
 
 
 
@@ -700,8 +705,9 @@ function populateProfile() {
     $('#studentId').val(user.studentId);
     $('#email').val(user.email);
     $('#college').val(user.college);
-    $('.profile-avatar').text(user.firstName[0] + user.lastName[0]);
+    $('.avatar span').text(user.firstName[0] + user.lastName[0]);
 }
+
 
 /**
  * Initializes the edit toggle for the Personal Information form.
@@ -713,7 +719,91 @@ function populateProfile() {
  * @todo Replace localStorage update with PUT /api/users/:id API call
  * @returns {void}
  */
-function initProfileEdit() {}
+function initProfileEdit() {
+    const $editBtn = $('#editPersonalBtn');
+    const $form = $('#personalForm');
+    const $inputs = $form.find('input, select');
+    const $actions = $('#personalActions');
+    const $cancelBtn = $actions.find('.cancel-btn');
+    const $saveBtn = $actions.find('.save-btn');
+
+    // Store original values
+    let originalValues = {};
+
+    $editBtn.on('click', function() {
+        // Enable inputs
+        $inputs.prop('disabled', false);
+
+        // Show Save/Cancel
+        $actions.removeClass('hidden');
+
+        // Hide Edit button
+        $editBtn.hide();
+
+        // Save original values
+        originalValues = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            studentId: $('#studentId').val(),
+            email: $('#email').val(),
+            college: $('#college').val()
+        };
+    });
+
+    $cancelBtn.on('click', function() {
+        // Revert to original values
+        $('#firstName').val(originalValues.firstName);
+        $('#lastName').val(originalValues.lastName);
+        $('#studentId').val(originalValues.studentId);
+        $('#email').val(originalValues.email);
+        $('#college').val(originalValues.college);
+
+        // Disable inputs
+        $inputs.prop('disabled', true);
+
+        // Hide Save/Cancel, show Edit
+        $actions.addClass('hidden');
+        $editBtn.show();
+    });
+
+    $saveBtn.on('click', function(e) {
+        e.preventDefault(); // Prevent form submission
+
+        // Simple validation
+        const firstName = $('#firstName').val().trim();
+        const lastName = $('#lastName').val().trim();
+        const email = $('#email').val().trim();
+
+        if (!firstName || !lastName || !email) {
+            alert('Please fill out all required fields.');
+            return;
+        }
+
+        // Save to localStorage (temporary, until backend is ready)
+        const updatedUser = {
+            firstName,
+            lastName,
+            studentId: $('#studentId').val(),
+            email,
+            college: $('#college').val()
+        };
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+        // Update header & avatar
+        $('.header-info h1').text(firstName + ' ' + lastName);
+        $('.header-info .email').text(email);
+        $('.avatar span').text(firstName[0] + lastName[0]);
+
+        // Disable inputs & restore buttons
+        $inputs.prop('disabled', true);
+        $actions.addClass('hidden');
+        $editBtn.show();
+
+        alert('Profile updated!');
+    });
+}
+
+
 
 /**
  * Handles the Delete Account button in the Danger Zone.
@@ -725,7 +815,22 @@ function initProfileEdit() {}
  * @todo Implement Email Notifications toggle persistence
  * @returns {void}
  */
-function handleDeleteAccount() {}
+function handleDeleteAccount() {
+    $('.danger-card .danger-btn').on('click', function () {
+        const confirmed = confirm(
+            'Are you sure you want to delete your account? This action cannot be undone.'
+        );
+        if (confirmed) {
+            // Remove stored user data
+            localStorage.removeItem('currentUser');
+
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }
+    });
+}
+
+
 
 /**
  * Handles the Change Password button (.setting-btn) in Account Settings.
@@ -760,7 +865,26 @@ function handleChangeAvatar() {}
  * @todo Replace with PUT /api/users/:id/settings API call
  * @returns {void}
  */
-function handleNotificationToggle() {}
+function handleNotificationToggle() {
+     $('.setting-item .toggle input[type="checkbox"]').on('change', function () {
+        const enabled = $(this).is(':checked');
+
+        // Save preference in localStorage
+        const user = JSON.parse(localStorage.getItem('currentUser')) || {};
+        user.notifications = enabled;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+
+        alert(`Email notifications ${enabled ? 'enabled' : 'disabled'}`);
+    });
+}
+
+
+$(document).ready(function() {
+    populateProfile();
+    initProfileEdit();
+    handleDeleteAccount();
+    handleNotificationToggle();
+});
 
 
 // =============================================================================
