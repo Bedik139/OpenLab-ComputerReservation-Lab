@@ -499,27 +499,42 @@ $(document).ready(function() {
      * @returns {void}
      */
     function initReservationFilters() {
-        // This whole block filters the reservation cards based on the data-filter attribute of the clicked tab button
-        $('.tab-btn').on('click', function () {
-            const filter = $(this).data('filter');
 
-            // Toggle active tab
-            $('.tab-btn').removeClass('active');
-            $(this).addClass('active');
+    // When a filter tab (All, Upcoming, Completed, Cancelled) is clicked
+    $('.tab-btn').on('click', function () {
 
-            // Show/hide cards with fade
-            $('.reservation-card').each(function () {
-                const status = $(this).data('status');
-                if (filter === 'all' || status === filter) {
-                    $(this).fadeIn(300); // fade in over 300ms
-                } else {
-                    $(this).fadeOut(300); // fade out over 300ms
-                }
-            });
+        // Get the filter value from the clicked button 
+        const filter = $(this).data('filter');
+
+        // Remove the active class from all tabs,then add it only to the one that was clicked
+        $('.tab-btn').removeClass('active');
+        $(this).addClass('active');
+
+        // Loop through every reservation card
+        $('.reservation-card').each(function () {
+
+            // Get the status of the current card 
+            const status = $(this).data('status');
+
+            
+            if (filter === 'all' || status === filter) {
+                $(this).fadeIn(300);
+            } else {
+                // Otherwise, hide it with a fade-out effect
+                $(this).fadeOut(300);
+            }
         });
-        // Trigger the active tab on page load
-        $('.tab-btn.active').trigger('click');
-    }
+
+        // Refresh pagination after filtering
+        if (typeof window.refreshPagination === 'function') {
+            window.refreshPagination();
+        }
+    });
+
+    // Trigger the active tab on page load so the correct reservations show
+    $('.tab-btn.active').trigger('click');
+}
+
 
     $(document).ready(function() {
         initReservationFilters();
@@ -536,30 +551,36 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleCancelReservation() {
-        $('.action-btn.cancel').on('click', function () {
-            const card = $(this).closest('.reservation-card');
-            if (confirm('Are you sure you want to cancel this reservation?')) {
-                // Update the status
-                card.data('status', 'cancelled');
 
-                // Update the status badge text and classes
-                card.find('.status-badge')
-                    .text('Cancelled')
-                    .removeClass('upcoming completed')
-                    .addClass('cancelled');
+    // When the cancel button is clicked
+    $('.action-btn.cancel').on('click', function () {
 
-                // Hide the cancel button 
-                $(this).fadeOut('fast');
+        // Get the reservation card this button belongs to
+        const card = $(this).closest('.reservation-card');
 
-                // Hide card if current filter is not 'all' or 'cancelled'
-                const activeFilter = $('.tab-btn.active').data('filter');
-                if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
-                    card.fadeOut('fast');
-                }
+        // Ask the user to confirm cancellation
+        if (confirm('Are you sure you want to cancel this reservation?')) {
+
+            // Update the card's status data attribute
+            card.data('status', 'cancelled');
+
+            // Change the status badge text 
+            card.find('.status-badge')
+                .text('Cancelled')
+                .removeClass('upcoming completed')
+                .addClass('cancelled');
+
+            // Hide the cancel button since it's no longer needed
+            $(this).fadeOut('fast');
+
+            // If the current filter doesn't include cancelled items,hide the card from view
+            const activeFilter = $('.tab-btn.active').data('filter');
+            if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
+                card.fadeOut('fast');
             }
-        });
-    }
-
+        }
+    });
+}
 
     $(document).ready(function () {
     handleCancelReservation();
@@ -573,14 +594,25 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleRebook() {
-        $('.action-btn.rebook').on('click', function () {
-            const card = $(this).closest('.reservation-card');
-            const lab = card.find('.reservation-main h3').text().split(' - ')[0]; // Extract lab code before " - Seat"
-            const resId = card.data('id') || ''; // Optional reservation ID
-            window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
-        });
-    }
+    // When the "Book Again" button is clicked
+    $('.action-btn.rebook').on('click', function () {
 
+        // Get the reservation card this button belongs to
+        const card = $(this).closest('.reservation-card');
+
+        // Extract the lab name from the card title
+        const lab = card.find('.reservation-main h3')
+                        .text()
+                        .split(' - ')[0];
+
+        // Get the reservation ID 
+        const resId = card.data('id') || '';
+
+        // Redirect to the reservation page 
+        window.location.href = 
+            `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
+    });
+}
     $(document).ready(function () {
     handleRebook();
 });
@@ -596,12 +628,25 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleEditReservation() {
-        $('.action-btn.edit').on('click', function () {
-            const card = $(this).closest('.reservation-card');
-            const lab = card.find('.reservation-main h3').text().split(' - ')[0]; // Extract lab code
-            const resId = card.data('id') || ''; // Optional reservation ID
-            window.location.href = `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
-        });
+       
+    // When the edit button is clicked
+    $('.action-btn.edit').on('click', function () {
+
+        // Get the reservation card this button belongs to
+        const card = $(this).closest('.reservation-card');
+
+        // Extract the lab name from the title
+        const lab = card.find('.reservation-main h3')
+                        .text()
+                        .split(' - ')[0];
+
+        // Get the reservation ID 
+        const resId = card.data('id') || '';
+
+        // Redirect to the reservation page
+        window.location.href =
+            `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
+    });
     }
 
     $(document).ready(function () {
@@ -632,64 +677,47 @@ $(document).ready(function() {
      */
     function initLabFilters() {
 
-        /* This defines the buildingMap object that maps
-         the filter values to the corresponding building names */
-        const buildingMap = {
-            andrew: "andrew building",
-            lasalle: "la salle hall",
-            gokongwei: "gokongwei building",
-            velasco: "velasco building"
-        };
+    // Map dropdown values to their actual building names
+    const buildingMap = {
+        andrew: "andrew building",
+        lasalle: "la salle hall",
+        gokongwei: "gokongwei building",
+        velasco: "velasco building"
+    };
 
-        // When clicked, it will filter the lab cards based on the selected building.
-        $('.filter-btn').on('click', function () {
+    // When the "Apply Filters" button is clicked
+    $('.filter-btn').on('click', function () {
 
-            // Get the selected value from the Building dropdown
-            const selected = $('#buildingFilter').val();
+        // Get the selected building from the dropdown
+        const selected = $('#buildingFilter').val();
 
-            /*
-              Loop through every lab card on the page.
-              Each card will be checked if it belongs to the
-              selected building.
-            */
-            $('.lab-card').each(function () {
+        // Loop through each lab card
+        $('.lab-card').each(function () {
 
-                /*
-                  Get the building name written inside the card.
-                  Convert to lowercase and remove extra spaces
-                  so it exactly matches our buildingMap values.
-                */
-                const cardBuilding = $(this)
-                    .find('.building-tag')
-                    .text()
-                    .trim()
-                    .toLowerCase();
+            // Get the building name shown on the card
+            const cardBuilding = $(this)
+                .find('.building-tag')
+                .text()
+                .trim()
+                .toLowerCase();
 
-                /*
-                  If "All Buildings" is selected (empty value),
-                  simply show all lab cards.
-                */
-                if (!selected) {
-                    $(this).show();
-                    return;
-                }
+            // If no building is selected, show everything
+            if (!selected) {
+                $(this).show();
+                return;
+            }
 
-                // Get the correct building name from the map
-                const target = buildingMap[selected];
+            // Get the matching building name from the map
+            const target = buildingMap[selected];
 
-                /*
-                  Compare the card's building with the target building.
-                  If they match, show the card.
-                  Otherwise, hide the card.
-                */
-                if (cardBuilding === target) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-
-            });
+            // Show the card if it matches, otherwise hide it
+            if (cardBuilding === target) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
         });
+    });
     }
 
     $(document).ready(function() {
@@ -708,19 +736,24 @@ $(document).ready(function() {
      * @returns {void}
      */
     function populateProfile() {
-        const user = getCurrentUser();
-        if (!user) {
-            return;
-        }
+    // Get the current user object 
+    const user = getCurrentUser();
 
-        // Fill the values in the profile header and form fields
-        $('#firstName').val(user.firstName);
-        $('#lastName').val(user.lastName);
-        $('#studentId').val(user.studentId);
-        $('#email').val(user.email);
-        $('#college').val(user.college);
-        $('.avatar span').text(user.firstName[0] + user.lastName[0]);
+    // If no user is found, exit early
+    if (!user) {
+        return;
     }
+
+    // Fill in the personal info form fields
+    $('#firstName').val(user.firstName);
+    $('#lastName').val(user.lastName);
+    $('#studentId').val(user.studentId);
+    $('#email').val(user.email);
+    $('#college').val(user.college);
+
+    // Set avatar initials using first letters of first and last name
+    $('.avatar span').text(user.firstName[0] + user.lastName[0]);
+}
 
 
     /**
@@ -734,27 +767,23 @@ $(document).ready(function() {
      * @returns {void}
      */
     function initProfileEdit() {
-        const $editBtn = $('#editPersonalBtn');
+    const $editBtn = $('#editPersonalBtn');
     const $form = $('#personalForm');
     const $inputs = $form.find('input, select');
     const $actions = $('#personalActions');
     const $cancelBtn = $actions.find('.cancel-btn');
     const $saveBtn = $actions.find('.save-btn');
 
-    // Store original values
+    // Keep original values to restore on cancel
     let originalValues = {};
 
+    // Edit button click
     $editBtn.on('click', function() {
-        // Enable inputs
-        $inputs.prop('disabled', false);
+        $inputs.prop('disabled', false); // Enable inputs
+        $actions.removeClass('hidden');   // Show Save/Cancel buttons
+        $editBtn.hide();                  // Hide Edit button
 
-        // Show Save/Cancel
-        $actions.removeClass('hidden');
-
-        // Hide Edit button
-        $editBtn.hide();
-
-        // Save original values
+        // Save current values
         originalValues = {
             firstName: $('#firstName').val(),
             lastName: $('#lastName').val(),
@@ -764,36 +793,36 @@ $(document).ready(function() {
         };
     });
 
+    // Cancel button click
     $cancelBtn.on('click', function() {
-        // Revert to original values
+        // Revert inputs to original values
         $('#firstName').val(originalValues.firstName);
         $('#lastName').val(originalValues.lastName);
         $('#studentId').val(originalValues.studentId);
         $('#email').val(originalValues.email);
         $('#college').val(originalValues.college);
 
-        // Disable inputs
-        $inputs.prop('disabled', true);
-
-        // Hide Save/Cancel, show Edit
-        $actions.addClass('hidden');
-        $editBtn.show();
+        $inputs.prop('disabled', true);  // Disable inputs
+        $actions.addClass('hidden');      // Hide Save/Cancel
+        $editBtn.show();                  // Show Edit button
     });
 
+    // Save button click
     $saveBtn.on('click', function(e) {
         e.preventDefault(); // Prevent form submission
 
-        // Simple validation
+        // Get trimmed input values
         const firstName = $('#firstName').val().trim();
         const lastName = $('#lastName').val().trim();
         const email = $('#email').val().trim();
 
+        // Simple validation
         if (!firstName || !lastName || !email) {
             alert('Please fill out all required fields.');
             return;
         }
 
-        // Save to localStorage (temporary, until backend is ready)
+        // Save updated data 
         const updatedUser = {
             firstName,
             lastName,
@@ -803,19 +832,19 @@ $(document).ready(function() {
         };
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
-        // Update header & avatar
+        // Update header and avatar
         $('.header-info h1').text(firstName + ' ' + lastName);
         $('.header-info .email').text(email);
         $('.avatar span').text(firstName[0] + lastName[0]);
 
-        // Disable inputs & restore buttons
+        // Disable inputs and restore buttons
         $inputs.prop('disabled', true);
         $actions.addClass('hidden');
         $editBtn.show();
 
         alert('Profile updated!');
     });
-    }
+}
 
     /**
      * Handles the Delete Account button in the Danger Zone.
@@ -830,7 +859,10 @@ $(document).ready(function() {
     function handleDeleteAccount() {
         $('.danger-card .danger-btn').on('click', function () {
         if (confirm('Are you sure you want to delete your account?')) {
+             // Remove user data
             localStorage.removeItem('currentUser');
+
+            // Redirect home
             window.location.href = '../index.html';
         }
     });
@@ -847,68 +879,57 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleChangePassword() {
-    // Handle the "Change" button on profile page
+    // Profile page: redirect to change password page
     const changePasswordBtn = document.querySelector('.setting-btn');
-    
     if (changePasswordBtn) {
-        // When button is clicked, go to change password page
         changePasswordBtn.addEventListener('click', function() {
             window.location.href = 'changepassword.html';
         });
     }
-    
-    // Handle the form on change password page
+
+    // Change password page: handle form submission
     const changePasswordForm = $('#changePasswordForm');
-    
     if (changePasswordForm.length) {
         changePasswordForm.on('submit', function(e) {
-            e.preventDefault(); // Stop form from reloading page
-            
-            // Get what the user typed
+            e.preventDefault(); // Stop form from reloading
+
+            // Get user inputs
             const currentPassword = $('#currentPassword').val();
             const newPassword = $('#newPassword').val();
             const confirmPassword = $('#confirmPassword').val();
             const errorDiv = $('#passwordError');
             const successDiv = $('#passwordSuccess');
-            
-            // Hide any previous messages
+
+            // Hide previous messages
             errorDiv.hide().text('');
             successDiv.hide().text('');
-            
-            // Check if all fields are filled
+
+            // Validation checks
             if (!currentPassword || !newPassword || !confirmPassword) {
                 errorDiv.text('All fields are required.').show();
                 return;
             }
-            
-            // Check if new password is long enough
             if (newPassword.length < 8) {
                 errorDiv.text('New password must be at least 8 characters long.').show();
                 return;
             }
-            
-            // Check if passwords match
             if (newPassword !== confirmPassword) {
                 errorDiv.text('New password and confirmation do not match.').show();
                 return;
             }
-            
-            // Get saved password from browser storage
+
+            // Check current password
             const storedPassword = localStorage.getItem('userPassword');
-            
-            // Check if current password is correct
             if (storedPassword && storedPassword !== currentPassword) {
                 errorDiv.text('Current password is incorrect.').show();
                 return;
             }
-            
-            // Save new password to browser storage
+
+            // Save new password
             localStorage.setItem('userPassword', newPassword);
-            
-            // Show success message
+
+            // Show success message and redirect to profile
             successDiv.text('Password changed successfully! Redirecting...').show();
-            
-            // Go back to profile page after 2 seconds
             setTimeout(function() {
                 window.location.href = 'profile.html';
             }, 2000);
@@ -931,44 +952,44 @@ $(document).ready(function() {
      * @todo Replace with POST /api/users/:id/avatar multipart upload API call
      * @returns {void}
      */
-    function handleChangeAvatar() {
+   function handleChangeAvatar() {
+    // Hidden file input for selecting image
     const $fileInput = $('<input>', {
         type: 'file',
         accept: 'image/png, image/jpeg, image/gif',
         style: 'display:none'
     }).appendTo('body');
 
+    // Open file picker on button click
     $('.change-avatar-btn').on('click', function() {
         $fileInput.click();
     });
 
-
+    // Handle file selection
     $fileInput.on('change', function() {
-        const file = this.files[0];
-        const maxSize = 2 * 1024 * 1024; // 2MB
-
+        const file = this.files[0]; // Get the selected file
+        const maxSize = 2 * 1024 * 1024; // This is 2MB
         if (!file) return;
 
-        // Validation
+        // Check file size
         if (file.size > maxSize) {
             alert("File too large! Max 2MB.");
             return;
         }
 
+        // Read file as data URL
         const reader = new FileReader();
-        
         reader.onload = function(e) {
             const imageData = e.target.result;
 
-
+            // Update avatar element
             const $newImg = $('<img>').attr({
-                'src': imageData,
-                'style': 'width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'
+                src: imageData,
+                style: 'width:100%; height:100%; border-radius:50%; object-fit:cover;'
             });
-
             $('.avatar').empty().append($newImg);
 
-            // Save to localStorage (temporary, until backend is ready)
+            // Save image data to localStorage (temporary)
             const user = JSON.parse(localStorage.getItem('currentUser')) || {};
             user.profilePic = imageData;
             localStorage.setItem('currentUser', JSON.stringify(user));
@@ -976,8 +997,7 @@ $(document).ready(function() {
 
         reader.readAsDataURL(file);
     });
-        
-    }
+}
 
     /**
      * Handles the Email Notifications toggle in Account Settings.
@@ -989,17 +1009,24 @@ $(document).ready(function() {
      * @returns {void}
      */
     function handleNotificationToggle() {
-        $('.setting-item .toggle input[type="checkbox"]').on('change', function () {
+    $('.setting-item .toggle input[type="checkbox"]').on('change', function () {
         const enabled = $(this).is(':checked');
 
-        // Save preference in localStorage
+        // Update 
         const user = JSON.parse(localStorage.getItem('currentUser')) || {};
         user.notifications = enabled;
         localStorage.setItem('currentUser', JSON.stringify(user));
 
-        alert(`Email notifications ${enabled ? 'enabled' : 'disabled'}`);
+        // Show confirmation
+        let message = '';
+        if (enabled) {
+            message = 'Email notifications enabled';
+        } else {
+            message = 'Email notifications disabled';
+        }
+        alert(message);
     });
-    }
+}
 
     $(document).ready(function () {
     populateProfile();
@@ -1026,44 +1053,67 @@ $(document).ready(function() {
      * @returns {void}
      */
     function initUserSearch() {
+  // The search input field
   const $searchInput = $('#userSearch');
+
+  // The college dropdown filter
   const $collegeFilter = $('#collegeFilter');
+
+  // The button that triggers filtering manually
   const $searchBtn = $('.search-btn');
+
+  // All user cards displayed on the page
   const $userCards = $('.user-card');
 
   function filterCards() {
+    // Get the current search text (lowercase and trimmed)
     const searchTerm = $searchInput.val().toLowerCase().trim();
+
+    // Get the currently selected college from the dropdown
     const selectedCollege = $collegeFilter.val();
 
     $userCards.each(function () {
-      const $card = $(this);
-      const name = $card.find('h3').text().toLowerCase();
-      const studentId = $card.find('.user-id').text().toLowerCase();
-      const college = $card.find('.college-badge').text();
+      const $card = $(this); // The current user card in the loop
+      const name = $card.find('h3').text().toLowerCase(); // User's full name
+      const studentId = $card.find('.user-id').text().toLowerCase(); // User's ID text
+      const college = $card.find('.college-badge').text(); // User's college badge text
 
+      // Check if the card matches the search term (name or ID)
       const matchesSearch = name.includes(searchTerm) || studentId.includes(searchTerm);
+
+      // Check if the card matches the selected college
       const matchesCollege = selectedCollege === '' || college === selectedCollege;
 
+      // Show or hide the card based on matches
       if (matchesSearch && matchesCollege) {
         $card.show();
       } else {
         $card.hide();
       }
 
-      // Update "View Profile" link dynamically
-      const idMatch = studentId.match(/\d+/); // extract numeric ID
+      // Extract numeric ID from the student ID text
+      const idMatch = studentId.match(/\d+/); 
       if (idMatch) {
-        $card.find('.view-profile-btn').attr('href', `public-profile.html?id=${idMatch[0]}`);
+        // Update "View Profile" link 
+        $card.find('.view-profile-btn').attr('href', 'public-profile.html?id=' + idMatch[0]);
       }
     });
+
+    // Refresh page
+    if (typeof window.refreshPagination === 'function') {
+      window.refreshPagination();
+    }
   }
 
   // Event listeners
-  $searchBtn.on('click', filterCards);
-  $searchInput.on('keyup', filterCards);
-  $collegeFilter.on('change', filterCards);
+  $searchBtn.on('click', filterCards); // Manual search click
+  $searchInput.on('keyup', filterCards); // Filter as user types
+  $collegeFilter.on('change', filterCards); // Filter when college changes
+  $searchInput.on('keypress', function (e) {
+    if (e.which === 13) filterCards(); // Enter key triggers search
+  });
 
- 
+  // Initial filter on page load
   filterCards();
 }
 
@@ -1085,7 +1135,25 @@ $(document).ready(initUserSearch);
      * @todo Replace hardcoded sample data with GET /api/users/:id/public API call
      * @returns {void}
      */
-    function initPublicProfilePage() {}
+    function initPublicProfilePage() {
+         // Parse the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Extract the 'id' parameter to identify which user's profile to show
+        const userId = urlParams.get('id');
+
+        // If no user ID is provided in the URL, exit 
+        if (!userId) {
+            console.log('No user ID provided');
+            return;
+        }
+
+        // Log the ID for debugging purposes
+        console.log('Public profile page initialized for user ID:', userId);
+    
+    // TODO: Fetch user data from API
+    // TODO: Populate profile with user data
+    }
 
 
 // =============================================================================
@@ -1123,10 +1191,89 @@ $(document).ready(initUserSearch);
      * @todo Replace with POST /api/reservations/walkin API call
      * @returns {void}
      */
-    function initWalkInReservation() {
+  function initWalkInReservation() {
+    // When the walk-in form is submitted
+    $('.walkin-form').on('submit', function (e) {
+        e.preventDefault(); // Stop page from reloading
+        
+        // Get form values
+        const studentId = $('#walkinStudentId').val().trim(); // Student's ID
+        const lab = $('#walkinLab').val(); // Selected lab
+        const seat = $('#walkinSeat').val().trim().toUpperCase(); // Seat number in uppercase
+        const date = $('#walkinDate').val(); // Date of reservation
+        const time = $('#walkinTime').val(); // Time slot
+        
+        // Check if student ID is 8 digits
+        if (!/^[0-9]{8}$/.test(studentId)) {
+            alert('Student ID must be exactly 8 digits.');
+            $('#walkinStudentId').focus();
+            return;
+        }
+        
+        // Make sure a lab is selected
+        if (!lab) {
+            alert('Please select a lab.');
+            $('#walkinLab').focus();
+            return;
+        }
+        
+        // Make sure seat is entered
+        if (!seat) {
+            alert('Please enter a seat number.');
+            $('#walkinSeat').focus();
+            return;
+        }
+        
+        // Check seat format (like A1, B5, C10)
+        if (!/^[A-Z][0-9]{1,2}$/i.test(seat)) {
+            alert('Seat must be in format like A1, B5, or C10.');
+            $('#walkinSeat').focus();
+            return;
+        }
+        
+        // Make sure a date is picked
+        if (!date) {
+            alert('Please select a date.');
+            $('#walkinDate').focus();
+            return;
+        }
+        
+        // Do not allow past dates
+        const selectedDate = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+            alert('Cannot reserve for a past date.');
+            $('#walkinDate').focus();
+            return;
+        }
+        
+        // Make sure a time is picked
+        if (!time) {
+            alert('Please select a time slot.');
+            $('#walkinTime').focus();
+            return;
+        }
+        
+        // Get the text of the time slot for confirmation
+        const timeText = $('#walkinTime option:selected').text();
+        
+        // Show confirmation message
+        alert(
+            'Walk-in reservation created!\n\n' +
+            'Student ID: ' + studentId + '\n' +
+            'Lab: ' + lab + '\n' +
+            'Seat: ' + seat + '\n' +
+            'Date: ' + date + '\n' +
+            'Time: ' + timeText
+        );
+        
+        // Clear the form
+        $('.walkin-form')[0].reset();
+    });
+}
 
-    }
-
+    
     /**
      * Handles the removal of a no-show reservation by a lab technician.
      * - Attaches click listeners to .remove-noshow-btn elements on the walk-in page.
@@ -1138,7 +1285,50 @@ $(document).ready(initUserSearch);
      * @todo Replace with DELETE /api/reservations/:id/noshow API call
      * @returns {void}
      */
-    function handleRemoveNoShow() {}
+   function handleRemoveNoShow() {
+    // When a remove button is clicked
+    $('.remove-btn').on('click', function() {
+        // Stop if the button is disabled
+        if ($(this).prop('disabled')) {
+            alert('This reservation cannot be removed yet. Wait until within 10 minutes of start time.');
+            return;
+        }
+        
+        // Get reservation info
+        const $item = $(this).closest('.walkin-reservation-item');
+        const reservationId = $item.data('reservation-id'); // ID of reservation
+        const seatInfo = $item.find('.label').text(); // Seat info
+        const studentInfo = $item.find('.value').text(); // Student info
+        
+        // Ask for confirmation
+        if (confirm(
+            'Remove this no-show reservation?\n\n' +
+            seatInfo + '\n' +
+            studentInfo + '\n\n' +
+            'This will cancel the reservation and free the seat.'
+        )) {
+            // Remove the reservation visually
+            $item.fadeOut(300, function() {
+                $(this).remove();
+                
+                // If no reservations left, show message
+                if ($('.walkin-reservation-item').length === 0) {
+                    $('.summary-details').append(
+                        '<div class="summary-item" style="text-align: center; color: #666;">' +
+                        '<p>No current reservations</p>' +
+                        '</div>'
+                    );
+                }
+            });
+            
+            // Show success alert
+            setTimeout(function() {
+                alert('No-show reservation removed successfully.');
+            }, 350);
+        }
+    });
+}
+
 
 
 // =============================================================================
@@ -1157,7 +1347,51 @@ $(document).ready(initUserSearch);
      * @todo Replace client-side pagination with server-side pagination using query params (?page=1&limit=10)
      * @returns {void}
      */
-    function initPagination() {}
+    function initPagination() {
+  // Stop if there is no pagination on this page
+  if ($('.pagination').length === 0) return;
+
+  const itemsPerPage = 5;   // Number of items to show per page
+  let currentPage = 1;      // Current page
+
+  // Show items for a given page and update pagination UI
+  function showPage(page) {
+    currentPage = page;
+
+    // Get all visible items (reservation cards and user cards)
+    const $items = $('.reservation-card:visible, .user-card:visible');
+    const totalPages = Math.ceil($items.length / itemsPerPage);
+
+    // Hide all items, then show only the ones for the current page
+    const start = (page - 1) * itemsPerPage;
+    $items.hide().slice(start, start + itemsPerPage).show();
+
+    // Highlight the current page number
+    $('.page-num').removeClass('active').filter(function() {
+      return parseInt($(this).text()) === page;
+    }).addClass('active');
+
+    // Disable Previous button on first page, Next button on last page
+    $('.page-btn').first().prop('disabled', page === 1);
+    $('.page-btn').last().prop('disabled', page >= totalPages);
+
+    // Update page info text
+    $('.page-info').text(`Page ${page} of ${totalPages || 1}`);
+  }
+
+  // Click handlers for Previous, Next, and numbered buttons
+  $('.page-btn').first().on('click', () => showPage(currentPage - 1));
+  $('.page-btn').last().on('click', () => showPage(currentPage + 1));
+  $('.page-num').on('click', function() {
+    showPage(parseInt($(this).text()));
+  });
+
+  // Show first page on load
+  showPage(1);
+
+  // Allow external code to refresh pagination
+  window.refreshPagination = () => showPage(1);
+}
 
 
 // =============================================================================
@@ -1175,7 +1409,42 @@ $(document).ready(initUserSearch);
      * @todo Replace with GET /api/search?q=TERM API call for server-side search
      * @returns {void}
      */
-    function initGlobalSearch() {}
+   function initGlobalSearch() {
+    const $searchInput = $('.search-bar input'); // input element in the navbar
+    const path = window.location.pathname;       // current page path
+
+    $searchInput.on('keypress', function(e) {
+        if (e.which !== 13) return; // run when Enter is pressed
+
+        const searchTerm = $(this).val().trim().toLowerCase();
+        if (!searchTerm) return;
+
+        // Filter lab cards if on cmpslots.html
+        if (path.indexOf('cmpslots.html') > -1) {
+            $('.lab-card').each(function() {
+                const labName = $(this).find('h3').text().toLowerCase();
+                const building = $(this).find('.building-tag').text().toLowerCase();
+                $(this).toggle(labName.includes(searchTerm) || building.includes(searchTerm));
+            });
+        }
+        // Filter user cards if on users.html
+        else if (path.indexOf('users.html') > -1) {
+            $('#userSearch').val(searchTerm).trigger('keyup');
+        }
+        // Redirect to cmpslots.html for other pages
+        else {
+            const inPages = path.indexOf('/pages/') > -1;
+            const target = inPages ? 'cmpslots.html' : 'pages/cmpslots.html';
+            window.location.href = `${target}?search=${encodeURIComponent(searchTerm)}`;
+        }
+    });
+
+    // If there is a search term in the URL on cmpslots.html, apply it automatically
+    const urlSearch = new URLSearchParams(window.location.search).get('search');
+    if (urlSearch && path.indexOf('cmpslots.html') > -1) {
+        $searchInput.val(urlSearch).trigger($.Event('keypress', { which: 13 }));
+    }
+}
 
 
 // =============================================================================
