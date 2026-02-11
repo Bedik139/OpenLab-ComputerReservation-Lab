@@ -952,8 +952,49 @@ $(document).ready(function() {
      * @todo Pagination needs backend data
      * @returns {void}
      */
-    function initUserSearch() {}
+    function initUserSearch() {
+  const $searchInput = $('#userSearch');
+  const $collegeFilter = $('#collegeFilter');
+  const $searchBtn = $('.search-btn');
+  const $userCards = $('.user-card');
 
+  function filterCards() {
+    const searchTerm = $searchInput.val().toLowerCase().trim();
+    const selectedCollege = $collegeFilter.val();
+
+    $userCards.each(function () {
+      const $card = $(this);
+      const name = $card.find('h3').text().toLowerCase();
+      const studentId = $card.find('.user-id').text().toLowerCase();
+      const college = $card.find('.college-badge').text();
+
+      const matchesSearch = name.includes(searchTerm) || studentId.includes(searchTerm);
+      const matchesCollege = selectedCollege === '' || college === selectedCollege;
+
+      if (matchesSearch && matchesCollege) {
+        $card.show();
+      } else {
+        $card.hide();
+      }
+
+      // Update "View Profile" link dynamically
+      const idMatch = studentId.match(/\d+/); // extract numeric ID
+      if (idMatch) {
+        $card.find('.view-profile-btn').attr('href', `public-profile.html?id=${idMatch[0]}`);
+      }
+    });
+  }
+
+  // Event listeners
+  $searchBtn.on('click', filterCards);
+  $searchInput.on('keyup', filterCards);
+  $collegeFilter.on('change', filterCards);
+
+ 
+  filterCards();
+}
+
+$(document).ready(initUserSearch);
 
 // =============================================================================
 // PUBLIC PROFILE PAGE (pages/public-profile.html)
