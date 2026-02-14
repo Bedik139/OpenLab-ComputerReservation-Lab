@@ -7,19 +7,17 @@
 
 var USER_KEY = 'openlab_user'; 
 
-/**
- * Checks whether a user is currently logged in.
- * Looks for 'openlab_user' key in localStorage.
- *
- * @returns {boolean} true if user session exists, false otherwise
- */
-
-
-
     // =============================================================================
     // AUTH & SESSION
     // =============================================================================
 
+    /**
+     * Checks whether a user is currently logged in.
+     * Looks for 'openlab_user' key in localStorage.
+     *
+     * @returns {boolean} true if user session exists, false otherwise
+     */
+        
     function isLoggedIn() {
         return localStorage.getItem(USER_KEY) !== null;
     }
