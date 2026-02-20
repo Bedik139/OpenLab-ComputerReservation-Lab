@@ -1,641 +1,873 @@
 /**
  * OpenLab Computer Reservation System
  * @file app.js
- * @description Main application logic for the OpenLab reservation system.
- *              Include in all pages: index.html uses "js/app.js", pages/*.html use "../js/app.js"
+ * @description Main application logic — all data is centralized here and
+ *              rendered via jQuery DOM manipulation. No hardcoded HTML data.
  */
 
-var USER_KEY = 'openlab_user'; 
+// =============================================================================
+// CONSTANTS & DATA STORE
+// =============================================================================
 
-    // =============================================================================
-    // AUTH & SESSION
-    // =============================================================================
+var USER_KEY = 'openlab_user';
+var RESERVATIONS_KEY = 'openlab_reservations';
+var ACCOUNTS_KEY = 'openlab_accounts';
+var ALL_RESERVATIONS_KEY = 'openlab_all_reservations';
 
-    /**
-     * Checks whether a user is currently logged in.
-     * Looks for 'openlab_user' key in localStorage.
-     *
-     * @returns {boolean} true if user session exists, false otherwise
-     */
-        
-    function isLoggedIn() {
-        return localStorage.getItem(USER_KEY) !== null;
+/** Shared time slot options (30-min intervals, 7:30 AM – 5:30 PM) */
+var TIME_SLOTS = [
+    { value: "07:30", label: "07:30 AM - 08:00 AM" },
+    { value: "08:00", label: "08:00 AM - 08:30 AM" },
+    { value: "08:30", label: "08:30 AM - 09:00 AM" },
+    { value: "09:00", label: "09:00 AM - 09:30 AM" },
+    { value: "09:30", label: "09:30 AM - 10:00 AM" },
+    { value: "10:00", label: "10:00 AM - 10:30 AM" },
+    { value: "10:30", label: "10:30 AM - 11:00 AM" },
+    { value: "11:00", label: "11:00 AM - 11:30 AM" },
+    { value: "11:30", label: "11:30 AM - 12:00 PM" },
+    { value: "12:00", label: "12:00 PM - 12:30 PM" },
+    { value: "12:30", label: "12:30 PM - 01:00 PM" },
+    { value: "13:00", label: "01:00 PM - 01:30 PM" },
+    { value: "13:30", label: "01:30 PM - 02:00 PM" },
+    { value: "14:00", label: "02:00 PM - 02:30 PM" },
+    { value: "14:30", label: "02:30 PM - 03:00 PM" },
+    { value: "15:00", label: "03:00 PM - 03:30 PM" },
+    { value: "15:30", label: "03:30 PM - 04:00 PM" },
+    { value: "16:00", label: "04:00 PM - 04:30 PM" },
+    { value: "16:30", label: "04:30 PM - 05:00 PM" },
+    { value: "17:00", label: "05:00 PM - 05:30 PM" }
+];
+
+/** College options for registration and profile */
+var COLLEGES = [
+    { value: "CCS",    label: "College of Computer Studies" },
+    { value: "CLA",    label: "College of Liberal Arts" },
+    { value: "COB",    label: "College of Business" },
+    { value: "COE",    label: "College of Engineering" },
+    { value: "COS",    label: "College of Science" },
+    { value: "GCOE",   label: "Gokongwei College of Engineering" },
+    { value: "SOE",    label: "School of Economics" },
+    { value: "BAGCED", label: "Br. Andrew Gonzalez College of Education" }
+];
+
+/** Computer labs with building info, hours, and total seats */
+var LABS = [
+    {
+        code: "AG1010",
+        building: "Andrew Building",
+        buildingKey: "andrew",
+        totalSeats: 30,
+        rows: ["A", "B", "C"],
+        cols: 10,
+        hours: "7:30 AM - 6:00 PM",
+        occupied: ["A3", "A7", "B1", "B4", "B8", "C2", "C5", "C6", "C10", "A9", "B6", "C8"],
+        reserved: ["A5", "B10"]
+    },
+    {
+        code: "LS313",
+        building: "La Salle Hall",
+        buildingKey: "lasalle",
+        totalSeats: 25,
+        rows: ["A", "B", "C", "D", "E"],
+        cols: 5,
+        hours: "8:00 AM - 7:00 PM",
+        occupied: ["A2", "A4", "B1", "B3", "B5", "C2", "C4", "D1", "D3", "D5", "E2", "E4", "A1", "C1", "D2", "E3", "E5"],
+        reserved: ["B2"]
+    },
+    {
+        code: "GK101A",
+        building: "Gokongwei Building",
+        buildingKey: "gokongwei",
+        totalSeats: 40,
+        rows: ["A", "B", "C", "D"],
+        cols: 10,
+        hours: "7:00 AM - 9:00 PM",
+        occupied: ["A3", "A9", "B1", "B4", "B8", "C2", "C5", "C6", "C10", "D3", "D7", "D8"],
+        reserved: ["A7", "B10"]
+    },
+    {
+        code: "GK101B",
+        building: "Gokongwei Building",
+        buildingKey: "gokongwei",
+        totalSeats: 40,
+        rows: ["A", "B", "C", "D"],
+        cols: 10,
+        hours: "7:00 AM - 9:00 PM",
+        occupied: ["A1", "A5", "A8", "B2", "B6", "B9", "C1", "C4", "C7", "C10", "D2", "D5", "D8", "A3", "B3", "C3", "D3", "A10", "B7", "C8", "D6", "D9", "D10", "A6", "B5"],
+        reserved: ["A2", "C9"]
+    },
+    {
+        code: "GK304",
+        building: "Gokongwei Building",
+        buildingKey: "gokongwei",
+        totalSeats: 20,
+        rows: ["A", "B", "C", "D"],
+        cols: 5,
+        hours: "8:00 AM - 6:00 PM",
+        occupied: ["A2", "A4", "B1", "B3", "B5", "C2", "C4", "D1", "D3", "D5"],
+        reserved: ["A5"]
     }
+];
 
-    /**
-     * Retrieves the currently logged-in user's data from localStorage.
-     *
-     * @returns {Object|null} User object {firstName, lastName, email, studentId, college} or null if not logged in
-     */
-    function getCurrentUser() {
-        var userStr = localStorage.getItem(USER_KEY);
-        if (userStr) {
-            return JSON.parse(userStr);
-        }
-        return null;
+/** Seat occupant data — who occupies/reserved each seat (for tooltips) */
+var SEAT_OCCUPANTS = {
+    "GK101A": {
+        "A3": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "A7": { name: "Anonymous", id: null, anonymous: true },
+        "A9": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "B1": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "B4": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "B8": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "B10": { name: "Anonymous", id: null, anonymous: true },
+        "C2": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "C5": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "C6": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "C10": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "D3": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "D7": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "D8": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false }
     }
+};
 
-
-    /**
-     * Logs out the current user by clearing session data from localStorage
-     * and redirecting to the homepage.
-     * - Removes 'openlab_user' from localStorage.
-     * - Redirects to index.html (use "../index.html" from /pages/, or "index.html" from root).
-     * - Called by the .signout-btn anchor in dashboard.html via onclick="logout()".
-     *   The anchor's default href (../index.html) acts as a fallback if JS fails.
-     *
-     * @returns {void}
-     */
-    function logout() {
-        localStorage.removeItem(USER_KEY);
-
-        // Check if we are inside the 'pages' folder
-        var path = window.location.pathname;
-        if (path.indexOf("/pages/") > -1) {
-            window.location.href = "../index.html";
-        } else {
-            window.location.href = "index.html";
-        }
+/** Sample users for the Find Users page and public profiles */
+var SAMPLE_USERS = [
+    {
+        id: "12340001",
+        firstName: "Maria Clara",
+        lastName: "Santos",
+        email: "maria_santos@dlsu.edu.ph",
+        college: "CCS",
+        accountType: "student",
+        password: "password123",
+        avatarClass: "",
+        bio: "CCS sophomore | Usually found at GK101A grinding CCAPDEV projects",
+        totalSessions: 32,
+        completed: 28,
+        cancelled: 2,
+        hoursUsed: 16,
+        memberSince: "August 2024",
+        reservations: [
+            { lab: "GK101A", seat: "C7", date: "Feb 11, 2025", time: "10:00 AM - 10:30 AM" },
+            { lab: "LS313",  seat: "A3", date: "Feb 13, 2025", time: "02:00 PM - 02:30 PM" },
+            { lab: "AG1010", seat: "B2", date: "Feb 14, 2025", time: "09:00 AM - 09:30 AM" }
+        ]
+    },
+    {
+        id: "12340002",
+        firstName: "Jose Rizal",
+        lastName: "Jr.",
+        email: "jose_rizal@dlsu.edu.ph",
+        college: "CLA",
+        accountType: "student",
+        password: "password123",
+        avatarClass: "orange",
+        bio: "CLA student | History enthusiast and lab regular",
+        totalSessions: 28,
+        completed: 25,
+        cancelled: 1,
+        hoursUsed: 14,
+        memberSince: "September 2024",
+        reservations: [
+            { lab: "LS313",  seat: "B4", date: "Feb 12, 2025", time: "09:00 AM - 09:30 AM" },
+            { lab: "AG1010", seat: "A1", date: "Feb 15, 2025", time: "01:00 PM - 01:30 PM" }
+        ]
+    },
+    {
+        id: "12340003",
+        firstName: "Ana Garcia",
+        lastName: "Lopez",
+        email: "ana_lopez@dlsu.edu.ph",
+        college: "GCOE",
+        accountType: "student",
+        password: "password123",
+        avatarClass: "purple",
+        bio: "Engineering student | Prefers the quiet hours at GK304",
+        totalSessions: 45,
+        completed: 40,
+        cancelled: 3,
+        hoursUsed: 22.5,
+        memberSince: "June 2024",
+        reservations: [
+            { lab: "GK304",  seat: "D2", date: "Feb 10, 2025", time: "08:00 AM - 08:30 AM" },
+            { lab: "GK101B", seat: "C5", date: "Feb 11, 2025", time: "03:00 PM - 03:30 PM" },
+            { lab: "GK304",  seat: "D2", date: "Feb 13, 2025", time: "08:00 AM - 08:30 AM" }
+        ]
+    },
+    {
+        id: "12340004",
+        firstName: "Karl Reyes",
+        lastName: "Mendoza",
+        email: "karl_mendoza@dlsu.edu.ph",
+        college: "COB",
+        accountType: "student",
+        password: "password123",
+        avatarClass: "teal",
+        bio: "Business student | Uses labs for group projects and presentations",
+        totalSessions: 19,
+        completed: 17,
+        cancelled: 1,
+        hoursUsed: 9.5,
+        memberSince: "October 2024",
+        reservations: [
+            { lab: "AG1010", seat: "A5", date: "Feb 14, 2025", time: "11:00 AM - 11:30 AM" }
+        ]
+    },
+    {
+        id: "12340005",
+        firstName: "Lea Domingo",
+        lastName: "Cruz",
+        email: "lea_cruz@dlsu.edu.ph",
+        college: "COS",
+        accountType: "student",
+        password: "password123",
+        avatarClass: "red",
+        bio: "Science major | Data analysis and research computing",
+        totalSessions: 37,
+        completed: 34,
+        cancelled: 2,
+        hoursUsed: 18.5,
+        memberSince: "July 2024",
+        reservations: [
+            { lab: "GK101A", seat: "B8", date: "Feb 10, 2025", time: "02:00 PM - 02:30 PM" },
+            { lab: "GK101A", seat: "B8", date: "Feb 12, 2025", time: "02:00 PM - 02:30 PM" }
+        ]
+    },
+    {
+        id: "99999999",
+        firstName: "Admin",
+        lastName: "Technician",
+        email: "tech_admin@dlsu.edu.ph",
+        college: "CCS",
+        accountType: "technician",
+        password: "admin123",
+        avatarClass: "blue",
+        bio: "Lab technician | Managing computer lab reservations and walk-in students",
+        totalSessions: 0,
+        completed: 0,
+        cancelled: 0,
+        hoursUsed: 0,
+        memberSince: "January 2025",
+        reservations: []
     }
-    
+];
 
-    /**
-     * Auth guard that runs on every page load.
-     * Checks if the current page is protected (dashboard, profile, reservations, users).
-     * If protected and user is NOT logged in, redirects to login.html.
-     * If user is on login/register while already logged in, redirects to dashboard.html.
-     *
-     * @returns {void}
-     */
-    function authGuard() {
-        var path = window.location.pathname;
-        var loggedIn = isLoggedIn();
-
-        // List of pages that require login
-        var isProtected = (path.indexOf("dashboard.html") > -1) ||
-            (path.indexOf("reservations.html") > -1) ||
-            (path.indexOf("reserve.html") > -1) ||
-            (path.indexOf("profile.html") > -1);
-
-        // List of pages you shouldn't see if already logged in
-        var isAuthPage = (path.indexOf("login.html") > -1) ||
-            (path.indexOf("register.html") > -1);
-
-        if (isProtected && !loggedIn) {
-            // If page is protected and user is NOT logged in, send to login
-            // Handle path correctly if we are in root or pages folder
-            if (path.indexOf("/pages/") > -1) {
-                window.location.href = "login.html";
-            } else {
-                window.location.href = "pages/login.html";
-            }
-        } else if (isAuthPage && loggedIn) {
-            // If user is already logged in, send them to dashboard
-            window.location.href = "dashboard.html";
-        }
+/** Default reservations for the logged-in user (seeded into localStorage) */
+var DEFAULT_RESERVATIONS = [
+    {
+        id: 1,
+        lab: "GK101A",
+        seat: "B5",
+        building: "Gokongwei Building",
+        date: "2025-02-10",
+        displayDate: "Feb 10, 2025",
+        timeSlot: "09:00 AM - 09:30 AM",
+        status: "upcoming",
+        bookedOn: "Feb 8, 2025",
+        anonymous: false
+    },
+    {
+        id: 2,
+        lab: "LS313",
+        seat: "A8",
+        building: "La Salle Hall",
+        date: "2025-02-12",
+        displayDate: "Feb 12, 2025",
+        timeSlot: "02:00 PM - 02:30 PM",
+        status: "upcoming",
+        bookedOn: "Feb 9, 2025",
+        anonymous: false
+    },
+    {
+        id: 3,
+        lab: "AG1010",
+        seat: "C3",
+        building: "Andrew Building",
+        date: "2025-02-08",
+        displayDate: "Feb 8, 2025",
+        timeSlot: "11:00 AM - 11:30 AM",
+        status: "completed",
+        bookedOn: "Feb 6, 2025",
+        anonymous: false
+    },
+    {
+        id: 4,
+        lab: "GK101A",
+        seat: "D7",
+        building: "Gokongwei Building",
+        date: "2025-02-07",
+        displayDate: "Feb 7, 2025",
+        timeSlot: "03:00 PM - 03:30 PM",
+        status: "completed",
+        bookedOn: "Feb 5, 2025",
+        anonymous: false
+    },
+    {
+        id: 5,
+        lab: "GK304",
+        seat: "A2",
+        building: "Gokongwei Building",
+        date: "2025-02-06",
+        displayDate: "Feb 6, 2025",
+        timeSlot: "10:00 AM - 10:30 AM",
+        status: "cancelled",
+        bookedOn: "Feb 4, 2025",
+        anonymous: false
+    },
+    {
+        id: 6,
+        lab: "GK101B",
+        seat: "B3",
+        building: "Gokongwei Building",
+        date: "2025-02-05",
+        displayDate: "Feb 5, 2025",
+        timeSlot: "01:00 PM - 01:30 PM",
+        status: "completed",
+        bookedOn: "Feb 3, 2025",
+        anonymous: true
+    },
+    {
+        id: 7,
+        lab: "LS313",
+        seat: "D1",
+        building: "La Salle Hall",
+        date: "2025-02-04",
+        displayDate: "Feb 4, 2025",
+        timeSlot: "09:30 AM - 10:00 AM",
+        status: "completed",
+        bookedOn: "Feb 2, 2025",
+        anonymous: false
     }
+];
+
+/** Recent activity items for the dashboard */
+var ACTIVITIES = [
+    { type: "completed", text: 'Completed session at <strong>AG1010</strong>',     time: "Today, 11:30 AM" },
+    { type: "booked",    text: 'Booked seat at <strong>GK101A</strong>',            time: "Yesterday, 3:45 PM" },
+    { type: "completed", text: 'Completed session at <strong>LS313</strong>',       time: "Feb 7, 2025" },
+    { type: "cancelled", text: 'Cancelled reservation at <strong>GK304</strong>',   time: "Feb 6, 2025" },
+    { type: "booked",    text: 'Booked seat at <strong>LS313</strong>',             time: "Feb 5, 2025" }
+];
+
+/** Favorite / frequently used labs for the dashboard */
+var FAVORITE_LABS = [
+    { code: "GK101A", building: "Gokongwei Building", visits: 8 },
+    { code: "LS313",  building: "La Salle Hall",      visits: 5 },
+    { code: "AG1010", building: "Andrew Building",     visits: 2 }
+];
+
+/** Walk-in reservations (sample data for the technician page) */
+var WALKIN_RESERVATIONS = [
+    { id: 1, lab: "GK101A", seat: "B5", time: "09:00 AM", studentName: "Tyrion Dela Cruz", studentId: "12345678", canRemove: true },
+    { id: 2, lab: "GK101A", seat: "A8", time: "09:00 AM", studentName: "Jerwin Santos",    studentId: "12340001", canRemove: false },
+    { id: 3, lab: "LS313",  seat: "C3", time: "09:30 AM", studentName: "Jose Reyes",       studentId: "12340002", canRemove: false }
+];
+
+/** Features for the landing page */
+var FEATURES = [
+    { title: "Real-Time Availability", desc: "See which seats are open now across all labs" },
+    { title: "Easy Reservations",      desc: "Book 30-min slots up to 7 days ahead" },
+    { title: "Multiple Buildings",     desc: "Gokongwei, Andrew, and La Salle labs" }
+];
 
 
 // =============================================================================
-// NAVBAR
+// UTILITY HELPERS
 // =============================================================================
 
-    /**
-     * Dynamically updates the navigation bar based on authentication state.
-     * - Logged in: replaces "Login"/"Register" link with "Profile", adds a "Logout" link.
-     * - Not logged in: replaces "Profile" link with "Login".
-     * Handles href path differences between root and /pages/ directory.
-     *
-     * @returns {void}
-     */
-    function updateNavbar() {
-        var user = getCurrentUser();
-        var path = window.location.pathname;
-        var inPages = path.indexOf("/pages/") > -1;
+function isLoggedIn() {
+    return localStorage.getItem(USER_KEY) !== null;
+}
 
-        // Determine correct paths for links
-        var profilePath = inPages ? "profile.html" : "pages/profile.html";
-        var loginPath = inPages ? "login.html" : "pages/login.html";
-        var usersPath = inPages ? "users.html" : "pages/users.html";
+function getCurrentUser() {
+    var userStr = localStorage.getItem(USER_KEY);
+    return userStr ? JSON.parse(userStr) : null;
+}
 
-        if (user) {
-            // User IS logged in
-            // 1. Remove Login/Register links
-            $('.nav-links a[href*="login.html"]').remove();
-            $('.nav-links a[href*="register.html"]').remove();
+function logout() {
+    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(RESERVATIONS_KEY);
+    var path = window.location.pathname;
+    window.location.href = (path.indexOf("/pages/") > -1) ? "../index.html" : "index.html";
+}
 
-            // 2. Add Profile Link if missing
-            if ($('.nav-links a:contains("Profile")').length === 0) {
-                $('<a href="' + profilePath + '">Profile</a>').insertBefore('.search-bar');
-            }
+function authGuard() {
+    var path = window.location.pathname;
+    var loggedIn = isLoggedIn();
+    var user = getCurrentUser();
+    var isProtected = (path.indexOf("dashboard.html") > -1) ||
+        (path.indexOf("reservations.html") > -1) ||
+        (path.indexOf("reserve.html") > -1) ||
+        (path.indexOf("profile.html") > -1);
+    var isTechnicianOnly = (path.indexOf("walkin.html") > -1);
+    var isAuthPage = (path.indexOf("login.html") > -1) ||
+        (path.indexOf("register.html") > -1);
 
-            // 3. Add Find Users Link if missing
-            if ($('.nav-links a:contains("Find Users")').length === 0) {
-                $('<a href="' + usersPath + '">Find Users</a>').insertBefore('.search-bar');
-            }
-        } else {
-            // User is NOT logged in
-            $('.nav-links a:contains("Profile")').remove();
-            $('.nav-links a:contains("Find Users")').remove();
-            $('#nav-logout').remove();
-
-            // Ensure login link exists
-            if ($('.nav-links a[href*="login.html"]').length === 0) {
-                $('<a href="' + loginPath + '">Login</a>').insertBefore('.search-bar');
-            }
-        }
+    if ((isProtected || isTechnicianOnly) && !loggedIn) {
+        window.location.href = (path.indexOf("/pages/") > -1) ? "login.html" : "pages/login.html";
+    } else if (isTechnicianOnly && loggedIn && (!user || user.accountType !== 'technician')) {
+        alert("Access denied. Technicians only.");
+        window.location.href = (path.indexOf("/pages/") > -1) ? "dashboard.html" : "pages/dashboard.html";
+    } else if (isAuthPage && loggedIn) {
+        window.location.href = (path.indexOf("/pages/") > -1) ? "dashboard.html" : "pages/dashboard.html";
     }
+}
 
+/** Get / initialize reservations from localStorage */
+function getReservations() {
+    var stored = localStorage.getItem(RESERVATIONS_KEY);
+    if (stored) return JSON.parse(stored);
+    localStorage.setItem(RESERVATIONS_KEY, JSON.stringify(DEFAULT_RESERVATIONS));
+    return DEFAULT_RESERVATIONS;
+}
 
-// =============================================================================
-// LOGIN PAGE (pages/login.html)
-// =============================================================================
+function saveReservations(list) {
+    localStorage.setItem(RESERVATIONS_KEY, JSON.stringify(list));
+}
 
-    /**
-     * Initializes the login page.
-     * - Attaches a submit handler to .login-form that prevents default submission.
-     * - Validates that email and password fields are non-empty.
-     * - On success: stores user object in localStorage, redirects to dashboard.html.
-     * - On failure: displays an error message.
-     *
-     * @todo Replace localStorage mock with POST /api/login API call
-     * @returns {void}
-     */
-    function initLoginPage() {
-        $('.login-form').submit(function(e) {
-            e.preventDefault();
-
-            var email = $('#email').val();
-            var password = $('#password').val();
-
-            if (email && password) {
-                // Mock Login
-                var mockUser = {
-                    firstName: "Benedict",
-                    lastName: "Santos",
-                    email: email,
-                    studentId: "12467676",
-                    college: "CCS",
-                    bio: "CCS student | Likes to code in the Gokongwei labs"
-                };
-                localStorage.setItem(USER_KEY, JSON.stringify(mockUser));
-                window.location.href = "dashboard.html";
-            } else {
-                alert("Please fill in all fields.");
-            }
-        });
+/** Resolve href based on whether current page is in /pages/ or root */
+function resolvePath(file) {
+    var inPages = window.location.pathname.indexOf("/pages/") > -1;
+    if (file.indexOf("index.html") > -1) {
+        return inPages ? "../index.html" : "index.html";
     }
+    return inPages ? file : "pages/" + file;
+}
 
+/** Get initials from a name */
+function getInitials(firstName, lastName) {
+    return (firstName ? firstName.charAt(0) : "") + (lastName ? lastName.charAt(0) : "");
+}
 
-    /**
-     * Handles the "Forgot password?" link (.forgot-password) on the login page.
-     * - Attaches a click listener to .forgot-password, prevents default navigation.
-     * - Shows a modal or inline form prompting the user to enter their DLSU email.
-     * - Validates email format.
-     * - On submit: displays a confirmation message that a password reset link has been sent.
-     *
-     * @todo Replace with POST /api/auth/forgot-password API call
-     * @returns {void}
-     */
-    function handleForgotPassword() {
-        $('.forgot-password').click(function(e) {
-            e.preventDefault();
-            var email = prompt("Enter your DLSU email:");
-            if (email) {
-                alert("Reset link sent to " + email);
-            }
-        });
+/** Find a lab object by code */
+function getLabByCode(code) {
+    for (var i = 0; i < LABS.length; i++) {
+        if (LABS[i].code === code) return LABS[i];
     }
+    return null;
+}
 
-
-// =============================================================================
-// REGISTER PAGE (pages/register.html)
-// =============================================================================
-
-    /**
-     * Initializes the registration page.
-     * - Attaches a submit handler to .register-form that prevents default submission.
-     * - Validates all fields:
-     *     - password === confirmPassword
-     *     - password.length >= 8
-     *     - studentId matches /^[0-9]{8}$/
-     *     - all required fields are filled
-     * - On success: stores user in localStorage, redirects to dashboard.html.
-     * - On failure: displays specific validation error.
-     *
-     * @todo Replace localStorage mock with POST /api/register API call
-     * @todo Fix register.html line 117 — unclosed div for password form-group
-     * @returns {void}
-     */
-    function initRegisterPage() {
-        $('.register-form').submit(function(e) {
-            e.preventDefault();
-
-            var pass = $('#password').val();
-            var confirmPass = $('#confirmPassword').val();
-            var studentId = $('#studentId').val();
-
-            // 1. Validate Password Match
-            if (pass !== confirmPass) {
-                alert("Passwords do not match.");
-                return;
-            }
-
-            // 2. Validate Password Length
-            if (pass.length < 8) {
-                alert("Password must be at least 8 characters.");
-                return;
-            }
-
-            // 3. Validate ID (Simple regex check)
-            var idRegex = /^[0-9]{8}$/;
-            if (!idRegex.test(studentId)) {
-                alert("Student ID must be exactly 8 digits.");
-                return;
-            }
-
-            // Save User
-            var newUser = {
-                firstName: $('#firstName').val(),
-                lastName: $('#lastName').val(),
-                studentId: studentId,
-                email: $('#email').val(),
-                college: $('#college').val()
-            };
-
-            localStorage.setItem(USER_KEY, JSON.stringify(newUser));
-            alert("Registration successful!");
-            window.location.href = "dashboard.html";
-        });
+/** Find a sample user by ID */
+function getUserById(id) {
+    for (var i = 0; i < SAMPLE_USERS.length; i++) {
+        if (SAMPLE_USERS[i].id === id) return SAMPLE_USERS[i];
     }
+    return null;
+}
 
-
-// =============================================================================
-// RESERVE PAGE (pages/reserve.html)
-// =============================================================================
-
-    /**
-     * Reads the lab query parameter from the URL (e.g. ?lab=GK101A)
-     * and updates the page header and booking summary with the correct
-     * lab name and building name.
-     *
-     * Lab mapping:
-     *   AG1010  -> Andrew Building
-     *   LS313   -> La Salle Hall
-     *   GK101A  -> Gokongwei Building
-     *   GK101B  -> Gokongwei Building
-     *   GK304   -> Gokongwei Building
-     *
-     * @todo Currently hardcoded to GK101A — this function fixes that
-     * @returns {void}
-     */
-    function loadLabFromURL() {
-        var urlParams = new URLSearchParams(window.location.search);
-        var labCode = urlParams.get('lab');
-        if (!labCode) labCode = "GK101A"; // Default
-
-        // Dictionary for building names
-        var buildings = {
-            'AG1010': 'Andrew Building',
-            'LS313': 'La Salle Hall',
-            'GK101A': 'Gokongwei Building',
-            'GK101B': 'Gokongwei Building',
-            'GK304': 'Gokongwei Building'
-        };
-        var bldg = buildings[labCode] || "Gokongwei Building";
-
-        // Update Text
-        $('.panel-header h3').text(labCode + " - " + bldg);
-
-        // Update Summary Lab/Building
-        $('.summary-item').each(function() {
-            var label = $(this).find('.label').text();
-            if (label === 'Lab') $(this).find('.value').text(labCode);
-            if (label === 'Building') $(this).find('.value').text(bldg);
-        });
+/** Build time slot <option> elements */
+function buildTimeSlotOptions(selectedValue) {
+    var html = '';
+    for (var i = 0; i < TIME_SLOTS.length; i++) {
+        var ts = TIME_SLOTS[i];
+        var sel = (ts.value === selectedValue) ? ' selected' : '';
+        html += '<option value="' + ts.value + '"' + sel + '>' + ts.label + '</option>';
     }
+    return html;
+}
 
-
-    /**
-     * Handles seat selection on the seat map grid.
-     * - Adds click listeners to .seat.available elements only (not .occupied or .reserved).
-     * - On click: toggles the seat to 'selected', reverts previously selected seat to 'available'.
-     * - Updates #summarySeat in the Booking Summary panel with the data-seat value.
-     * - Enables #confirmBtn and changes its text to "Confirm Reservation".
-     *
-     * @returns {void}
-     */
-    function initSeatSelection() {
-        $('.seat-grid').on('click', '.seat.available', function() {
-            // Remove 'selected' from others
-            $('.seat.selected').removeClass('selected').addClass('available');
-
-            // Add 'selected' to clicked
-            $(this).removeClass('available').addClass('selected');
-
-            // Update Summary
-            var seatId = $(this).attr('data-seat');
-            $('#summarySeat').text(seatId);
-
-            // Enable Button
-            $('#confirmBtn').prop('disabled', false).text("Confirm Reservation");
-        });
+/** Build college <option> elements */
+function buildCollegeOptions(selectedValue, includePlaceholder) {
+    var html = '';
+    if (includePlaceholder) {
+        html += '<option value="" disabled selected>Select your college</option>';
     }
-
-
-    /**
-     * Attaches change listeners to #reserveDate and #timeSlot inputs.
-     * - When date changes: formats the date and updates #summaryDate text.
-     * - When time changes: updates #summaryTime with the selected option text.
-     *
-     * @returns {void}
-     */
-    function initDateTimeSync() {
-        $('#reserveDate').change(function() {
-            $('#summaryDate').text($(this).val());
-        });
-
-        $('#timeSlot').change(function() {
-            var text = $(this).find('option:selected').text();
-            $('#summaryTime').text(text);
-        });
+    for (var i = 0; i < COLLEGES.length; i++) {
+        var c = COLLEGES[i];
+        var sel = (c.value === selectedValue) ? ' selected' : '';
+        html += '<option value="' + c.value + '"' + sel + '>' + c.label + '</option>';
     }
+    return html;
+}
 
+/** Format date string like "2025-02-10" to "February 10, 2025" */
+function formatDateLong(dateStr) {
+    var months = ["January","February","March","April","May","June",
+                  "July","August","September","October","November","December"];
+    var parts = dateStr.split("-");
+    var m = parseInt(parts[1], 10) - 1;
+    var d = parseInt(parts[2], 10);
+    return months[m] + " " + d + ", " + parts[0];
+}
 
-    /**
-     * Handles the confirm reservation button (#confirmBtn) click.
-     * - Checks isLoggedIn(); if not, redirects to login.html.
-     * - Validates a seat has been selected.
-     * - On success: redirects to reservations.html.
-     *
-     * @todo Replace with POST /api/reservations API call (send lab, seat, date, time, userId)
-     * @returns {void}
-     */
-    function handleConfirmReservation() {
-        if (!isLoggedIn()) {
-            alert("You must login first.");
-            window.location.href = "login.html";
-            return;
-        }
-
-        var seat = $('.seat.selected').attr('data-seat');
-        if (!seat) {
-            alert("Please select a seat.");
-            return;
-        }
-
-        alert("Reservation confirmed for " + seat);
-        window.location.href = "reservations.html";
-    }
-
-
-    /**
-     * Populates the "Reserving as" user info card with data from getCurrentUser().
-     * Updates .user-name, .user-id, .user-college, and .user-avatar elements.
-     *
-     * @returns {void}
-     */
-    function populateUserCard() {
-        var user = getCurrentUser();
-        if (user) {
-            $('.user-name').text(user.firstName + " " + user.lastName);
-            $('.user-id').text("ID: " + user.studentId);
-            $('.user-college').text(user.college);
-
-            var initials = user.firstName.charAt(0) + user.lastName.charAt(0);
-            $('.user-avatar').text(initials);
-        }
-    }
-
-
-    /**
-     * Initializes the anonymous reservation toggle on the reserve page.
-     * - Attaches a change listener to #anonymousToggle checkbox.
-     * - When checked: the reservation will hide the user's identity from other users
-     *   viewing the seat map; reserved seats display "Anonymous" instead of the user's name.
-     * - When unchecked: the reservation displays the user's name publicly on the seat.
-     * - Updates the booking summary to reflect the current anonymous status.
-     *
-     * @todo Persist anonymous flag when sending POST /api/reservations
-     * @returns {void}
-     */
-    function initAnonymousToggle() {
-        $('#anonymousToggle').change(function() {
-            var isAnon = $(this).is(':checked');
-
-            // Find or create a status element in the booking summary
-            var $summaryStatus = $('#summaryAnonStatus');
-
-            if ($summaryStatus.length === 0) {
-                // Create it if it doesn't exist (append to summary details)
-                $('.summary-details').append(
-                    '<div class="summary-item" id="summaryAnonStatus">' +
-                    '<span class="label">Mode</span>' +
-                    '<span class="value"></span></div>'
-                );
-                $summaryStatus = $('#summaryAnonStatus');
-            }
-
-            // Update the text
-            if (isAnon) {
-                $summaryStatus.find('.value').text("Anonymous");
-            } else {
-                $summaryStatus.find('.value').text("Public");
-            }
-        });
-    }
-
-
-    /**
-     * Displays reservee information on occupied and reserved seats in the seat map.
-     * - Adds hover/click listeners to .seat.occupied and .seat.reserved elements.
-     * - On hover: shows a tooltip or popover with the reservee's name and student ID.
-     * - If the reservation was made anonymously, displays "Anonymous" instead.
-     * - Clicking the reservee's name navigates to public-profile.html?id=STUDENTID.
-     *
-     * @todo Requires GET /api/reservations/seat/:seatId to fetch reservee data
-     * @returns {void}
-     */
-    function showSeatReservee() {
-        $('.seat.occupied, .seat.reserved').hover(function() {
-            var status = $(this).hasClass('occupied') ? "Occupied" : "Reserved";
-            $(this).attr('title', status + " by another student");
-        });
-    }
-
-
-    /**
-     * Periodically polls for updated seat availability data on the reserve page.
-     * - Uses setInterval to fetch the latest seat statuses every 30 seconds.
-     * - Updates each .seat element's class (available, occupied, reserved) based on the response.
-     * - Updates the availability count displayed in .availability-badge.
-     * - Clears the interval when the user navigates away from the page.
-     *
-     * @todo Requires GET /api/labs/:labId/availability endpoint
-     * @returns {void}
-     */
-    function pollAvailability() {
-        var intervalId = setInterval(function() {
-            console.log("Polling for seat updates...");
-
-            // Mock updating the badge count
-            var count = Math.floor(Math.random() * 10) + 15;
-            $('.availability-badge').text(count + " seats available");
-
-        }, 30000);
-
-        // Clears the interval when the user navigates away (cleanup)
-        $(window).on('unload', function() {
-            clearInterval(intervalId);
-        });
-    }
-
-
-// =============================================================================
-// RESERVATIONS PAGE (pages/reservations.html)
-// =============================================================================
-
-    /**
-     * Initializes filter tab buttons on the reservations page.
-     * - Adds click listeners to .tab-btn elements.
-     * - Reads data-filter attribute (all | upcoming | completed | cancelled).
-     * - Shows/hides .reservation-card elements by matching their data-status attribute.
-     * - Toggles .active class on the clicked tab.
-     *
-     * @returns {void}
-     */
-    function initReservationFilters() {
-    // When a filter tab (All, Upcoming, Completed, Cancelled) is clicked
-    $('.tab-btn').on('click', function () {
-        // Get the filter value from the clicked button 
-        const filter = $(this).data('filter');
-
-        // Remove the active class from all tabs, then add it only to the one that was clicked
-        $('.tab-btn').removeClass('active');
-        $(this).addClass('active');
-
-        // Loop through every reservation card
-        $('.reservation-card').each(function () {
-            // Get the status of the current card 
-            const status = $(this).data('status');
-
-            if (filter === 'all' || status === filter) {
-                // Show the card
-                $(this).show();
-            } else {
-                // Otherwise, hide it immediately to prevent layout jumps
-                $(this).hide();
-            }
-        });
-
-        // Refresh pagination after filtering
-        if (typeof window.refreshPagination === 'function') {
-            window.refreshPagination();
-        }
-    });
-
-    // Trigger the active tab on page load so the correct reservations show
-    $('.tab-btn.active').trigger('click');
+/** Parse date "2025-02-10" into {day, month, year} */
+function parseDateParts(dateStr) {
+    var months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+    var parts = dateStr.split("-");
+    return {
+        day: parts[2],
+        month: months[parseInt(parts[1], 10) - 1],
+        year: parts[0]
+    };
 }
 
 
-    /**
-     * Handles the cancel button (.action-btn.cancel) on reservation cards.
-     * - Shows a confirm() dialog before proceeding.
-     * - On confirm: updates card status badge to "Cancelled" and swaps action buttons.
-     *
-     * @todo Replace with PATCH /api/reservations/:id API call
-     * @todo Fix reservations.html — missing closing </div> for .reservations-list before pagination
-     * @returns {void}
-     */
-   function handleCancelReservation() {
-    // When the cancel button is clicked
-    $('.action-btn.cancel').on('click', function () {
-        // Get the reservation card this button belongs to
-        const card = $(this).closest('.reservation-card');
+// =============================================================================
+// ACCOUNT MANAGEMENT
+// =============================================================================
 
-        // Ask the user to confirm cancellation
-        if (confirm('Are you sure you want to cancel this reservation?')) {
-            // Update the card's status data attribute
-            card.data('status', 'cancelled');
-
-            // Change the status badge text 
-            card.find('.status-badge')
-                .text('Cancelled')
-                .removeClass('upcoming completed')
-                .addClass('cancelled');
-
-            // Hide the cancel button since it's no longer needed
-            $(this).fadeOut('fast');
-
-            // If the current filter doesn't include cancelled items, hide the card from view
-            const activeFilter = $('.tab-btn.active').data('filter');
-            if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
-                card.fadeOut('fast');
-            }
+/** Seed accounts from SAMPLE_USERS on first run */
+function initializeAccounts() {
+    var stored = localStorage.getItem(ACCOUNTS_KEY);
+    if (!stored) {
+        var accounts = [];
+        for (var i = 0; i < SAMPLE_USERS.length; i++) {
+            var u = SAMPLE_USERS[i];
+            accounts.push({
+                id: u.id,
+                firstName: u.firstName,
+                lastName: u.lastName,
+                email: u.email,
+                studentId: u.id,
+                college: u.college,
+                accountType: u.accountType || 'student',
+                password: u.password || 'password123',
+                bio: u.bio || ''
+            });
         }
-    });
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+    }
+}
+
+function getAccounts() {
+    var stored = localStorage.getItem(ACCOUNTS_KEY);
+    return stored ? JSON.parse(stored) : [];
+}
+
+function saveAccounts(accounts) {
+    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+function findAccountByEmail(email) {
+    var accounts = getAccounts();
+    for (var i = 0; i < accounts.length; i++) {
+        if (accounts[i].email.toLowerCase() === email.toLowerCase()) {
+            return accounts[i];
+        }
+    }
+    return null;
+}
+
+function authenticateUser(email, password) {
+    var account = findAccountByEmail(email);
+    if (!account) return null;
+    if (account.password !== password) return null;
+    return account;
+}
+
+function registerAccount(data) {
+    var accounts = getAccounts();
+    if (findAccountByEmail(data.email)) {
+        return { success: false, error: 'Email already registered.' };
+    }
+    for (var i = 0; i < accounts.length; i++) {
+        if (accounts[i].studentId === data.studentId) {
+            return { success: false, error: 'Student ID already registered.' };
+        }
+    }
+    var newAccount = {
+        id: data.studentId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        studentId: data.studentId,
+        college: data.college,
+        accountType: data.accountType,
+        password: data.password,
+        bio: ''
+    };
+    accounts.push(newAccount);
+    saveAccounts(accounts);
+    return { success: true, account: newAccount };
+}
+
+function updateAccountPassword(email, newPassword) {
+    var accounts = getAccounts();
+    for (var i = 0; i < accounts.length; i++) {
+        if (accounts[i].email.toLowerCase() === email.toLowerCase()) {
+            accounts[i].password = newPassword;
+            saveAccounts(accounts);
+            return true;
+        }
+    }
+    return false;
 }
 
 
-    /**
-     * Handles the "Book Again" button (.action-btn.rebook) on completed/cancelled cards.
-     * Redirects to reserve.html?lab=LABNAME using the lab name from the card content.
-     *
-     * @returns {void}
-     */
-    function handleRebook() {
-    // When the "Book Again" button is clicked
-    $('.action-btn.rebook').on('click', function () {
-        // Get the reservation card this button belongs to
-        const card = $(this).closest('.reservation-card');
+// =============================================================================
+// GLOBAL RESERVATION STORE (all users' reservations)
+// =============================================================================
 
-        // Extract the lab name from the card title 
-        const fullTitle = card.find('.reservation-main h3').text();
-        let lab = fullTitle;
-        if (fullTitle.includes(' - ')) {
-            lab = fullTitle.split(' - ')[0];
-        }
-
-
-        // Get the reservation ID 
-        const resId = card.data('id') || '';
-
-        // Redirect to the reservation page 
-        if (lab) {
-            window.location.href = 
-                `reserve.html?lab=${encodeURIComponent(lab.trim())}&edit=${encodeURIComponent(resId)}`;
-        }
-    });
+function getAllReservations() {
+    var stored = localStorage.getItem(ALL_RESERVATIONS_KEY);
+    if (!stored) {
+        localStorage.setItem(ALL_RESERVATIONS_KEY, JSON.stringify([]));
+        return [];
+    }
+    return JSON.parse(stored);
 }
 
-    /**
-     * Handles the edit button (.action-btn.edit) on upcoming reservation cards.
-     * - Reads the reservation data (lab, seat, date, time) from the clicked card's content.
-     * - Redirects to reserve.html?lab=LABNAME&edit=RESERVATION_ID with pre-filled data,
-     *   allowing the user to change the seat, date, or time slot.
-     * - Lab technicians are able to edit any reservation; students can only edit their own.
-     *
-     * @todo Replace with PUT /api/reservations/:id API call
-     * @returns {void}
-     */
-    function handleEditReservation() {
-    // When the edit button is clicked
-    $('.action-btn.edit').on('click', function () {
-        // Get the reservation card this button belongs to
-        const card = $(this).closest('.reservation-card');
+function saveAllReservations(list) {
+    localStorage.setItem(ALL_RESERVATIONS_KEY, JSON.stringify(list));
+}
 
-        // Extract the lab name from the title
-        const lab = card.find('.reservation-main h3')
-                        .text()
-                        .split(' - ')[0];
+/** Seed default reservations into global store for a user on first login */
+function seedUserReservations(userEmail) {
+    var allRes = getAllReservations();
+    var hasAny = false;
+    for (var i = 0; i < allRes.length; i++) {
+        if (allRes[i].userEmail === userEmail) { hasAny = true; break; }
+    }
+    if (!hasAny) {
+        var seeded = [];
+        for (var j = 0; j < DEFAULT_RESERVATIONS.length; j++) {
+            var r = DEFAULT_RESERVATIONS[j];
+            seeded.push({
+                id: r.id,
+                lab: r.lab,
+                seat: r.seat,
+                building: r.building,
+                date: r.date,
+                displayDate: r.displayDate,
+                timeSlot: r.timeSlot,
+                status: r.status,
+                bookedOn: r.bookedOn,
+                anonymous: r.anonymous,
+                userEmail: userEmail,
+                isWalkIn: false
+            });
+        }
+        allRes = allRes.concat(seeded);
+        saveAllReservations(allRes);
+        saveReservations(seeded);
+    } else {
+        var userRes = [];
+        for (var k = 0; k < allRes.length; k++) {
+            if (allRes[k].userEmail === userEmail) userRes.push(allRes[k]);
+        }
+        saveReservations(userRes);
+    }
+}
 
-        // Get the reservation ID 
-        const resId = card.data('id') || '';
 
-        // Redirect to the reservation page
-        window.location.href =
-            `reserve.html?lab=${encodeURIComponent(lab)}&edit=${resId}`;
+// =============================================================================
+// NAVBAR BUILDER
+// =============================================================================
+
+function buildNavbar(activePage) {
+    var inPages = window.location.pathname.indexOf("/pages/") > -1;
+    var user = getCurrentUser();
+
+    var navLinks = [
+        { href: inPages ? "../index.html" : "index.html",    label: "Home",             page: "index" },
+        { href: inPages ? "cmpslots.html" : "pages/cmpslots.html", label: "Available Slots", page: "cmpslots" },
+        { href: inPages ? "dashboard.html" : "pages/dashboard.html", label: "Dashboard",    page: "dashboard" },
+        { href: inPages ? "reservations.html" : "pages/reservations.html", label: "My Reservations", page: "reservations" }
+    ];
+
+    if (user) {
+        if (user.accountType === 'technician') {
+            navLinks.push({ href: inPages ? "walkin.html" : "pages/walkin.html", label: "Walk-In", page: "walkin" });
+        }
+        navLinks.push({ href: inPages ? "profile.html" : "pages/profile.html", label: "Profile", page: "profile" });
+        navLinks.push({ href: inPages ? "users.html" : "pages/users.html", label: "Find Users", page: "users" });
+    } else {
+        navLinks.push({ href: inPages ? "login.html" : "pages/login.html", label: "Login", page: "login" });
+    }
+
+    var $nav = $('<nav class="topnav"></nav>');
+    var $container = $('<div class="nav-container"></div>');
+    $container.append('<a href="' + (inPages ? "../index.html" : "index.html") + '" class="logo">OpenLab</a>');
+
+    var $links = $('<div class="nav-links"></div>');
+    for (var i = 0; i < navLinks.length; i++) {
+        var link = navLinks[i];
+        var activeClass = (link.page === activePage) ? ' class="active"' : '';
+        $links.append('<a href="' + link.href + '"' + activeClass + '>' + link.label + '</a>');
+    }
+    $links.append('<div class="search-bar"><input type="text" placeholder="Search..."></div>');
+
+    $container.append($links);
+    $nav.append($container);
+
+    $('.site-wrapper').prepend($nav);
+}
+
+
+// =============================================================================
+// INDEX PAGE (index.html)
+// =============================================================================
+
+function buildIndexPage() {
+    // Banner content
+    var $banner = $('.banner-content');
+    $banner.append(
+        '<h1>Find Your Seat,<br>Skip the Search</h1>' +
+        '<p>Check real-time computer lab availability across DLSU.<br>' +
+        'Reserve your slot in seconds — no more wandering.</p>' +
+        '<div class="banner-buttons">' +
+            '<a href="' + resolvePath("cmpslots.html") + '" class="btn btn-primary">View Labs</a>' +
+            '<a href="' + resolvePath("register.html") + '" class="btn btn-outline">Register Now</a>' +
+        '</div>'
+    );
+
+    // Features grid
+    var $grid = $('.features-grid');
+    for (var i = 0; i < FEATURES.length; i++) {
+        $grid.append(
+            '<article class="feature-card">' +
+                '<h3>' + FEATURES[i].title + '</h3>' +
+                '<p>' + FEATURES[i].desc + '</p>' +
+            '</article>'
+        );
+    }
+}
+
+
+// =============================================================================
+// DASHBOARD PAGE (pages/dashboard.html)
+// =============================================================================
+
+function buildDashboard() {
+    var user = getCurrentUser();
+    if (!user) return;
+
+    var isTechnician = user.accountType === 'technician';
+    var reservations = isTechnician ? getAllReservations() : getReservations();
+    var upcoming = reservations.filter(function(r) { return r.status === "upcoming"; });
+    var completed = reservations.filter(function(r) { return r.status === "completed"; });
+
+    // Calculate stats
+    var totalHours = (completed.length * 0.5);
+    var streak = Math.min(completed.length, 5);
+
+    var $container = $('.dashboard-container');
+
+    // Welcome Header
+    var welcomeTitle = isTechnician
+        ? '<h1>Technician Dashboard</h1>'
+        : '<h1>Welcome back, ' + user.firstName + '!</h1>';
+    var welcomeDesc = isTechnician
+        ? '<p>Manage lab reservations and walk-in students</p>'
+        : '<p>Here\'s an overview of your lab reservations</p>';
+
+    $container.append(
+        '<div class="welcome-header">' +
+            '<div class="welcome-text">' + welcomeTitle + welcomeDesc + '</div>' +
+            '<a href="cmpslots.html" class="new-reservation-btn">+ New Reservation</a>' +
+            '<a href="../index.html" class="signout-btn" id="signoutBtn">Sign-out</a>' +
+        '</div>'
+    );
+
+    // Stats Grid
+    var upLabel = isTechnician ? 'All Upcoming' : 'Upcoming Reservations';
+    $container.append(
+        '<div class="stats-grid">' +
+            '<div class="stat-card"><div class="stat-icon upcoming"></div>' +
+                '<div class="stat-content"><span class="stat-number">' + upcoming.length + '</span>' +
+                '<span class="stat-label">' + upLabel + '</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon completed"></div>' +
+                '<div class="stat-content"><span class="stat-number">' + completed.length + '</span>' +
+                '<span class="stat-label">Completed Sessions</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon hours"></div>' +
+                '<div class="stat-content"><span class="stat-number">' + totalHours.toFixed(1) + '</span>' +
+                '<span class="stat-label">Hours This Month</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon streak"></div>' +
+                '<div class="stat-content"><span class="stat-number">' + streak + '</span>' +
+                '<span class="stat-label">Day Streak</span></div></div>' +
+        '</div>'
+    );
+
+    // Dashboard Grid
+    var $grid = $('<div class="dashboard-grid"></div>');
+
+    // Upcoming Reservations Card
+    var cardTitle = isTechnician ? 'All Upcoming Reservations' : 'Upcoming Reservations';
+    var upcomingHtml = '<div class="dashboard-card upcoming-reservations">' +
+        '<div class="card-header"><h3>' + cardTitle + '</h3>' +
+        '<a href="reservations.html" class="view-all">View All</a></div>' +
+        '<div class="card-content">';
+
+    if (upcoming.length === 0) {
+        upcomingHtml += '<div class="empty-state"><p>No upcoming reservations</p>' +
+            '<a href="cmpslots.html">Book a slot now</a></div>';
+    } else {
+        var showMax = isTechnician ? Math.min(upcoming.length, 5) : upcoming.length;
+        for (var i = 0; i < showMax; i++) {
+            var r = upcoming[i];
+            var dp = parseDateParts(r.date);
+            var userLabel = (isTechnician && r.userEmail) ? '<p style="font-size:0.85em;color:#999;">' + r.userEmail + '</p>' : '';
+            upcomingHtml +=
+                '<div class="reservation-item">' +
+                    '<div class="reservation-date"><span class="day">' + dp.day + '</span>' +
+                    '<span class="month">' + dp.month + '</span></div>' +
+                    '<div class="reservation-details">' +
+                        '<h4>' + r.lab + ' - Seat ' + r.seat + '</h4>' +
+                        '<p>' + r.building + '</p>' + userLabel +
+                        '<span class="time">' + r.timeSlot + '</span>' +
+                    '</div>' +
+                    '<div class="reservation-status upcoming"><span>Upcoming</span></div>' +
+                '</div>';
+        }
+    }
+    upcomingHtml += '</div></div>';
+    $grid.append(upcomingHtml);
+
+    // Quick Actions Card
+    var walkinAction = isTechnician
+        ? '<a href="walkin.html" class="action-item"><div class="action-icon manage"></div><span>Walk-In</span></a>'
+        : '';
+    $grid.append(
+        '<div class="dashboard-card quick-actions">' +
+            '<div class="card-header"><h3>Quick Actions</h3></div>' +
+            '<div class="card-content"><div class="action-grid">' +
+                '<a href="cmpslots.html" class="action-item"><div class="action-icon reserve"></div><span>Reserve a Seat</span></a>' +
+                '<a href="reservations.html" class="action-item"><div class="action-icon manage"></div><span>Manage Bookings</span></a>' +
+                walkinAction +
+                '<a href="profile.html" class="action-item"><div class="action-icon profile"></div><span>Edit Profile</span></a>' +
+                '<a href="users.html" class="action-item"><div class="action-icon search"></div><span>Find Users</span></a>' +
+            '</div></div>' +
+        '</div>'
+    );
+
+    // Recent Activity Card
+    var actHtml = '<div class="dashboard-card recent-activity">' +
+        '<div class="card-header"><h3>Recent Activity</h3></div>' +
+        '<div class="card-content"><div class="activity-list">';
+    for (var j = 0; j < ACTIVITIES.length; j++) {
+        var a = ACTIVITIES[j];
+        actHtml +=
+            '<div class="activity-item">' +
+                '<div class="activity-indicator ' + a.type + '"></div>' +
+                '<div class="activity-details">' +
+                    '<p>' + a.text + '</p>' +
+                    '<span class="activity-time">' + a.time + '</span>' +
+                '</div>' +
+            '</div>';
+    }
+    actHtml += '</div></div></div>';
+    $grid.append(actHtml);
+
+    // Favorite Labs Card
+    var favHtml = '<div class="dashboard-card favorite-labs">' +
+        '<div class="card-header"><h3>Frequently Used Labs</h3></div>' +
+        '<div class="card-content"><div class="lab-list">';
+    for (var k = 0; k < FAVORITE_LABS.length; k++) {
+        var fl = FAVORITE_LABS[k];
+        favHtml +=
+            '<a href="reserve.html?lab=' + fl.code + '" class="lab-item">' +
+                '<div class="lab-info"><h4>' + fl.code + '</h4><p>' + fl.building + '</p></div>' +
+                '<div class="lab-usage"><span class="usage-count">' + fl.visits + ' visits</span></div>' +
+            '</a>';
+    }
+    favHtml += '</div></div></div>';
+    $grid.append(favHtml);
+
+    $container.append($grid);
+
+    // Sign-out handler
+    $('#signoutBtn').on('click', function(e) {
+        e.preventDefault();
+        logout();
     });
 }
 
@@ -644,132 +876,659 @@ var USER_KEY = 'openlab_user';
 // AVAILABLE SLOTS PAGE (pages/cmpslots.html)
 // =============================================================================
 
-    /**
-     * Initializes the building filter on the available slots page.
-     * - On .filter-btn click: reads #buildingFilter value.
-     * - Maps filter values to building names:
-     *     andrew    -> "Andrew Building"
-     *     lasalle   -> "La Salle Hall"
-     *     gokongwei -> "Gokongwei Building"
-     *     velasco   -> "Velasco Building"
-     * - Shows/hides .lab-card elements by matching .building-tag text.
-     * - If filter is empty, shows all cards.
-     *
-     * @todo Date/time filters need backend GET /api/labs/availability to work with real data
-     * @todo Fix inconsistent HTML tags — first 4 lab cards use <span>, last uses <article>
-     * @returns {void}
-     */
-    function initLabFilters() {
+function buildCmpSlots() {
+    var $container = $('.slots-container');
 
-    // Map dropdown values to their actual building names
-    const buildingMap = {
+    // Page Header
+    $container.append(
+        '<div class="page-header">' +
+            '<h1>Computer Lab Availability</h1>' +
+            '<p>Select a lab to view available slots and make a reservation</p>' +
+        '</div>'
+    );
+
+    // Filter Section
+    var filterHtml =
+        '<div class="filter-section"><div class="filter-card"><div class="filter-row">' +
+            '<div class="filter-group"><label for="dateFilter">Date</label>' +
+            '<input type="date" id="dateFilter" name="dateFilter"></div>' +
+            '<div class="filter-group"><label for="timeFilter">Time Slot</label>' +
+            '<select id="timeFilter" name="timeFilter"><option value="">All Time Slots</option>' +
+            buildTimeSlotOptions("") + '</select></div>' +
+            '<div class="filter-group"><label for="buildingFilter">Building</label>' +
+            '<select id="buildingFilter" name="buildingFilter">' +
+                '<option value="">All Buildings</option>' +
+                '<option value="andrew">Andrew Building</option>' +
+                '<option value="lasalle">La Salle Hall</option>' +
+                '<option value="gokongwei">Gokongwei Building</option>' +
+            '</select></div>' +
+            '<button class="filter-btn">Apply Filters</button>' +
+        '</div></div></div>';
+    $container.append(filterHtml);
+
+    // Lab Cards Grid
+    var $grid = $('<div class="labs-grid"></div>');
+    for (var i = 0; i < LABS.length; i++) {
+        var lab = LABS[i];
+        var available = lab.totalSeats - lab.occupied.length - lab.reserved.length;
+        var occupied = lab.occupied.length + lab.reserved.length;
+
+        $grid.append(
+            '<article class="lab-card" data-lab="' + lab.code + '">' +
+                '<div class="lab-header"><h3>' + lab.code + '</h3>' +
+                '<span class="building-tag">' + lab.building + '</span></div>' +
+                '<div class="lab-stats">' +
+                    '<div class="stat"><span class="stat-number available">' + available + '</span>' +
+                    '<span class="stat-label">Available</span></div>' +
+                    '<div class="stat"><span class="stat-number occupied">' + occupied + '</span>' +
+                    '<span class="stat-label">Occupied</span></div>' +
+                    '<div class="stat"><span class="stat-number total">' + lab.totalSeats + '</span>' +
+                    '<span class="stat-label">Total</span></div>' +
+                '</div>' +
+                '<div class="lab-info"><p><strong>Hours:</strong> ' + lab.hours + '</p></div>' +
+                '<a href="reserve.html?lab=' + lab.code + '" class="reserve-btn">View Seats & Reserve</a>' +
+            '</article>'
+        );
+    }
+    $container.append($grid);
+
+    // Legend
+    $container.append(
+        '<div class="legend-section"><div class="legend-card">' +
+            '<h4>Legend</h4><div class="legend-items">' +
+            '<div class="legend-item"><span class="legend-color available"></span><span>Available - Open for reservation</span></div>' +
+            '<div class="legend-item"><span class="legend-color occupied"></span><span>Occupied - Currently in use</span></div>' +
+            '<div class="legend-item"><span class="legend-color reserved"></span><span>Reserved - Booked for later</span></div>' +
+        '</div></div></div>'
+    );
+
+    // Filter logic
+    initLabFilters();
+}
+
+function initLabFilters() {
+    var buildingMap = {
         andrew: "andrew building",
         lasalle: "la salle hall",
-        gokongwei: "gokongwei building",
-        velasco: "velasco building"
+        gokongwei: "gokongwei building"
     };
 
-    // When the "Apply Filters" button is clicked
-    $('.filter-btn').on('click', function () {
+    $('.filter-btn').on('click', function() {
+        var selected = $('#buildingFilter').val();
+        $('.lab-card').each(function() {
+            var cardBuilding = $(this).find('.building-tag').text().trim().toLowerCase();
+            if (!selected) { $(this).show(); return; }
+            var target = buildingMap[selected];
+            $(this).toggle(cardBuilding === target);
+        });
+    });
+}
 
-        // Get the selected building from the dropdown
-        const selected = $('#buildingFilter').val();
 
-        // Loop through each lab card
-        $('.lab-card').each(function () {
+// =============================================================================
+// RESERVE PAGE (pages/reserve.html)
+// =============================================================================
 
-            // Get the building name shown on the card
-            const cardBuilding = $(this)
-                .find('.building-tag')
-                .text()
-                .trim()
-                .toLowerCase();
+function buildReservePage() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var labCode = urlParams.get('lab') || "GK101A";
+    var lab = getLabByCode(labCode);
+    if (!lab) lab = LABS[2]; // fallback GK101A
 
-            // If no building is selected, show everything
-            if (!selected) {
-                $(this).show();
-                return;
+    var user = getCurrentUser();
+    var available = lab.totalSeats - lab.occupied.length - lab.reserved.length;
+
+    var $container = $('.reserve-container');
+
+    // Page Header
+    $container.append(
+        '<div class="page-header"><h1>Reserve a Seat</h1>' +
+        '<p>Select your preferred seat and time slot</p></div>'
+    );
+
+    var $layout = $('<div class="reserve-layout"></div>');
+
+    // === Left Column: Seat Selection ===
+    var leftHtml =
+        '<div class="seat-selection-panel"><div class="panel-card">' +
+            '<div class="panel-header"><h3>' + lab.code + ' - ' + lab.building + '</h3>' +
+            '<span class="availability-badge">' + available + ' seats available</span></div>';
+
+    // Time Selection
+    var today = new Date().toISOString().split('T')[0];
+    leftHtml +=
+        '<div class="time-selection"><label>Select Date & Time</label>' +
+        '<div class="time-row">' +
+        '<input type="date" id="reserveDate" value="' + today + '">' +
+        '<select id="timeSlot">' + buildTimeSlotOptions("09:00") + '</select>' +
+        '</div></div>';
+
+    // Seat Map
+    leftHtml += '<div class="seat-map-container">' +
+        '<div class="instructor-desk"><span>Instructor\'s Desk</span></div>' +
+        '<div class="seat-grid">';
+
+    for (var r = 0; r < lab.rows.length; r++) {
+        var row = lab.rows[r];
+        for (var c = 1; c <= lab.cols; c++) {
+            var seatId = row + c;
+            var seatClass = "available";
+            if (lab.occupied.indexOf(seatId) > -1) seatClass = "occupied";
+            else if (lab.reserved.indexOf(seatId) > -1) seatClass = "reserved";
+
+            leftHtml += '<div class="seat ' + seatClass + '" data-seat="' + seatId + '">' + seatId + '</div>';
+
+            // Add gap after column 5 (for labs with 10 cols)
+            if (lab.cols === 10 && c === 5) {
+                leftHtml += '<div class="seat-gap"></div>';
             }
+        }
+    }
 
-            // Get the matching building name from the map
-            const target = buildingMap[selected];
+    leftHtml += '</div>'; // end seat-grid
 
-            // Show the card if it matches, otherwise hide it
-            if (cardBuilding === target) {
+    // Legend
+    leftHtml +=
+        '<div class="seat-legend">' +
+            '<div class="legend-item"><span class="legend-seat available"></span><span>Available</span></div>' +
+            '<div class="legend-item"><span class="legend-seat occupied"></span><span>Occupied</span></div>' +
+            '<div class="legend-item"><span class="legend-seat reserved"></span><span>Reserved</span></div>' +
+            '<div class="legend-item"><span class="legend-seat selected"></span><span>Selected</span></div>' +
+        '</div>';
+
+    leftHtml += '</div></div></div>'; // end seat-map-container, panel-card, seat-selection-panel
+    $layout.append(leftHtml);
+
+    // === Right Column: Booking Summary ===
+    var timeLabel = "09:00 AM - 09:30 AM";
+    var rightHtml =
+        '<div class="booking-summary-panel">' +
+            '<div class="panel-card summary-card">' +
+                '<h3>Booking Summary</h3>' +
+                '<div class="summary-details">' +
+                    '<div class="summary-item"><span class="label">Lab</span><span class="value">' + lab.code + '</span></div>' +
+                    '<div class="summary-item"><span class="label">Building</span><span class="value">' + lab.building + '</span></div>' +
+                    '<div class="summary-item"><span class="label">Date</span><span class="value" id="summaryDate">' + formatDateLong(today) + '</span></div>' +
+                    '<div class="summary-item"><span class="label">Time Slot</span><span class="value" id="summaryTime">' + timeLabel + '</span></div>' +
+                    '<div class="summary-item"><span class="label">Selected Seat</span><span class="value" id="summarySeat">-</span></div>' +
+                '</div>' +
+                '<div class="divider"></div>' +
+                '<div class="rules-section"><h4>Reservation Rules</h4>' +
+                    '<ul><li>Each slot is 30 minutes</li>' +
+                    '<li>Book up to 7 days in advance</li>' +
+                    '<li>Arrive within 10 minutes or forfeit</li>' +
+                    '<li>Maximum 2 active reservations</li></ul>' +
+                '</div>' +
+                '<div class="anon">' +
+                    '<input type="checkbox" id="anonymousToggle">' +
+                    '<span class="reserve-text">Reserve anonymously</span>' +
+                '</div>' +
+                '<button class="confirm-btn" id="confirmBtn" disabled>Select a Seat to Continue</button>' +
+                '<a href="cmpslots.html" class="back-link">Back to Lab Selection</a>' +
+            '</div>';
+
+    // User Info Card
+    if (user) {
+        var initials = getInitials(user.firstName, user.lastName);
+        rightHtml +=
+            '<div class="panel-card user-card">' +
+                '<h4>Reserving as</h4>' +
+                '<div class="user-info">' +
+                    '<div class="user-avatar">' + initials + '</div>' +
+                    '<div class="user-details">' +
+                        '<span class="user-name">' + user.firstName + ' ' + user.lastName + '</span>' +
+                        '<span class="user-id">ID: ' + user.studentId + '</span>' +
+                        '<span class="user-college">' + (user.college || 'CCS') + '</span>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }
+
+    rightHtml += '</div>'; // end booking-summary-panel
+    $layout.append(rightHtml);
+    $container.append($layout);
+
+    // === Event Handlers ===
+    initSeatSelection(lab);
+    initDateTimeSync();
+    initAnonymousToggle();
+    showSeatReservee(lab);
+    pollAvailability();
+
+    $('#confirmBtn').on('click', function() {
+        handleConfirmReservation(lab);
+    });
+}
+
+function initSeatSelection(lab) {
+    $('.seat-grid').on('click', '.seat.available', function() {
+        $('.seat.selected').removeClass('selected').addClass('available');
+        $(this).removeClass('available').addClass('selected');
+        var seatId = $(this).attr('data-seat');
+        $('#summarySeat').text(seatId);
+        $('#confirmBtn').prop('disabled', false).text("Confirm Reservation");
+    });
+}
+
+function initDateTimeSync() {
+    $('#reserveDate').on('change', function() {
+        var val = $(this).val();
+        if (val) $('#summaryDate').text(formatDateLong(val));
+    });
+    $('#timeSlot').on('change', function() {
+        $('#summaryTime').text($(this).find('option:selected').text());
+    });
+}
+
+function initAnonymousToggle() {
+    $('#anonymousToggle').on('change', function() {
+        var isAnon = $(this).is(':checked');
+        var $status = $('#summaryAnonStatus');
+        if ($status.length === 0) {
+            $('.summary-details').append(
+                '<div class="summary-item" id="summaryAnonStatus">' +
+                '<span class="label">Mode</span><span class="value"></span></div>'
+            );
+            $status = $('#summaryAnonStatus');
+        }
+        $status.find('.value').text(isAnon ? "Anonymous" : "Public");
+    });
+}
+
+function showSeatReservee(lab) {
+    var occupants = SEAT_OCCUPANTS[lab.code] || {};
+    $('.seat.occupied, .seat.reserved').each(function() {
+        var seatId = $(this).attr('data-seat');
+        var occupant = occupants[seatId];
+        var status = $(this).hasClass('occupied') ? "Occupied" : "Reserved";
+        if (occupant && !occupant.anonymous) {
+            $(this).attr('title', status + ' by ' + occupant.name);
+        } else if (occupant && occupant.anonymous) {
+            $(this).attr('title', status + ' (Anonymous)');
+        } else {
+            $(this).attr('title', status + ' by another student');
+        }
+    });
+}
+
+function pollAvailability() {
+    var intervalId = setInterval(function() {
+        console.log("Polling for seat updates...");
+        var count = Math.floor(Math.random() * 10) + 15;
+        $('.availability-badge').text(count + " seats available");
+    }, 30000);
+
+    $(window).on('unload', function() { clearInterval(intervalId); });
+}
+
+function handleConfirmReservation(lab) {
+    if (!isLoggedIn()) {
+        alert("You must login first.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    var user = getCurrentUser();
+    var seat = $('.seat.selected').attr('data-seat');
+    if (!seat) { alert("Please select a seat."); return; }
+
+    var date = $('#reserveDate').val();
+    var timeText = $('#timeSlot option:selected').text();
+    var isAnon = $('#anonymousToggle').is(':checked');
+
+    // Add to both user and global reservation stores
+    var newRes = {
+        id: Date.now(),
+        lab: lab.code,
+        seat: seat,
+        building: lab.building,
+        date: date,
+        displayDate: formatDateLong(date),
+        timeSlot: timeText,
+        status: "upcoming",
+        bookedOn: formatDateLong(new Date().toISOString().split('T')[0]),
+        anonymous: isAnon,
+        userEmail: user.email,
+        isWalkIn: false
+    };
+
+    var reservations = getReservations();
+    reservations.unshift(newRes);
+    saveReservations(reservations);
+
+    var allRes = getAllReservations();
+    allRes.unshift(newRes);
+    saveAllReservations(allRes);
+
+    alert("Reservation confirmed for Seat " + seat + " at " + lab.code + "!");
+    window.location.href = "reservations.html";
+}
+
+
+// =============================================================================
+// RESERVATIONS PAGE (pages/reservations.html)
+// =============================================================================
+
+function buildReservationsPage() {
+    var user = getCurrentUser();
+    var isTechnician = user && user.accountType === 'technician';
+    var reservations = isTechnician ? getAllReservations() : getReservations();
+    var $container = $('.reservations-container');
+
+    // Page Header
+    var headerTitle = isTechnician ? 'All Reservations' : 'My Reservations';
+    var headerDesc = isTechnician ? 'View and manage all lab reservations' : 'View and manage your lab reservations';
+    $container.append(
+        '<div class="page-header"><div class="header-content">' +
+        '<h1>' + headerTitle + '</h1><p>' + headerDesc + '</p>' +
+        '</div></div>'
+    );
+
+    // Filter Tabs
+    $container.append(
+        '<div class="filter-tabs">' +
+            '<button class="tab-btn active" data-filter="all">All</button>' +
+            '<button class="tab-btn" data-filter="upcoming">Upcoming</button>' +
+            '<button class="tab-btn" data-filter="completed">Completed</button>' +
+            '<button class="tab-btn" data-filter="cancelled">Cancelled</button>' +
+        '</div>'
+    );
+
+    // Reservations List
+    var $list = $('<div class="reservations-list"></div>');
+
+    for (var i = 0; i < reservations.length; i++) {
+        var r = reservations[i];
+        var dp = parseDateParts(r.date);
+
+        var actionsHtml = '';
+        if (r.status === 'upcoming') {
+            actionsHtml = '<button class="action-btn edit">Edit</button>' +
+                          '<button class="action-btn cancel">Cancel</button>';
+        } else {
+            actionsHtml = '<button class="action-btn rebook">Book Again</button>';
+        }
+
+        var bookedLabel = (r.status === 'cancelled') ? 'Cancelled on ' + r.bookedOn : 'Booked on ' + r.bookedOn;
+        var userLabel = (isTechnician && r.userEmail) ? '<span class="booked-date" style="display:block;margin-top:4px;">User: ' + r.userEmail + '</span>' : '';
+        var walkInBadge = r.isWalkIn ? '<span class="status-badge" style="background:#17a2b8;margin-left:4px;">Walk-In</span>' : '';
+
+        $list.append(
+            '<div class="reservation-card ' + r.status + '" data-status="' + r.status + '" data-id="' + r.id + '">' +
+                '<div class="card-date"><span class="day">' + dp.day + '</span>' +
+                '<span class="month">' + dp.month + '</span>' +
+                '<span class="year">' + dp.year + '</span></div>' +
+                '<div class="card-content"><div class="reservation-main">' +
+                    '<h3>' + r.lab + ' - Seat ' + r.seat + '</h3>' +
+                    '<p class="location">' + r.building + '</p>' +
+                    '<div class="time-slot"><span class="time">' + r.timeSlot + '</span></div>' +
+                '</div><div class="reservation-meta">' +
+                    '<span class="status-badge ' + r.status + '">' + r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>' +
+                    walkInBadge +
+                    '<span class="booked-date">' + bookedLabel + '</span>' +
+                    userLabel +
+                '</div></div>' +
+                '<div class="card-actions">' + actionsHtml + '</div>' +
+            '</div>'
+        );
+    }
+    $container.append($list);
+
+    // Pagination
+    $container.append(
+        '<div class="pagination">' +
+            '<button class="page-btn" disabled>Previous</button>' +
+            '<span class="page-info">Page 1 of 1</span>' +
+            '<button class="page-btn">Next</button>' +
+        '</div>'
+    );
+
+    // Event Handlers
+    initReservationFilters();
+    handleCancelReservation();
+    handleRebook();
+    handleEditReservation();
+}
+
+function initReservationFilters() {
+    $('.tab-btn').on('click', function() {
+        var filter = $(this).data('filter');
+        $('.tab-btn').removeClass('active');
+        $(this).addClass('active');
+
+        $('.reservation-card').each(function() {
+            var status = $(this).data('status');
+            if (filter === 'all' || status === filter) {
                 $(this).show();
             } else {
                 $(this).hide();
             }
         });
+
+        if (typeof window.refreshPagination === 'function') {
+            window.refreshPagination();
+        }
     });
-    }
+
+    $('.tab-btn.active').trigger('click');
+}
+
+function handleCancelReservation() {
+    $('.reservations-list').on('click', '.action-btn.cancel', function() {
+        var card = $(this).closest('.reservation-card');
+        if (confirm('Are you sure you want to cancel this reservation?')) {
+            var resId = card.data('id');
+
+            // Update user reservations
+            var reservations = getReservations();
+            for (var i = 0; i < reservations.length; i++) {
+                if (reservations[i].id === resId) {
+                    reservations[i].status = 'cancelled';
+                    break;
+                }
+            }
+            saveReservations(reservations);
+
+            // Update global reservations
+            var allRes = getAllReservations();
+            for (var j = 0; j < allRes.length; j++) {
+                if (allRes[j].id === resId) {
+                    allRes[j].status = 'cancelled';
+                    break;
+                }
+            }
+            saveAllReservations(allRes);
+
+            // Update DOM
+            card.attr('data-status', 'cancelled').data('status', 'cancelled');
+            card.removeClass('upcoming').addClass('cancelled');
+            card.find('.status-badge').first().text('Cancelled').removeClass('upcoming completed').addClass('cancelled');
+            card.find('.action-btn.edit').remove();
+            $(this).replaceWith('<button class="action-btn rebook">Book Again</button>');
+
+            var activeFilter = $('.tab-btn.active').data('filter');
+            if (activeFilter !== 'all' && activeFilter !== 'cancelled') {
+                card.fadeOut('fast');
+            }
+        }
+    });
+}
+
+function handleRebook() {
+    $('.reservations-list').on('click', '.action-btn.rebook', function() {
+        var card = $(this).closest('.reservation-card');
+        var fullTitle = card.find('.reservation-main h3').text();
+        var lab = fullTitle.split(' - ')[0];
+        if (lab) {
+            window.location.href = 'reserve.html?lab=' + encodeURIComponent(lab.trim());
+        }
+    });
+}
+
+function handleEditReservation() {
+    $('.reservations-list').on('click', '.action-btn.edit', function() {
+        var card = $(this).closest('.reservation-card');
+        var lab = card.find('.reservation-main h3').text().split(' - ')[0];
+        var resId = card.data('id') || '';
+        window.location.href = 'reserve.html?lab=' + encodeURIComponent(lab) + '&edit=' + resId;
+    });
+}
 
 
 // =============================================================================
 // PROFILE PAGE (pages/profile.html)
 // =============================================================================
 
-    /**
-     * Populates the profile page with data from getCurrentUser().
-     * Fills in: header name, email, avatar initials, college badge,
-     * and all form fields (firstName, lastName, studentId, email, college).
-     *
-     * @returns {void}
-     */
-    function populateProfile() {
-    // Get the current user object
-    const user = getCurrentUser();
+function buildProfilePage() {
+    var user = getCurrentUser();
+    if (!user) return;
 
-    // If no user is found, exit early
-    if (!user) {
-        return;
+    var reservations = getReservations();
+    var upcoming = reservations.filter(function(r) { return r.status === "upcoming"; });
+    var completed = reservations.filter(function(r) { return r.status === "completed"; });
+    var cancelled = reservations.filter(function(r) { return r.status === "cancelled"; });
+    var totalRes = reservations.length;
+    var hoursUsed = (completed.length * 0.5).toFixed(1);
+    var noShows = Math.max(0, totalRes - completed.length - cancelled.length - upcoming.length);
+    var attendanceRate = totalRes > 0 ? Math.round((completed.length / (totalRes - upcoming.length)) * 100) : 100;
+
+    var initials = getInitials(user.firstName, user.lastName);
+    var $container = $('.profile-container');
+
+    // Profile Header
+    $container.append(
+        '<div class="profile-header">' +
+            '<div class="avatar-section"><div class="avatar"><span>' + initials + '</span></div>' +
+            '<button class="change-avatar-btn">Change Photo</button></div>' +
+            '<div class="header-info">' +
+                '<h1>' + user.firstName + ' ' + user.lastName + '</h1>' +
+                '<p class="email">' + user.email + '</p>' +
+                '<div class="badges">' +
+                    '<span class="badge student">' + (user.accountType === 'technician' ? 'Technician' : 'Student') + '</span>' +
+                    '<span class="badge college">' + (user.college || 'CCS') + '</span>' +
+                    '<span class="badge active">Active</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>'
+    );
+
+    // Profile Grid
+    var $grid = $('<div class="profile-grid"></div>');
+
+    // Personal Information Card
+    $grid.append(
+        '<div class="profile-card">' +
+            '<div class="card-header"><h3>Personal Information</h3>' +
+            '<button class="edit-btn" id="editPersonalBtn">Edit</button></div>' +
+            '<form class="profile-form" id="personalForm">' +
+                '<div class="form-row">' +
+                    '<div class="form-group"><label for="firstName">First Name</label>' +
+                    '<input type="text" id="firstName" value="' + (user.firstName || '') + '" disabled></div>' +
+                    '<div class="form-group"><label for="lastName">Last Name</label>' +
+                    '<input type="text" id="lastName" value="' + (user.lastName || '') + '" disabled></div>' +
+                '</div>' +
+                '<div class="form-group"><label for="studentId">Student ID</label>' +
+                '<input type="text" id="studentId" value="' + (user.studentId || '') + '" disabled></div>' +
+                '<div class="form-group"><label for="email">DLSU Email</label>' +
+                '<input type="email" id="email" value="' + (user.email || '') + '" disabled></div>' +
+                '<div class="form-group"><label for="college">College</label>' +
+                '<select id="college" disabled>' + buildCollegeOptions(user.college, false) + '</select></div>' +
+                '<div class="form-group"><label for="bio">Description</label>' +
+                '<input type="text" id="bio" placeholder="Tell us about yourself..." value="' + (user.bio || '') + '" disabled></div>' +
+                '<div class="form-actions hidden" id="personalActions">' +
+                    '<button type="button" class="cancel-btn">Cancel</button>' +
+                    '<button type="submit" class="save-btn">Save Changes</button>' +
+                '</div>' +
+            '</form>' +
+        '</div>'
+    );
+
+    // Account Settings Card
+    $grid.append(
+        '<div class="profile-card">' +
+            '<div class="card-header"><h3>Account Settings</h3></div>' +
+            '<div class="settings-list">' +
+                '<div class="setting-item"><div class="setting-info">' +
+                    '<h4>Change Password</h4><p>Update your account password</p></div>' +
+                    '<button class="setting-btn">Change</button></div>' +
+                '<div class="setting-item"><div class="setting-info">' +
+                    '<h4>Email Notifications</h4><p>Receive reservation reminders</p></div>' +
+                    '<label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>' +
+            '</div>' +
+        '</div>'
+    );
+
+    // Statistics Card
+    $grid.append(
+        '<div class="profile-card stats-card">' +
+            '<div class="card-header"><h3>Your Statistics</h3></div>' +
+            '<div class="stats-grid">' +
+                '<div class="stat-item"><span class="stat-value">' + totalRes + '</span><span class="stat-label">Total Reservations</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + completed.length + '</span><span class="stat-label">Completed</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + cancelled.length + '</span><span class="stat-label">Cancelled</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + noShows + '</span><span class="stat-label">No-shows</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + hoursUsed + '</span><span class="stat-label">Hours Used</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + attendanceRate + '%</span><span class="stat-label">Attendance Rate</span></div>' +
+            '</div>' +
+            '<div class="member-since"><p>Member since <strong>September 2024</strong></p></div>' +
+        '</div>'
+    );
+
+    // Current Reservations Card
+    var resHtml = '<div class="profile-card">' +
+        '<div class="card-header"><h3>Current Reservations</h3>' +
+        '<a href="reservations.html" class="view-all">View All</a></div>' +
+        '<div class="settings-list">';
+
+    if (upcoming.length === 0) {
+        resHtml += '<div class="setting-item"><div class="setting-info"><p>No upcoming reservations</p></div></div>';
+    } else {
+        for (var i = 0; i < upcoming.length; i++) {
+            var r = upcoming[i];
+            resHtml += '<div class="setting-item"><div class="setting-info">' +
+                '<h4>' + r.lab + ' - Seat ' + r.seat + '</h4>' +
+                '<p>' + r.displayDate + ' | ' + r.timeSlot + '</p>' +
+                '</div><span class="status-badge upcoming">Upcoming</span></div>';
+        }
     }
+    resHtml += '</div></div>';
+    $grid.append(resHtml);
 
-    // Fill in the personal info form fields
-    $('#firstName').val(user.firstName);
-    $('#lastName').val(user.lastName);
-    $('#studentId').val(user.studentId);
-    $('#email').val(user.email);
-    $('#college').val(user.college);
-    $('#bio').val(user.bio || '');
+    // Danger Zone
+    $grid.append(
+        '<div class="profile-card danger-card">' +
+            '<div class="card-header"><h3>Danger Zone</h3></div>' +
+            '<div class="danger-content"><div class="danger-item">' +
+                '<div class="danger-info"><h4>Delete Account</h4>' +
+                '<p>Permanently delete your account and all data. This action cannot be undone.</p></div>' +
+                '<button class="danger-btn">Delete Account</button>' +
+            '</div></div>' +
+        '</div>'
+    );
 
-    // Update the profile header with user's actual name and email
-    $('.header-info h1').text(user.firstName + ' ' + user.lastName);
-    $('.header-info .email').text(user.email);
+    $container.append($grid);
 
-    // Set avatar initials using first letters of first and last name
-    $('.avatar span').text(user.firstName[0] + user.lastName[0]);
+    // Event Handlers
+    initProfileEdit();
+    handleDeleteAccount();
+    handleChangePassword();
+    handleChangeAvatar();
+    handleNotificationToggle();
 }
 
+function initProfileEdit() {
+    var $editBtn = $('#editPersonalBtn');
+    var $form = $('#personalForm');
+    var $inputs = $form.find('input, select, textarea');
+    var $actions = $('#personalActions');
+    var $cancelBtn = $actions.find('.cancel-btn');
+    var $saveBtn = $actions.find('.save-btn');
+    var originalValues = {};
 
-    /**
-     * Initializes the edit toggle for the Personal Information form.
-     * - Click #editPersonalBtn: enables all form inputs, shows Save/Cancel buttons (#personalActions),
-     *   hides the Edit button.
-     * - Click Cancel: disables inputs, restores original values from localStorage, shows Edit button.
-     * - Click Save: validates input, updates localStorage, disables inputs, shows Edit button.
-     *
-     * @todo Replace localStorage update with PUT /api/users/:id API call
-     * @returns {void}
-     */
-    function initProfileEdit() {
-    const $editBtn = $('#editPersonalBtn');
-    const $form = $('#personalForm');
-    const $inputs = $form.find('input, select, textarea');
-    const $actions = $('#personalActions');
-    const $cancelBtn = $actions.find('.cancel-btn');
-    const $saveBtn = $actions.find('.save-btn');
-
-    // Keep original values to restore on cancel
-    let originalValues = {};
-
-    // Edit button click
     $editBtn.on('click', function() {
-        $inputs.prop('disabled', false); // Enable inputs
-        $actions.removeClass('hidden');   // Show Save/Cancel buttons
-        $editBtn.hide();                  // Hide Edit button
-
-        // Save current values
+        $inputs.prop('disabled', false);
+        $actions.removeClass('hidden');
+        $editBtn.hide();
         originalValues = {
             firstName: $('#firstName').val(),
             lastName: $('#lastName').val(),
@@ -780,237 +1539,154 @@ var USER_KEY = 'openlab_user';
         };
     });
 
-    // Cancel button click
     $cancelBtn.on('click', function() {
-        // Revert inputs to original values
         $('#firstName').val(originalValues.firstName);
         $('#lastName').val(originalValues.lastName);
         $('#studentId').val(originalValues.studentId);
         $('#email').val(originalValues.email);
         $('#college').val(originalValues.college);
         $('#bio').val(originalValues.bio);
-
-        $inputs.prop('disabled', true);  // Disable inputs
-        $actions.addClass('hidden');      // Hide Save/Cancel
-        $editBtn.show();                  // Show Edit button
+        $inputs.prop('disabled', true);
+        $actions.addClass('hidden');
+        $editBtn.show();
     });
 
-    // Save button click
     $saveBtn.on('click', function(e) {
-        e.preventDefault(); // Prevent form submission
-
-        // Get trimmed input values
-        const firstName = $('#firstName').val().trim();
-        const lastName = $('#lastName').val().trim();
-        const email = $('#email').val().trim();
-
-        // Simple validation
+        e.preventDefault();
+        var firstName = $('#firstName').val().trim();
+        var lastName = $('#lastName').val().trim();
+        var email = $('#email').val().trim();
         if (!firstName || !lastName || !email) {
             alert('Please fill out all required fields.');
             return;
         }
-
-        // Save updated data
-        const updatedUser = {
-            firstName,
-            lastName,
+        var currentUser = getCurrentUser();
+        var updatedUser = {
+            firstName: firstName,
+            lastName: lastName,
             studentId: $('#studentId').val(),
-            email,
+            email: email,
             college: $('#college').val(),
+            accountType: currentUser ? currentUser.accountType : 'student',
             bio: $('#bio').val().trim()
         };
         localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
 
-        // Update header and avatar
+        // Sync to accounts storage
+        var accounts = getAccounts();
+        for (var idx = 0; idx < accounts.length; idx++) {
+            if (accounts[idx].email.toLowerCase() === (currentUser ? currentUser.email.toLowerCase() : email.toLowerCase())) {
+                accounts[idx].firstName = firstName;
+                accounts[idx].lastName = lastName;
+                accounts[idx].college = updatedUser.college;
+                accounts[idx].bio = updatedUser.bio;
+                break;
+            }
+        }
+        saveAccounts(accounts);
+
         $('.header-info h1').text(firstName + ' ' + lastName);
         $('.header-info .email').text(email);
         $('.avatar span').text(firstName[0] + lastName[0]);
-
-        // Disable inputs and restore buttons
         $inputs.prop('disabled', true);
         $actions.addClass('hidden');
         $editBtn.show();
-
         alert('Profile updated!');
     });
 }
 
+function handleDeleteAccount() {
+    $('.danger-card .danger-btn').on('click', function() {
+        if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+            var user = getCurrentUser();
+            if (user) {
+                // Remove from accounts store
+                var accounts = getAccounts();
+                var filtered = [];
+                for (var i = 0; i < accounts.length; i++) {
+                    if (accounts[i].email.toLowerCase() !== user.email.toLowerCase()) {
+                        filtered.push(accounts[i]);
+                    }
+                }
+                saveAccounts(filtered);
 
-    /**
-     * Handles the Delete Account button in the Danger Zone.
-     * - Shows a confirm() dialog warning that deletion is permanent.
-     * - On confirm: clears localStorage, redirects to index.html.
-     *
-     * @todo Replace with DELETE /api/users/:id API call
-     * @todo Implement Change Password modal/page
-     * @todo Implement Email Notifications toggle persistence
-     * @returns {void}
-     */
-    function handleDeleteAccount() {
-        $('.danger-card .danger-btn').on('click', function () {
-        if (confirm('Are you sure you want to delete your account?')) {
-             // Remove user data
+                // Remove user's reservations from global store
+                var allRes = getAllReservations();
+                var filteredRes = [];
+                for (var j = 0; j < allRes.length; j++) {
+                    if (allRes[j].userEmail !== user.email) {
+                        filteredRes.push(allRes[j]);
+                    }
+                }
+                saveAllReservations(filteredRes);
+            }
             localStorage.removeItem(USER_KEY);
-
-            // Redirect home
+            localStorage.removeItem(RESERVATIONS_KEY);
             window.location.href = '../index.html';
         }
     });
-    }
+}
 
+function handleChangePassword() {
+    $('.setting-btn').on('click', function() {
+        window.location.href = 'changepassword.html';
+    });
 
-    /**
-     * Handles the Change Password button (.setting-btn) in Account Settings.
-     * - Shows a modal or inline form with fields: current password, new password, confirm new password.
-     * - Validates that new password length >= 8 and new password === confirm new password.
-     * - On success: updates the password in localStorage, displays a success message, closes the form.
-     * - On cancel: closes the form without changes.
-     *
-     * @todo Replace with PUT /api/users/:id/password API call
-     * @returns {void}
-     */
-    function handleChangePassword() {
-    // Profile page: redirect to change password page
-    const changePasswordBtn = document.querySelector('.setting-btn');
-    if (changePasswordBtn) {
-        changePasswordBtn.addEventListener('click', function() {
-            window.location.href = 'changepassword.html';
-        });
-    }
+    var $form = $('#changePasswordForm');
+    if ($form.length) {
+        $form.on('submit', function(e) {
+            e.preventDefault();
+            var user = getCurrentUser();
+            if (!user) { window.location.href = 'login.html'; return; }
 
-    // Change password page: handle form submission
-    const changePasswordForm = $('#changePasswordForm');
-    if (changePasswordForm.length) {
-        changePasswordForm.on('submit', function(e) {
-            e.preventDefault(); // Stop form from reloading
+            var currentPassword = $('#currentPassword').val();
+            var newPassword = $('#newPassword').val();
+            var confirmPassword = $('#confirmPassword').val();
+            var $error = $('#passwordError');
+            var $success = $('#passwordSuccess');
+            $error.hide().text('');
+            $success.hide().text('');
 
-            // Get user inputs
-            const currentPassword = $('#currentPassword').val();
-            const newPassword = $('#newPassword').val();
-            const confirmPassword = $('#confirmPassword').val();
-            const errorDiv = $('#passwordError');
-            const successDiv = $('#passwordSuccess');
-
-            // Hide previous messages
-            errorDiv.hide().text('');
-            successDiv.hide().text('');
-
-            // Validation checks
             if (!currentPassword || !newPassword || !confirmPassword) {
-                errorDiv.text('All fields are required.').show();
-                return;
+                $error.text('All fields are required.').show(); return;
             }
             if (newPassword.length < 8) {
-                errorDiv.text('New password must be at least 8 characters long.').show();
-                return;
+                $error.text('New password must be at least 8 characters long.').show(); return;
             }
             if (newPassword !== confirmPassword) {
-                errorDiv.text('New password and confirmation do not match.').show();
-                return;
+                $error.text('New password and confirmation do not match.').show(); return;
             }
-
-            // Check current password
-            const storedPassword = localStorage.getItem('userPassword');
-            if (storedPassword && storedPassword !== currentPassword) {
-                errorDiv.text('Current password is incorrect.').show();
-                return;
+            var account = authenticateUser(user.email, currentPassword);
+            if (!account) {
+                $error.text('Current password is incorrect.').show(); return;
             }
-
-            // Save new password
-            localStorage.setItem('userPassword', newPassword);
-
-            // Show pop-up and redirect to profile
+            updateAccountPassword(user.email, newPassword);
             alert('Password changed successfully!');
             window.location.href = 'profile.html';
         });
     }
 }
 
-
-    /**
-     * Handles the Change Photo button (.change-avatar-btn) on the profile page.
-     * - Opens a file input dialog for image selection.
-     * - Validates file type (jpg, png, gif) and file size (max 2MB).
-     * - On success: reads the file as a data URL, updates the .avatar element to show
-     *   the new image, and stores the image data in localStorage.
-     *
-     * @todo Replace with POST /api/users/:id/avatar multipart upload API call
-     * @returns {void}
-     */
-   function handleChangeAvatar() {
-    // Hidden file input for selecting image
-    const $fileInput = $('<input>', {
-        type: 'file',
-        accept: 'image/png, image/jpeg, image/gif',
-        style: 'display:none'
-    }).appendTo('body');
-
-    // Open file picker on button click
-    $('.change-avatar-btn').on('click', function() {
-        $fileInput.click();
-    });
-
-    // Handle file selection
+function handleChangeAvatar() {
+    var $fileInput = $('<input>', { type: 'file', accept: 'image/png, image/jpeg, image/gif', style: 'display:none' }).appendTo('body');
+    $('.change-avatar-btn').on('click', function() { $fileInput.click(); });
     $fileInput.on('change', function() {
-        const file = this.files[0]; // Get the selected file
-        const maxSize = 2 * 1024 * 1024; // This is 2MB
+        var file = this.files[0];
         if (!file) return;
-
-        // Check file size
-        if (file.size > maxSize) {
-            alert("File too large! Max 2MB.");
-            return;
-        }
-
-        // Read file as data URL
-        const reader = new FileReader();
+        if (file.size > 2 * 1024 * 1024) { alert("File too large! Max 2MB."); return; }
+        var reader = new FileReader();
         reader.onload = function(e) {
-            const imageData = e.target.result;
-
-            // Update avatar element
-            const $newImg = $('<img>').attr({
-                src: imageData,
-                style: 'width:100%; height:100%; border-radius:50%; object-fit:cover;'
-            });
-            $('.avatar').empty().append($newImg);
-
-            // Save image data to localStorage (temporary)
-            const user = JSON.parse(localStorage.getItem('currentUser')) || {};
-            user.profilePic = imageData;
-            localStorage.setItem('currentUser', JSON.stringify(user));
+            var $img = $('<img>').attr({ src: e.target.result, style: 'width:100%;height:100%;border-radius:50%;object-fit:cover;' });
+            $('.avatar').empty().append($img);
         };
-
         reader.readAsDataURL(file);
     });
 }
 
-
-    /**
-     * Handles the Email Notifications toggle in Account Settings.
-     * - Attaches a change listener to the .toggle input[type="checkbox"].
-     * - On toggle: updates the user's notification preference in localStorage.
-     * - Displays a brief confirmation message indicating the new state.
-     *
-     * @todo Replace with PUT /api/users/:id/settings API call
-     * @returns {void}
-     */
-    function handleNotificationToggle() {
-    $('.setting-item .toggle input[type="checkbox"]').on('change', function () {
-        const enabled = $(this).is(':checked');
-
-        // Update 
-        const user = JSON.parse(localStorage.getItem('currentUser')) || {};
-        user.notifications = enabled;
-        localStorage.setItem('currentUser', JSON.stringify(user));
-
-        // Show confirmation
-        let message = '';
-        if (enabled) {
-            message = 'Email notifications enabled';
-        } else {
-            message = 'Email notifications disabled';
-        }
-        alert(message);
+function handleNotificationToggle() {
+    $('.setting-item .toggle input[type="checkbox"]').on('change', function() {
+        var enabled = $(this).is(':checked');
+        alert(enabled ? 'Email notifications enabled' : 'Email notifications disabled');
     });
 }
 
@@ -1019,81 +1695,97 @@ var USER_KEY = 'openlab_user';
 // USERS PAGE (pages/users.html)
 // =============================================================================
 
-    /**
-     * Initializes the user search functionality.
-     * - On .search-btn click: reads #userSearch and #collegeFilter values.
-     * - Filters .user-card elements by matching name (h3) or student ID (.user-id)
-     *   against the search term, and .college-badge against the college filter.
-     * - Shows/hides cards based on match.
-     *
-     * @todo "View Profile" links currently point to "#" — should link to profile.html?id=STUDENTID
-     * @todo Fix duplicate user card in users.html (Ana Garcia Lopez appears twice, lines 102-138)
-     * @todo Pagination needs backend data
-     * @returns {void}
-     */
-    function initUserSearch() {
-  // The search input field
-  const $searchInput = $('#userSearch');
+function buildUsersPage() {
+    var $container = $('.users-container');
 
-  // The college dropdown filter
-  const $collegeFilter = $('#collegeFilter');
+    // Page Header
+    $container.append(
+        '<div class="page-header"><h1>Find Users</h1>' +
+        '<p>Search and connect with other OpenLab users</p></div>'
+    );
 
-  // The button that triggers filtering manually
-  const $searchBtn = $('.search-btn');
+    // Search Section
+    $container.append(
+        '<div class="search-section"><div class="search-card"><div class="search-row">' +
+            '<div class="search-input-group">' +
+            '<input type="text" id="userSearch" placeholder="Search by name or student ID..."></div>' +
+            '<div class="filter-group"><select id="collegeFilter">' +
+                '<option value="">All Colleges</option>' + buildCollegeOptions("", false) +
+            '</select></div>' +
+            '<button class="search-btn">Search</button>' +
+        '</div></div></div>'
+    );
 
-  // All user cards displayed on the page
-  const $userCards = $('.user-card');
+    // Users Grid
+    var $grid = $('<div class="users-grid"></div>');
+    for (var i = 0; i < SAMPLE_USERS.length; i++) {
+        var u = SAMPLE_USERS[i];
+        var initials = getInitials(u.firstName, u.lastName);
+        var avatarExtra = u.avatarClass ? ' ' + u.avatarClass : '';
+        var collegeBadgeClass = u.college.toLowerCase();
 
-  function filterCards() {
-    // Get the current search text (lowercase and trimmed)
-    const searchTerm = $searchInput.val().toLowerCase().trim();
-
-    // Get the currently selected college from the dropdown
-    const selectedCollege = $collegeFilter.val();
-
-    $userCards.each(function () {
-      const $card = $(this); // The current user card in the loop
-      const name = $card.find('h3').text().toLowerCase(); // User's full name
-      const studentId = $card.find('.user-id').text().toLowerCase(); // User's ID text
-      const college = $card.find('.college-badge').text(); // User's college badge text
-
-      // Check if the card matches the search term (name or ID)
-      const matchesSearch = name.includes(searchTerm) || studentId.includes(searchTerm);
-
-      // Check if the card matches the selected college
-      const matchesCollege = selectedCollege === '' || college === selectedCollege;
-
-      // Show or hide the card based on matches
-      if (matchesSearch && matchesCollege) {
-        $card.show();
-      } else {
-        $card.hide();
-      }
-
-      // Extract numeric ID from the student ID text
-      const idMatch = studentId.match(/\d+/); 
-      if (idMatch) {
-        // Update "View Profile" link 
-        $card.find('.view-profile-btn').attr('href', 'public-profile.html?id=' + idMatch[0]);
-      }
-    });
-
-    // Refresh page
-    if (typeof window.refreshPagination === 'function') {
-      window.refreshPagination();
+        $grid.append(
+            '<div class="user-card" data-college="' + u.college + '">' +
+                '<div class="user-avatar' + avatarExtra + '"><span>' + initials + '</span></div>' +
+                '<div class="user-info">' +
+                    '<h3>' + u.firstName + ' ' + u.lastName + '</h3>' +
+                    '<p class="user-id">ID: ' + u.id + '</p>' +
+                    '<span class="college-badge ' + collegeBadgeClass + '">' + u.college + '</span>' +
+                '</div>' +
+                '<div class="user-stats"><div class="stat">' +
+                    '<span class="value">' + u.totalSessions + '</span>' +
+                    '<span class="label">Sessions</span>' +
+                '</div></div>' +
+                '<a href="public-profile.html?id=' + u.id + '" class="view-profile-btn">View Profile</a>' +
+            '</div>'
+        );
     }
-  }
+    $container.append($grid);
 
-  // Event listeners
-  $searchBtn.on('click', filterCards); // Manual search click
-  $searchInput.on('keyup', filterCards); // Filter as user types
-  $collegeFilter.on('change', filterCards); // Filter when college changes
-  $searchInput.on('keypress', function (e) {
-    if (e.which === 13) filterCards(); // Enter key triggers search
-  });
+    // Pagination
+    $container.append(
+        '<div class="pagination">' +
+            '<button class="page-btn" disabled>Previous</button>' +
+            '<div class="page-numbers">' +
+                '<button class="page-num active">1</button>' +
+            '</div>' +
+            '<button class="page-btn">Next</button>' +
+        '</div>'
+    );
 
-  // Initial filter on page load
-  filterCards();
+    // Search logic
+    initUserSearch();
+}
+
+function initUserSearch() {
+    var $searchInput = $('#userSearch');
+    var $collegeFilter = $('#collegeFilter');
+    var $searchBtn = $('.search-btn');
+
+    function filterCards() {
+        var searchTerm = $searchInput.val().toLowerCase().trim();
+        var selectedCollege = $collegeFilter.val();
+
+        $('.user-card').each(function() {
+            var $card = $(this);
+            var name = $card.find('h3').text().toLowerCase();
+            var studentId = $card.find('.user-id').text().toLowerCase();
+            var college = $card.find('.college-badge').text();
+            var matchesSearch = name.indexOf(searchTerm) > -1 || studentId.indexOf(searchTerm) > -1;
+            var matchesCollege = selectedCollege === '' || college === selectedCollege;
+            $card.toggle(matchesSearch && matchesCollege);
+        });
+
+        if (typeof window.refreshPagination === 'function') {
+            window.refreshPagination();
+        }
+    }
+
+    $searchBtn.on('click', filterCards);
+    $searchInput.on('keyup', filterCards);
+    $collegeFilter.on('change', filterCards);
+    $searchInput.on('keypress', function(e) { if (e.which === 13) filterCards(); });
+    filterCards();
 }
 
 
@@ -1101,418 +1793,588 @@ var USER_KEY = 'openlab_user';
 // PUBLIC PROFILE PAGE (pages/public-profile.html)
 // =============================================================================
 
-    /**
-     * Initializes the public profile page for viewing another user's profile.
-     * - Reads the user ID from the URL query parameter (e.g., ?id=12340001).
-     * - Fetches and displays the user's public data:
-     *     - Profile picture (or initials), full name, student ID, college, and description.
-     *     - A list of the user's current non-anonymous reservations.
-     * - This page is read-only; visitors cannot edit another user's profile.
-     * - If no valid user ID is provided, displays a "User not found" message.
-     *
-     * @todo Replace hardcoded sample data with GET /api/users/:id/public API call
-     * @returns {void}
-     */
-    function initPublicProfilePage() {
-        // Parse the URL query parameters
-        const urlParams = new URLSearchParams(window.location.search);
+function buildPublicProfilePage() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var userId = urlParams.get('id');
+    var $container = $('.profile-container');
 
-        // Extract the 'id' parameter to identify which user's profile to show
-        const userId = urlParams.get('id');
+    if (!userId) {
+        $container.html(
+            '<div class="page-header" style="text-align:center;color:#fff;">' +
+            '<h1>User Not Found</h1><p>No user ID provided.</p>' +
+            '<a href="users.html" class="back-link">Back to Find Users</a></div>'
+        );
+        return;
+    }
 
-        // If no user ID is provided in the URL, exit
-        if (!userId) {
-            console.log('No user ID provided');
-            return;
+    var user = getUserById(userId);
+    if (!user) {
+        $container.html(
+            '<div class="page-header" style="text-align:center;color:#fff;">' +
+            '<h1>User Not Found</h1><p>No user exists with ID: ' + userId + '</p>' +
+            '<a href="users.html" class="back-link">Back to Find Users</a></div>'
+        );
+        return;
+    }
+
+    var initials = getInitials(user.firstName, user.lastName);
+    document.title = user.firstName + ' ' + user.lastName + ' - OpenLab';
+
+    // Profile Header
+    $container.append(
+        '<div class="profile-header">' +
+            '<div class="avatar-section"><div class="avatar"><span>' + initials + '</span></div></div>' +
+            '<div class="header-info">' +
+                '<h1>' + user.firstName + ' ' + user.lastName + '</h1>' +
+                '<p class="email">' + user.email + '</p>' +
+                '<div class="badges">' +
+                    '<span class="badge student">Student</span>' +
+                    '<span class="badge college">' + user.college + '</span>' +
+                    '<span class="badge active">Active</span>' +
+                '</div>' +
+                '<p class="bio">' + user.bio + '</p>' +
+            '</div>' +
+        '</div>'
+    );
+
+    // Current Reservations
+    var resHtml = '<div class="profile-card">' +
+        '<div class="card-header"><h3>Current Reservations</h3></div>' +
+        '<div class="settings-list">';
+
+    if (user.reservations.length === 0) {
+        resHtml += '<div class="setting-item"><div class="setting-info"><p>No current reservations</p></div></div>';
+    } else {
+        for (var i = 0; i < user.reservations.length; i++) {
+            var r = user.reservations[i];
+            resHtml += '<div class="setting-item"><div class="setting-info">' +
+                '<h4>' + r.lab + ' - Seat ' + r.seat + '</h4>' +
+                '<p>' + r.date + ' | ' + r.time + '</p>' +
+                '</div></div>';
+        }
+    }
+    resHtml += '</div></div>';
+    $container.append(resHtml);
+
+    // Statistics
+    $container.append(
+        '<div class="profile-card stats-card">' +
+            '<div class="card-header"><h3>Statistics</h3></div>' +
+            '<div class="stats-grid">' +
+                '<div class="stat-item"><span class="stat-value">' + user.totalSessions + '</span><span class="stat-label">Total Sessions</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + user.completed + '</span><span class="stat-label">Completed</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + user.cancelled + '</span><span class="stat-label">Cancelled</span></div>' +
+                '<div class="stat-item"><span class="stat-value">' + user.hoursUsed + '</span><span class="stat-label">Hours Used</span></div>' +
+            '</div>' +
+            '<div class="member-since"><p>Member since <strong>' + user.memberSince + '</strong></p></div>' +
+        '</div>'
+    );
+}
+
+
+// =============================================================================
+// WALK-IN RESERVATION PAGE (pages/walkin.html)
+// =============================================================================
+
+function buildWalkinPage() {
+    var $container = $('.reserve-container');
+    var user = getCurrentUser();
+
+    // Page Header
+    $container.append(
+        '<div class="page-header"><h1>Walk-In Reservation</h1>' +
+        '<p>Lab technicians: Reserve a seat for a walk-in student</p></div>'
+    );
+
+    var $layout = $('<div class="reserve-layout"></div>');
+
+    // Left Column: Walk-In Form
+    var labOptions = '';
+    for (var i = 0; i < LABS.length; i++) {
+        labOptions += '<option value="' + LABS[i].code + '">' + LABS[i].code + ' - ' + LABS[i].building + '</option>';
+    }
+
+    var today = new Date().toISOString().split('T')[0];
+
+    $layout.append(
+        '<div class="seat-selection-panel"><div class="panel-card">' +
+            '<div class="panel-header"><h3>Walk-In Student Details</h3></div>' +
+            '<form class="walkin-form">' +
+                '<div class="time-selection"><label for="walkinStudentId">Student ID</label>' +
+                '<div class="time-row"><input type="text" id="walkinStudentId" placeholder="Enter 8-digit student ID" pattern="[0-9]{8}" required></div></div>' +
+                '<div class="time-selection"><label for="walkinLab">Select Lab</label>' +
+                '<div class="time-row"><select id="walkinLab" required>' +
+                '<option value="" disabled selected>Choose a lab</option>' + labOptions + '</select></div></div>' +
+                '<div class="time-selection"><label for="walkinSeat">Seat Number</label>' +
+                '<div class="time-row"><input type="text" id="walkinSeat" placeholder="e.g., A1, B5, C10" required></div></div>' +
+                '<div class="time-selection"><label>Date & Time Slot</label>' +
+                '<div class="time-row"><input type="date" id="walkinDate" value="' + today + '">' +
+                '<select id="walkinTime">' + buildTimeSlotOptions("09:00") + '</select></div></div>' +
+                '<button type="submit" class="confirm-btn">Reserve for Student</button>' +
+            '</form>' +
+        '</div></div>'
+    );
+
+    // Right Column: Current Walk-In Reservations from global store
+    var allRes = getAllReservations();
+    var walkinRes = [];
+    for (var w = 0; w < allRes.length; w++) {
+        if (allRes[w].isWalkIn && allRes[w].status === 'upcoming') {
+            walkinRes.push(allRes[w]);
+        }
+    }
+
+    var rightHtml =
+        '<div class="booking-summary-panel"><div class="panel-card summary-card">' +
+        '<h3>Current Walk-In Reservations</h3>' +
+        '<div class="summary-item"><p>Remove no-show students or manage walk-in reservations</p></div>' +
+        '<div class="summary-details">';
+
+    if (walkinRes.length === 0) {
+        rightHtml += '<div class="summary-item" style="text-align:center;color:#666;"><p>No current walk-in reservations</p></div>';
+    } else {
+        for (var j = 0; j < walkinRes.length; j++) {
+            var wr = walkinRes[j];
+            var studentName = 'Student';
+            var accounts = getAccounts();
+            for (var a = 0; a < accounts.length; a++) {
+                if (accounts[a].studentId === wr.userId) {
+                    studentName = accounts[a].firstName + ' ' + accounts[a].lastName;
+                    break;
+                }
+            }
+            rightHtml +=
+                '<div class="walkin-reservation-item" data-reservation-id="' + wr.id + '">' +
+                    '<div class="summary-item">' +
+                        '<span class="label">' + wr.lab + ' - Seat ' + wr.seat + '</span>' +
+                        '<span class="value">' + wr.timeSlot.split(' - ')[0] + ' - ' + studentName + ' (' + wr.userId + ')</span>' +
+                    '</div>' +
+                    '<button class="remove-btn">Remove No-Show</button>' +
+                '</div>';
+            if (j < walkinRes.length - 1) {
+                rightHtml += '<div class="divider"></div>';
+            }
+        }
+    }
+
+    rightHtml += '</div><a href="dashboard.html" class="back-link">Back to Dashboard</a></div></div>';
+    $layout.append(rightHtml);
+    $container.append($layout);
+
+    // Event Handlers
+    initWalkInReservation();
+    handleRemoveNoShow();
+}
+
+function initWalkInReservation() {
+    $('.walkin-form').on('submit', function(e) {
+        e.preventDefault();
+        var user = getCurrentUser();
+        var studentId = $('#walkinStudentId').val().trim();
+        var lab = $('#walkinLab').val();
+        var seat = $('#walkinSeat').val().trim().toUpperCase();
+        var date = $('#walkinDate').val();
+        var time = $('#walkinTime').val();
+
+        if (!/^[0-9]{8}$/.test(studentId)) {
+            alert('Student ID must be exactly 8 digits.'); $('#walkinStudentId').focus(); return;
+        }
+        if (!lab) { alert('Please select a lab.'); $('#walkinLab').focus(); return; }
+        if (!seat) { alert('Please enter a seat number.'); $('#walkinSeat').focus(); return; }
+        if (!/^[A-Z][0-9]{1,2}$/i.test(seat)) {
+            alert('Seat must be in format like A1, B5, or C10.'); $('#walkinSeat').focus(); return;
+        }
+        if (!date) { alert('Please select a date.'); $('#walkinDate').focus(); return; }
+        var selectedDate = new Date(date);
+        var todayDate = new Date(); todayDate.setHours(0, 0, 0, 0);
+        if (selectedDate < todayDate) { alert('Cannot reserve for a past date.'); $('#walkinDate').focus(); return; }
+        if (!time) { alert('Please select a time slot.'); $('#walkinTime').focus(); return; }
+
+        var timeText = $('#walkinTime option:selected').text();
+        var labObj = getLabByCode(lab);
+
+        // Find student name from accounts if registered
+        var studentName = 'Student';
+        var studentEmail = 'walkin_' + studentId + '@temp.dlsu.edu.ph';
+        var accounts = getAccounts();
+        for (var i = 0; i < accounts.length; i++) {
+            if (accounts[i].studentId === studentId) {
+                studentName = accounts[i].firstName + ' ' + accounts[i].lastName;
+                studentEmail = accounts[i].email;
+                break;
+            }
         }
 
-        // Mock user database for Phase 1 (hardcoded sample data)
-        // @todo Replace with GET /api/users/:id/public API call
-        var mockUsers = {
-            '12340001': {
-                firstName: 'Maria Clara',
-                lastName: 'Santos',
-                email: 'maria_santos@dlsu.edu.ph',
-                college: 'CCS',
-                bio: 'CCS sophomore | Usually found at GK101A grinding CCAPDEV projects',
-                totalSessions: 32,
-                completed: 28,
-                cancelled: 2,
-                hoursUsed: 16,
-                memberSince: 'August 2024',
-                reservations: [
-                    { lab: 'GK101A - Seat C7', datetime: 'Feb 11, 2025 | 10:00 AM - 10:30 AM' },
-                    { lab: 'LS313 - Seat A3', datetime: 'Feb 13, 2025 | 02:00 PM - 02:30 PM' },
-                    { lab: 'AG1010 - Seat B2', datetime: 'Feb 14, 2025 | 09:00 AM - 09:30 AM' }
-                ]
-            },
-            '12340002': {
-                firstName: 'Jose Rizal',
-                lastName: 'Jr.',
-                email: 'jose_rizal@dlsu.edu.ph',
-                college: 'CLA',
-                bio: 'CLA student | History enthusiast and lab regular',
-                totalSessions: 28,
-                completed: 25,
-                cancelled: 1,
-                hoursUsed: 14,
-                memberSince: 'September 2024',
-                reservations: [
-                    { lab: 'LS313 - Seat B4', datetime: 'Feb 12, 2025 | 09:00 AM - 09:30 AM' },
-                    { lab: 'AG1010 - Seat A1', datetime: 'Feb 15, 2025 | 01:00 PM - 01:30 PM' }
-                ]
-            },
-            '12340003': {
-                firstName: 'Ana Garcia',
-                lastName: 'Lopez',
-                email: 'ana_lopez@dlsu.edu.ph',
-                college: 'GCOE',
-                bio: 'Engineering student | Prefers the quiet hours at GK304',
-                totalSessions: 45,
-                completed: 40,
-                cancelled: 3,
-                hoursUsed: 22.5,
-                memberSince: 'June 2024',
-                reservations: [
-                    { lab: 'GK304 - Seat D2', datetime: 'Feb 10, 2025 | 08:00 AM - 08:30 AM' },
-                    { lab: 'GK101B - Seat C5', datetime: 'Feb 11, 2025 | 03:00 PM - 03:30 PM' },
-                    { lab: 'GK304 - Seat D2', datetime: 'Feb 13, 2025 | 08:00 AM - 08:30 AM' }
-                ]
-            },
-            '12340004': {
-                firstName: 'Karl Reyes',
-                lastName: 'Mendoza',
-                email: 'karl_mendoza@dlsu.edu.ph',
-                college: 'COB',
-                bio: 'Business student | Uses labs for group projects and presentations',
-                totalSessions: 19,
-                completed: 17,
-                cancelled: 1,
-                hoursUsed: 9.5,
-                memberSince: 'October 2024',
-                reservations: [
-                    { lab: 'AG1010 - Seat A5', datetime: 'Feb 14, 2025 | 11:00 AM - 11:30 AM' }
-                ]
-            },
-            '12340005': {
-                firstName: 'Lea Domingo',
-                lastName: 'Cruz',
-                email: 'lea_cruz@dlsu.edu.ph',
-                college: 'COS',
-                bio: 'Science major | Data analysis and research computing',
-                totalSessions: 37,
-                completed: 34,
-                cancelled: 2,
-                hoursUsed: 18.5,
-                memberSince: 'July 2024',
-                reservations: [
-                    { lab: 'GK101A - Seat B8', datetime: 'Feb 10, 2025 | 02:00 PM - 02:30 PM' },
-                    { lab: 'GK101A - Seat B8', datetime: 'Feb 12, 2025 | 02:00 PM - 02:30 PM' }
-                ]
-            }
+        // Create walk-in reservation and persist to global store
+        var newRes = {
+            id: Date.now(),
+            lab: lab,
+            seat: seat,
+            building: labObj ? labObj.building : '',
+            date: date,
+            displayDate: formatDateLong(date),
+            timeSlot: timeText,
+            status: "upcoming",
+            bookedOn: formatDateLong(new Date().toISOString().split('T')[0]),
+            anonymous: false,
+            userEmail: studentEmail,
+            userId: studentId,
+            isWalkIn: true,
+            createdBy: user ? user.email : ''
         };
 
-        // Look up the user by their student ID
-        var user = mockUsers[userId];
+        var allRes = getAllReservations();
+        allRes.unshift(newRes);
+        saveAllReservations(allRes);
 
-        // If user not found, show a message and exit
-        if (!user) {
-            $('.profile-container').html(
-                '<div class="page-header" style="text-align:center;color:#fff;">' +
-                '<h1>User Not Found</h1>' +
-                '<p>No user exists with ID: ' + userId + '</p>' +
-                '<a href="users.html" class="back-link">Back to Find Users</a>' +
-                '</div>'
-            );
-            return;
+        alert('Walk-in reservation created!\n\nStudent ID: ' + studentId +
+              '\nStudent: ' + studentName +
+              '\nLab: ' + lab + '\nSeat: ' + seat + '\nDate: ' + date + '\nTime: ' + timeText);
+
+        // Remove empty state message if present
+        var $emptyMsg = $('.summary-details .summary-item p');
+        if ($emptyMsg.length && $emptyMsg.text().indexOf('No current') > -1) {
+            $emptyMsg.closest('.summary-item').remove();
         }
 
-        // Update avatar initials
-        var initials = user.firstName.charAt(0) + user.lastName.charAt(0);
-        $('.avatar span').text(initials);
+        // Add to current reservations panel
+        var newItemHtml =
+            '<div class="divider"></div>' +
+            '<div class="walkin-reservation-item" data-reservation-id="' + newRes.id + '">' +
+                '<div class="summary-item">' +
+                    '<span class="label">' + lab + ' - Seat ' + seat + '</span>' +
+                    '<span class="value">' + timeText.split(' - ')[0] + ' - ' + studentName + ' (' + studentId + ')</span>' +
+                '</div>' +
+                '<button class="remove-btn">Remove No-Show</button>' +
+            '</div>';
+        $('.summary-details').append(newItemHtml);
 
-        // Update header info
-        $('.header-info h1').text(user.firstName + ' ' + user.lastName);
-        $('.header-info .email').text(user.email);
-        $('.badge.college').text(user.college);
-        $('.header-info .bio').text(user.bio);
-
-        // Update page title
-        document.title = user.firstName + ' ' + user.lastName + ' - OpenLab';
-
-        // Build reservations list
-        var $reservationsList = $('.settings-list');
-        $reservationsList.empty();
-
-        if (user.reservations.length === 0) {
-            $reservationsList.html(
-                '<div class="setting-item">' +
-                '<div class="setting-info"><p>No current reservations</p></div>' +
-                '</div>'
-            );
-        } else {
-            for (var i = 0; i < user.reservations.length; i++) {
-                var res = user.reservations[i];
-                $reservationsList.append(
-                    '<div class="setting-item">' +
-                    '<div class="setting-info">' +
-                    '<h4>' + res.lab + '</h4>' +
-                    '<p>' + res.datetime + '</p>' +
-                    '</div></div>'
-                );
-            }
-        }
-
-        // Update statistics
-        var $statValues = $('.stats-grid .stat-item .stat-value');
-        $statValues.eq(0).text(user.totalSessions);
-        $statValues.eq(1).text(user.completed);
-        $statValues.eq(2).text(user.cancelled);
-        $statValues.eq(3).text(user.hoursUsed);
-
-        // Update member since
-        $('.member-since strong').text(user.memberSince);
-    }
-
-
-// =============================================================================
-// DASHBOARD PAGE (pages/dashboard.html)
-// =============================================================================
-
-    /**
-     * Initializes the dashboard page.
-     * - Replaces the hardcoded "Welcome back, Juan!" with getCurrentUser().firstName.
-     *
-     * @todo All stats, upcoming reservations, recent activity, and favorite labs
-     *       are hardcoded sample data — need API calls to populate dynamically
-     * @returns {void}
-     */
-    function initDashboard() {
-        const user = getCurrentUser();
-        if (user) {
-            // Update welcome heading with user's first name
-            $('.welcome-text h1').text('Welcome back, ' + user.firstName + '!');
-            $('.welcome-text p').text("Here's an overview of your lab reservations");
-        }
-    }
-
-
-// =============================================================================
-// LAB TECHNICIAN FEATURES (pages/walkin.html)
-// =============================================================================
-
-    /**
-     * Initializes the walk-in reservation page for lab technicians.
-     * - Attaches a submit handler to .walkin-form that prevents default submission.
-     * - Lab technicians enter the walk-in student's ID, select the lab, seat, and time slot.
-     * - Validates that the student ID is a valid 8-digit number and the seat is available.
-     * - On success: creates a reservation under the walk-in student's account,
-     *   marks the seat as reserved, and displays a confirmation message.
-     *
-     * @todo Requires technician authentication check (role === 'technician')
-     * @todo Replace with POST /api/reservations/walkin API call
-     * @returns {void}
-     */
-  function initWalkInReservation() {
-    // When the walk-in form is submitted
-    $('.walkin-form').on('submit', function (e) {
-        e.preventDefault(); // Stop page from reloading
-        
-        // Get form values
-        const studentId = $('#walkinStudentId').val().trim(); // Student's ID
-        const lab = $('#walkinLab').val(); // Selected lab
-        const seat = $('#walkinSeat').val().trim().toUpperCase(); // Seat number in uppercase
-        const date = $('#walkinDate').val(); // Date of reservation
-        const time = $('#walkinTime').val(); // Time slot
-        
-        // Check if student ID is 8 digits
-        if (!/^[0-9]{8}$/.test(studentId)) {
-            alert('Student ID must be exactly 8 digits.');
-            $('#walkinStudentId').focus();
-            return;
-        }
-        
-        // Make sure a lab is selected
-        if (!lab) {
-            alert('Please select a lab.');
-            $('#walkinLab').focus();
-            return;
-        }
-        
-        // Make sure seat is entered
-        if (!seat) {
-            alert('Please enter a seat number.');
-            $('#walkinSeat').focus();
-            return;
-        }
-        
-        // Check seat format (like A1, B5, C10)
-        if (!/^[A-Z][0-9]{1,2}$/i.test(seat)) {
-            alert('Seat must be in format like A1, B5, or C10.');
-            $('#walkinSeat').focus();
-            return;
-        }
-        
-        // Make sure a date is picked
-        if (!date) {
-            alert('Please select a date.');
-            $('#walkinDate').focus();
-            return;
-        }
-        
-        // Do not allow past dates
-        const selectedDate = new Date(date);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (selectedDate < today) {
-            alert('Cannot reserve for a past date.');
-            $('#walkinDate').focus();
-            return;
-        }
-        
-        // Make sure a time is picked
-        if (!time) {
-            alert('Please select a time slot.');
-            $('#walkinTime').focus();
-            return;
-        }
-        
-        // Get the text of the time slot for confirmation
-        const timeText = $('#walkinTime option:selected').text();
-        
-        // Show confirmation message
-        alert(
-            'Walk-in reservation created!\n\n' +
-            'Student ID: ' + studentId + '\n' +
-            'Lab: ' + lab + '\n' +
-            'Seat: ' + seat + '\n' +
-            'Date: ' + date + '\n' +
-            'Time: ' + timeText
-        );
-        
-        // Clear the form
         $('.walkin-form')[0].reset();
     });
 }
 
-    
-    /**
-     * Handles the removal of a no-show reservation by a lab technician.
-     * - Attaches click listeners to .remove-noshow-btn elements on the walk-in page.
-     * - Only enabled when the current time is within 10 minutes after the reservation start time.
-     * - Shows a confirm() dialog warning that the entire reservation will be cancelled.
-     * - On confirm: cancels the reservation, frees the seat, and updates the UI.
-     *
-     * @todo Requires technician authentication check (role === 'technician')
-     * @todo Replace with DELETE /api/reservations/:id/noshow API call
-     * @returns {void}
-     */
-   function handleRemoveNoShow() {
-    // When a remove button is clicked
-    $('.remove-btn').on('click', function() {
-        // Stop if the button is disabled
-        if ($(this).prop('disabled')) {
-            alert('This reservation cannot be removed yet. Wait until within 10 minutes of start time.');
-            return;
-        }
-        
-        // Get reservation info
-        const $item = $(this).closest('.walkin-reservation-item');
-        const reservationId = $item.data('reservation-id'); // ID of reservation
-        const seatInfo = $item.find('.label').text(); // Seat info
-        const studentInfo = $item.find('.value').text(); // Student info
-        
-        // Ask for confirmation
-        if (confirm(
-            'Remove this no-show reservation?\n\n' +
-            seatInfo + '\n' +
-            studentInfo + '\n\n' +
-            'This will cancel the reservation and free the seat.'
-        )) {
-            // Remove the reservation visually
+function handleRemoveNoShow() {
+    $('.summary-details').on('click', '.remove-btn', function() {
+        var $item = $(this).closest('.walkin-reservation-item');
+        var resId = $item.data('reservation-id');
+        var seatInfo = $item.find('.label').text();
+        var studentInfo = $item.find('.value').text();
+
+        if (confirm('Remove this no-show reservation?\n\n' + seatInfo + '\n' + studentInfo +
+                     '\n\nThis will cancel the reservation and free the seat.')) {
+            // Update status in global store
+            var allRes = getAllReservations();
+            for (var i = 0; i < allRes.length; i++) {
+                if (allRes[i].id === resId) {
+                    allRes[i].status = 'cancelled';
+                    break;
+                }
+            }
+            saveAllReservations(allRes);
+
+            $item.prev('.divider').remove();
             $item.fadeOut(300, function() {
                 $(this).remove();
-                
-                // If no reservations left, show message
                 if ($('.walkin-reservation-item').length === 0) {
-                    $('.summary-details').append(
-                        '<div class="summary-item" style="text-align: center; color: #666;">' +
-                        '<p>No current reservations</p>' +
-                        '</div>'
+                    $('.summary-details').html(
+                        '<div class="summary-item" style="text-align:center;color:#666;"><p>No current walk-in reservations</p></div>'
                     );
                 }
             });
-            
-            // Show success alert
-            setTimeout(function() {
-                alert('No-show reservation removed successfully.');
-            }, 350);
+            setTimeout(function() { alert('No-show reservation removed successfully.'); }, 350);
         }
     });
 }
 
+
+// =============================================================================
+// LOGIN PAGE (pages/login.html)
+// =============================================================================
+
+function buildLoginPage() {
+    var $banner = $('.banner-content');
+    $banner.append(
+        '<div class="login-card">' +
+            '<h2>Welcome Back</h2>' +
+            '<p class="subtitle">Sign in to access your lab reservations</p>' +
+            '<form class="login-form">' +
+                '<div class="form-group"><label for="email">Email Address</label>' +
+                '<input type="email" id="email" name="email" placeholder="Enter your DLSU email" required></div>' +
+                '<div class="form-group"><label for="password">Password</label>' +
+                '<input type="password" id="password" name="password" placeholder="Enter your password" required></div>' +
+                '<div class="form-options">' +
+                    '<label class="remember-me"><input type="checkbox" name="remember" id="remember"><span>Remember me</span></label>' +
+                    '<a href="#" class="forgot-password">Forgot password?</a>' +
+                '</div>' +
+                '<button type="submit" class="login-btn">Sign In</button>' +
+            '</form>' +
+            '<div class="divider"><span>or continue with</span></div>' +
+            '<p class="register-link">Don\'t have an account? <a href="register.html">Sign up</a></p>' +
+        '</div>'
+    );
+
+    initLoginPage();
+}
+
+function initLoginPage() {
+    $('.login-form').on('submit', function(e) {
+        e.preventDefault();
+        var email = $('#email').val().trim();
+        var password = $('#password').val();
+
+        if (!email || !password) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        var account = authenticateUser(email, password);
+        if (!account) {
+            alert("Invalid email or password.");
+            $('#password').val('').focus();
+            return;
+        }
+
+        // Create session user (without password)
+        var sessionUser = {
+            firstName: account.firstName,
+            lastName: account.lastName,
+            email: account.email,
+            studentId: account.studentId,
+            college: account.college,
+            accountType: account.accountType,
+            bio: account.bio
+        };
+        localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+
+        // Seed/load user reservations
+        seedUserReservations(account.email);
+
+        window.location.href = "dashboard.html";
+    });
+
+    $('.forgot-password').on('click', function(e) {
+        e.preventDefault();
+        var email = prompt("Enter your DLSU email:");
+        if (email) {
+            var account = findAccountByEmail(email);
+            if (account) {
+                alert("Password hint: Your password is '" + account.password + "'");
+            } else {
+                alert("Email not found in our records.");
+            }
+        }
+    });
+}
+
+
+// =============================================================================
+// REGISTER PAGE (pages/register.html)
+// =============================================================================
+
+function buildRegisterPage() {
+    var $banner = $('.banner-content');
+    $banner.append(
+        '<div class="register-card">' +
+            '<h2>Create Account</h2>' +
+            '<p class="subtitle">Join OpenLab to start reserving computer slots</p>' +
+            '<form class="register-form">' +
+                '<div class="name-row">' +
+                    '<div class="form-group"><label for="firstName">First Name</label>' +
+                    '<input type="text" id="firstName" name="firstName" placeholder="Juan" autocomplete="given-name" required></div>' +
+                    '<div class="form-group"><label for="lastName">Last Name</label>' +
+                    '<input type="text" id="lastName" name="lastName" placeholder="Dela Cruz" autocomplete="family-name" required></div>' +
+                '</div>' +
+                '<div class="form-group"><label for="studentId">Student ID</label>' +
+                '<input type="text" id="studentId" name="studentId" placeholder="12345678" pattern="[0-9]{8}" title="Please enter your 8-digit student ID" required></div>' +
+                '<div class="form-group"><label for="email">DLSU Email</label>' +
+                '<input type="email" id="email" name="email" placeholder="juan_delacruz@dlsu.edu.ph" autocomplete="email" required></div>' +
+                '<div class="form-group"><label for="college">College</label>' +
+                '<select id="college" name="college" required>' + buildCollegeOptions("", true) + '</select></div>' +
+                '<div class="form-group"><label for="accountType">Account Type</label>' +
+                '<select id="accountType" name="accountType" required>' +
+                    '<option value="" disabled selected>Select account type</option>' +
+                    '<option value="student">Student</option>' +
+                    '<option value="technician">Lab Technician</option>' +
+                '</select></div>' +
+                '<div class="form-group"><label for="password">Password</label>' +
+                '<input type="password" id="password" name="password" placeholder="Create a strong password" minlength="8" autocomplete="new-password" required></div>' +
+                '<div class="form-group"><label for="confirmPassword">Confirm Password</label>' +
+                '<input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" autocomplete="new-password" required></div>' +
+                '<button type="submit" class="register-btn">Create Account</button>' +
+            '</form>' +
+            '<p class="login-link">Already have an account? <a href="login.html">Sign in</a></p>' +
+        '</div>'
+    );
+
+    initRegisterPage();
+}
+
+function initRegisterPage() {
+    $('.register-form').on('submit', function(e) {
+        e.preventDefault();
+        var pass = $('#password').val();
+        var confirmPass = $('#confirmPassword').val();
+        var studentId = $('#studentId').val().trim();
+        var email = $('#email').val().trim();
+
+        if (pass !== confirmPass) { alert("Passwords do not match."); return; }
+        if (pass.length < 8) { alert("Password must be at least 8 characters."); return; }
+        if (!/^[0-9]{8}$/.test(studentId)) { alert("Student ID must be exactly 8 digits."); return; }
+
+        var result = registerAccount({
+            firstName: $('#firstName').val().trim(),
+            lastName: $('#lastName').val().trim(),
+            studentId: studentId,
+            email: email,
+            college: $('#college').val(),
+            accountType: $('#accountType').val(),
+            password: pass
+        });
+
+        if (!result.success) {
+            alert("Registration failed: " + result.error);
+            return;
+        }
+
+        // Auto-login after registration
+        var sessionUser = {
+            firstName: result.account.firstName,
+            lastName: result.account.lastName,
+            email: result.account.email,
+            studentId: result.account.studentId,
+            college: result.account.college,
+            accountType: result.account.accountType,
+            bio: ''
+        };
+        localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+        localStorage.setItem(RESERVATIONS_KEY, JSON.stringify([]));
+
+        alert("Registration successful! Welcome to OpenLab.");
+        window.location.href = "dashboard.html";
+    });
+}
+
+
+// =============================================================================
+// CHANGE PASSWORD PAGE (pages/changepassword.html)
+// =============================================================================
+
+function buildChangePasswordPage() {
+    var $banner = $('.banner-content');
+    $banner.append(
+        '<div class="pwd-card">' +
+            '<h2>Change your Password</h2>' +
+            '<p class="subtitle">Update your account password below</p>' +
+            '<form id="changePasswordForm">' +
+                '<div id="passwordError" class="alert alert-danger" style="display:none;"></div>' +
+                '<div id="passwordSuccess" class="alert alert-success" style="display:none;"></div>' +
+                '<div class="form-group"><label for="currentPassword">Current Password</label>' +
+                '<input type="password" id="currentPassword" name="currentPassword" placeholder="Enter your current password" required></div>' +
+                '<div class="form-group"><label for="newPassword">New Password</label>' +
+                '<input type="password" id="newPassword" name="newPassword" placeholder="Enter your new password" minlength="8" required></div>' +
+                '<div class="form-group"><label for="confirmPassword">Confirm New Password</label>' +
+                '<input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your new password" minlength="8" required></div>' +
+                '<button type="submit" class="pwd-btn">Confirm</button>' +
+                '<a href="profile.html" class="back-link">Back to Profile</a>' +
+            '</form>' +
+        '</div>'
+    );
+
+    handleChangePassword();
+}
+
+
+// =============================================================================
+// ADMIN SIGNUP PAGE (pages/adminsignup.html)
+// =============================================================================
+
+function buildAdminSignupPage() {
+    var $banner = $('.banner-content');
+    $banner.append(
+        '<div class="login-card">' +
+            '<h2>Welcome Back</h2>' +
+            '<p class="subtitle">Technician</p>' +
+            '<form class="login-form">' +
+                '<div class="form-group"><label for="email">Email Address</label>' +
+                '<input type="email" id="email" name="email" placeholder="Enter your DLSU email" required></div>' +
+                '<div class="form-group"><label for="password">Password</label>' +
+                '<input type="password" id="password" name="password" placeholder="Enter your password" required></div>' +
+                '<div class="form-options">' +
+                    '<label class="remember-me"><input type="checkbox" name="remember" id="remember"><span>Remember me</span></label>' +
+                    '<a href="#" class="forgot-password">Forgot password?</a>' +
+                '</div>' +
+                '<button type="submit" class="login-btn">Sign In</button>' +
+            '</form>' +
+            '<div class="divider"><span>or continue with</span></div>' +
+            '<p class="register-link">Don\'t have an account? <a href="register.html">Sign up</a></p>' +
+        '</div>'
+    );
+
+    // Technician login with real authentication
+    $('.login-form').on('submit', function(e) {
+        e.preventDefault();
+        var email = $('#email').val().trim();
+        var password = $('#password').val();
+        if (!email || !password) { alert("Please fill in all fields."); return; }
+
+        var account = authenticateUser(email, password);
+        if (!account || account.accountType !== 'technician') {
+            alert("Invalid technician credentials.");
+            $('#password').val('').focus();
+            return;
+        }
+
+        var sessionUser = {
+            firstName: account.firstName,
+            lastName: account.lastName,
+            email: account.email,
+            studentId: account.studentId,
+            college: account.college,
+            accountType: account.accountType,
+            bio: account.bio
+        };
+        localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+        seedUserReservations(account.email);
+        window.location.href = 'dashboard.html';
+    });
+}
 
 
 // =============================================================================
 // PAGINATION (shared across pages)
 // =============================================================================
 
-    /**
-     * Initializes pagination controls on pages that have a .pagination element.
-     * - Used on reservations.html and users.html.
-     * - Attaches click listeners to .page-btn (Previous/Next) and .page-num buttons.
-     * - Calculates which content items to show/hide based on current page and items per page.
-     * - Updates the .active state on .page-num buttons.
-     * - Disables the Previous button on the first page and Next button on the last page.
-     * - Updates .page-info text (e.g., "Page 1 of 3").
-     *
-     * @todo Replace client-side pagination with server-side pagination using query params (?page=1&limit=10)
-     * @returns {void}
-     */
-    function initPagination() {
-  // Stop if there is no pagination on this page
-  if ($('.pagination').length === 0) return;
+function initPagination() {
+    if ($('.pagination').length === 0) return;
 
-  const itemsPerPage = 5;   // Number of items to show per page
-  let currentPage = 1;      // Current page
+    var itemsPerPage = 5;
+    var currentPage = 1;
 
-  // Show items for a given page and update pagination UI
-  function showPage(page) {
-    currentPage = page;
+    function showPage(page) {
+        currentPage = page;
+        var $items = $('.reservation-card:visible, .user-card:visible');
+        var totalPages = Math.ceil($items.length / itemsPerPage) || 1;
 
-    // Get all visible items (reservation cards and user cards)
-    const $items = $('.reservation-card:visible, .user-card:visible');
-    const totalPages = Math.ceil($items.length / itemsPerPage);
+        var start = (page - 1) * itemsPerPage;
+        $items.hide().slice(start, start + itemsPerPage).show();
 
-    // Hide all items, then show only the ones for the current page
-    const start = (page - 1) * itemsPerPage;
-    $items.hide().slice(start, start + itemsPerPage).show();
+        $('.page-num').removeClass('active').filter(function() {
+            return parseInt($(this).text()) === page;
+        }).addClass('active');
 
-    // Highlight the current page number
-    $('.page-num').removeClass('active').filter(function() {
-      return parseInt($(this).text()) === page;
-    }).addClass('active');
+        $('.page-btn').first().prop('disabled', page === 1);
+        $('.page-btn').last().prop('disabled', page >= totalPages);
+        $('.page-info').text('Page ' + page + ' of ' + totalPages);
+    }
 
-    // Disable Previous button on first page, Next button on last page
-    $('.page-btn').first().prop('disabled', page === 1);
-    $('.page-btn').last().prop('disabled', page >= totalPages);
+    $('.page-btn').first().on('click', function() { showPage(currentPage - 1); });
+    $('.page-btn').last().on('click', function() { showPage(currentPage + 1); });
+    $('.pagination').on('click', '.page-num', function() {
+        showPage(parseInt($(this).text()));
+    });
 
-    // Update page info text
-    $('.page-info').text(`Page ${page} of ${totalPages || 1}`);
-  }
-
-  // Click handlers for Previous, Next, and numbered buttons
-  $('.page-btn').first().on('click', () => showPage(currentPage - 1));
-  $('.page-btn').last().on('click', () => showPage(currentPage + 1));
-  $('.page-num').on('click', function() {
-    showPage(parseInt($(this).text()));
-  });
-
-  // Show first page on load
-  showPage(1);
-
-  // Allow external code to refresh pagination
-  window.refreshPagination = () => showPage(1);
+    showPage(1);
+    window.refreshPagination = function() { showPage(1); };
 }
 
 
@@ -1520,49 +2382,31 @@ var USER_KEY = 'openlab_user';
 // GLOBAL SEARCH (shared across all pages)
 // =============================================================================
 
-    /**
-     * Initializes the global search bar found in the navbar across all pages.
-     * - Attaches a keyup listener to .search-bar input; triggers search on Enter key.
-     * - Search behavior depends on the current page context:
-     *     cmpslots.html -> filters .lab-card elements by lab name or building name
-     *     users.html    -> filters .user-card elements by name or student ID
-     *     other pages   -> redirects to cmpslots.html?search=TERM
-     *
-     * @todo Replace with GET /api/search?q=TERM API call for server-side search
-     * @returns {void}
-     */
-   function initGlobalSearch() {
-    const $searchInput = $('.search-bar input'); // input element in the navbar
-    const path = window.location.pathname;       // current page path
+function initGlobalSearch() {
+    var $searchInput = $('.search-bar input');
+    var path = window.location.pathname;
 
     $searchInput.on('keypress', function(e) {
-        if (e.which !== 13) return; // run when Enter is pressed
-
-        const searchTerm = $(this).val().trim().toLowerCase();
+        if (e.which !== 13) return;
+        var searchTerm = $(this).val().trim().toLowerCase();
         if (!searchTerm) return;
 
-        // Filter lab cards if on cmpslots.html
         if (path.indexOf('cmpslots.html') > -1) {
             $('.lab-card').each(function() {
-                const labName = $(this).find('h3').text().toLowerCase();
-                const building = $(this).find('.building-tag').text().toLowerCase();
-                $(this).toggle(labName.includes(searchTerm) || building.includes(searchTerm));
+                var labName = $(this).find('h3').text().toLowerCase();
+                var building = $(this).find('.building-tag').text().toLowerCase();
+                $(this).toggle(labName.indexOf(searchTerm) > -1 || building.indexOf(searchTerm) > -1);
             });
-        }
-        // Filter user cards if on users.html
-        else if (path.indexOf('users.html') > -1) {
+        } else if (path.indexOf('users.html') > -1) {
             $('#userSearch').val(searchTerm).trigger('keyup');
-        }
-        // Redirect to cmpslots.html for other pages
-        else {
-            const inPages = path.indexOf('/pages/') > -1;
-            const target = inPages ? 'cmpslots.html' : 'pages/cmpslots.html';
-            window.location.href = `${target}?search=${encodeURIComponent(searchTerm)}`;
+        } else {
+            var inPages = path.indexOf('/pages/') > -1;
+            var target = inPages ? 'cmpslots.html' : 'pages/cmpslots.html';
+            window.location.href = target + '?search=' + encodeURIComponent(searchTerm);
         }
     });
 
-    // If there is a search term in the URL on cmpslots.html, apply it automatically
-    const urlSearch = new URLSearchParams(window.location.search).get('search');
+    var urlSearch = new URLSearchParams(window.location.search).get('search');
     if (urlSearch && path.indexOf('cmpslots.html') > -1) {
         $searchInput.val(urlSearch).trigger($.Event('keypress', { which: 13 }));
     }
@@ -1573,136 +2417,68 @@ var USER_KEY = 'openlab_user';
 // PAGE ROUTER
 // =============================================================================
 
-    /**
-     * Main entry point. Runs on DOMContentLoaded.
-     * - Calls authGuard() to check authentication.
-     * - Calls updateNavbar() to set correct nav links.
-     * - Calls initGlobalSearch() on all pages.
-     * - Calls initPagination() on pages with .pagination elements.
-     * - Detects current page from window.location.pathname and calls
-     *   the appropriate init function:
-     *     login.html          -> initLoginPage(), handleForgotPassword()
-     *     register.html       -> initRegisterPage()
-     *     reserve.html        -> loadLabFromURL(), initSeatSelection(), initDateTimeSync(),
-     *                            handleConfirmReservation(), populateUserCard(),
-     *                            initAnonymousToggle(), showSeatReservee(), pollAvailability()
-     *     reservations.html   -> initReservationFilters(), handleCancelReservation(),
-     *                            handleRebook(), handleEditReservation()
-     *     cmpslots.html       -> initLabFilters()
-     *     profile.html        -> populateProfile(), initProfileEdit(), handleDeleteAccount(),
-     *                            handleChangePassword(), handleChangeAvatar(),
-     *                            handleNotificationToggle()
-     *     users.html          -> initUserSearch()
-     *     public-profile.html -> initPublicProfilePage()
-     *     dashboard.html      -> initDashboard()
-     *     walkin.html         -> initWalkInReservation(), handleRemoveNoShow()
-     *
-     * @returns {void}
-     */
-    function init() {
-        console.log("Initializing OpenLab...");
+function init() {
+    console.log("Initializing OpenLab...");
 
-        // =========================================================================
-        // 1. GLOBAL CALLS (Run on every page)
-        // =========================================================================
+    // Initialize accounts from SAMPLE_USERS on first run
+    initializeAccounts();
 
-        // Check if user is allowed to be on this page
-        authGuard();
+    // Global: Auth guard
+    authGuard();
 
-        // Update the top navigation bar (Login vs Profile)
-        updateNavbar();
+    // Detect current page
+    var path = window.location.pathname;
+    var activePage = "index";
+    if (path.indexOf("login.html") > -1) activePage = "login";
+    else if (path.indexOf("register.html") > -1) activePage = "register";
+    else if (path.indexOf("dashboard.html") > -1) activePage = "dashboard";
+    else if (path.indexOf("cmpslots.html") > -1) activePage = "cmpslots";
+    else if (path.indexOf("reserve.html") > -1) activePage = "reserve";
+    else if (path.indexOf("reservations.html") > -1) activePage = "reservations";
+    else if (path.indexOf("profile.html") > -1 && path.indexOf("public") === -1) activePage = "profile";
+    else if (path.indexOf("public-profile.html") > -1) activePage = "public-profile";
+    else if (path.indexOf("users.html") > -1) activePage = "users";
+    else if (path.indexOf("walkin.html") > -1) activePage = "walkin";
+    else if (path.indexOf("changepassword.html") > -1) activePage = "changepassword";
+    else if (path.indexOf("adminsignup.html") > -1) activePage = "adminsignup";
 
-        // Initialize Global Search (if it exists in your partner's code)
-        if (typeof initGlobalSearch === 'function') {
-            initGlobalSearch();
-        }
+    // Build navbar
+    buildNavbar(activePage);
 
-        // Initialize Pagination (if it exists in your partner's code)
-        if ($('.pagination').length > 0 && typeof initPagination === 'function') {
-            initPagination();
-        }
-
-        // =========================================================================
-        // 2. PAGE SPECIFIC CALLS
-        // =========================================================================
-
-        var path = window.location.pathname;
-
-        // --- LOGIN PAGE ----------------------------------------------------------
-        if (path.indexOf("login.html") > -1) {
-            initLoginPage();
-            handleForgotPassword();
-        }
-
-        // --- REGISTER PAGE -------------------------------------------------------
-        else if (path.indexOf("register.html") > -1) {
-            initRegisterPage();
-        }
-
-        // --- RESERVE PAGE --------------------------------------------------------
-        else if (path.indexOf("reserve.html") > -1) {
-            // Load lab name from URL
-            loadLabFromURL();
-
-            // Enable clicking on seats
-            initSeatSelection();
-
-            // Sync date/time inputs with the summary box
-            initDateTimeSync();
-
-            // Populate the "Reserving as..." card
-            populateUserCard();
-
-            // Listen for the "Anonymous" checkbox
-            initAnonymousToggle();
-
-            // Add tooltips to occupied seats
-            showSeatReservee();
-
-            // Start checking for seat updates
-            pollAvailability();
-
-            // Bind the Confirm button click
-            $('#confirmBtn').click(function() {
-                handleConfirmReservation();
-            });
-        }
-
-        // --- Chris's Functions (Placeholders) --------------------------------------
-
-        else if (path.indexOf("reservations.html") > -1) {
-             initReservationFilters();
-             handleCancelReservation();
-             handleRebook();
-             handleEditReservation();
-        }
-        else if (path.indexOf("cmpslots.html") > -1) {
-            initLabFilters();
-        }
-        else if (path.indexOf("profile.html") > -1) {
-             populateProfile();
-             initProfileEdit();
-             handleDeleteAccount();
-             handleChangePassword();
-             handleChangeAvatar();
-             handleNotificationToggle();
-        }
-        else if (path.indexOf("users.html") > -1) {
-             initUserSearch();
-        }
-        else if (path.indexOf("public-profile.html") > -1) {
-             initPublicProfilePage();
-        }
-        else if (path.indexOf("dashboard.html") > -1) {
-             initDashboard();
-        }
-        else if (path.indexOf("walkin.html") > -1) {
-             initWalkInReservation();
-             handleRemoveNoShow();
-        }
+    // Page-specific builders
+    if (activePage === "index") {
+        buildIndexPage();
+    } else if (activePage === "login") {
+        buildLoginPage();
+    } else if (activePage === "register") {
+        buildRegisterPage();
+    } else if (activePage === "dashboard") {
+        buildDashboard();
+    } else if (activePage === "cmpslots") {
+        buildCmpSlots();
+    } else if (activePage === "reserve") {
+        buildReservePage();
+    } else if (activePage === "reservations") {
+        buildReservationsPage();
+    } else if (activePage === "profile") {
+        buildProfilePage();
+    } else if (activePage === "users") {
+        buildUsersPage();
+    } else if (activePage === "public-profile") {
+        buildPublicProfilePage();
+    } else if (activePage === "walkin") {
+        buildWalkinPage();
+    } else if (activePage === "changepassword") {
+        buildChangePasswordPage();
+    } else if (activePage === "adminsignup") {
+        buildAdminSignupPage();
     }
 
+    // Global: search & pagination (after content is built)
+    initGlobalSearch();
+    if ($('.pagination').length > 0) {
+        initPagination();
+    }
+}
 
 $(document).ready(init);
-
-

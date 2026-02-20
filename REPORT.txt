@@ -1,0 +1,219 @@
+================================================================================
+OPENLAB COMPUTER RESERVATION SYSTEM - PROJECT REPORT
+================================================================================
+
+PROJECT OVERVIEW
+----------------
+A front-end only (Phase 1) lab reservation system for DLSU built with
+HTML, CSS, jQuery 4.0, and Bootstrap 4.4.1. All data is stored in
+JavaScript variables and localStorage. No backend or database.
+
+
+================================================================================
+1. DEFAULT ACCOUNTS
+================================================================================
+
+STUDENT ACCOUNT
+  Email:    maria_santos@dlsu.edu.ph
+  Password: password123
+
+TECHNICIAN ACCOUNT
+  Email:    tech_admin@dlsu.edu.ph
+  Password: admin123
+
+OTHER SAMPLE STUDENT ACCOUNTS (all use password: password123)
+  - jose_rizal@dlsu.edu.ph
+  - ana_lopez@dlsu.edu.ph
+  - karl_mendoza@dlsu.edu.ph
+  - lea_cruz@dlsu.edu.ph
+
+
+================================================================================
+2. FILE STRUCTURE
+================================================================================
+
+index.html                  Landing page (public)
+pages/
+  login.html                Student/general login
+  register.html             Account registration
+  adminsignup.html          Technician-specific login
+  dashboard.html            User dashboard (protected)
+  cmpslots.html             View computer lab availability (public)
+  reserve.html              Reserve a seat (protected)
+  reservations.html         View/manage reservations (protected)
+  profile.html              View/edit own profile (protected)
+  public-profile.html       View another user's profile
+  users.html                Search/find other users
+  walkin.html               Walk-in reservation (technician only)
+  changepassword.html       Change password (protected)
+js/
+  app.js                    ALL application logic (~2480 lines)
+assets/css/
+  style.css                 All styling
+
+
+================================================================================
+3. HOW AUTHENTICATION WORKS
+================================================================================
+
+- All user accounts are stored in localStorage under key 'openlab_accounts'
+- On first load, SAMPLE_USERS (6 users) are seeded into this store
+- Login validates email + password against stored accounts
+- On success, a session object (without password) is saved to 'openlab_user'
+- Registration creates a new entry in the accounts store with the password
+- Duplicate emails and student IDs are rejected during registration
+- After registration, the user is auto-logged in and redirected to dashboard
+- Logging out removes the session and redirects to the landing page
+- Password changes update the account in the accounts store directly
+
+
+================================================================================
+4. ROLE-BASED ACCESS
+================================================================================
+
+STUDENT can:
+  - Register and login
+  - View lab availability and seat maps
+  - Reserve a seat (30-min slots)
+  - View, edit, and cancel their own reservations
+  - View and edit their profile
+  - Change their password
+  - Search for other users
+  - Delete their account
+
+TECHNICIAN can do everything a student can, PLUS:
+  - See ALL reservations from all users (on reservations page)
+  - See all-user stats on their dashboard
+  - Access the Walk-In Reservation page (walkin.html)
+  - Create walk-in reservations for students
+  - Remove no-show reservations
+  - Walk-In link appears in their navbar
+
+PROTECTED PAGES (redirect to login if not authenticated):
+  - dashboard.html
+  - reservations.html
+  - reserve.html
+  - profile.html
+
+TECHNICIAN-ONLY PAGE (students get "Access denied"):
+  - walkin.html
+
+
+================================================================================
+5. DATA STORAGE (localStorage keys)
+================================================================================
+
+openlab_user              Current logged-in user session (JSON object)
+openlab_reservations      Current user's reservations (JSON array)
+openlab_accounts          All registered accounts with passwords (JSON array)
+openlab_all_reservations  All reservations from all users (JSON array)
+
+
+================================================================================
+6. KEY FEATURES IMPLEMENTED
+================================================================================
+
+REGISTRATION
+  - First name, last name, student ID, email, college, account type, password
+  - Validates: password match, min 8 chars, 8-digit student ID
+  - Rejects duplicate email or student ID
+  - Account type: Student or Lab Technician
+
+LOGIN
+  - Authenticates email + password against accounts store
+  - Invalid credentials show error message
+  - "Forgot password" shows password hint (demo only)
+  - Separate technician login page (adminsignup.html)
+
+RESERVATIONS
+  - Select lab, seat, date, time slot (30-min intervals, 7:30 AM - 5:30 PM)
+  - Seat map with available/occupied/reserved/selected states
+  - Anonymous reservation option
+  - Booking summary panel
+  - Cancel, edit, and rebook actions
+  - All reservations persist in localStorage across page navigations
+  - Technicians see all users' reservations with email labels
+
+WALK-IN (Technician Only)
+  - Enter student ID, select lab, seat, date, time
+  - Validates student ID format and seat format
+  - Looks up student name from accounts if registered
+  - Saves to global reservation store with isWalkIn flag
+  - Right panel shows current walk-in reservations from storage
+  - Remove no-show button cancels the reservation in storage
+
+DASHBOARD
+  - Dynamic stats computed from actual reservation data
+  - Upcoming reservations list
+  - Quick actions (Reserve, Manage, Walk-In for techs, Profile, Find Users)
+  - Recent activity feed
+  - Favorite labs section
+  - Technician dashboard shows all-user data
+
+PROFILE
+  - View and edit personal information
+  - Statistics computed from reservation data
+  - Change password (validates current password)
+  - Change avatar (file upload, max 2MB)
+  - Email notification toggle
+  - Delete account (removes from all stores)
+  - Role badge shows Student or Technician
+
+SEARCH
+  - Global search bar in navbar
+  - Lab search on available slots page
+  - User search by name, ID, or college filter
+
+
+================================================================================
+7. ALL HTML FILES ARE SKELETON-ONLY
+================================================================================
+
+Every HTML file contains only:
+  - <head> with CSS/JS includes
+  - An empty container div inside .site-wrapper
+
+ALL content (navbar, forms, cards, lists, buttons) is generated dynamically
+by jQuery DOM manipulation in app.js. There is zero hardcoded HTML data.
+
+
+================================================================================
+8. HOW TO TEST
+================================================================================
+
+1. Open index.html in a browser
+2. Click "View Labs" or navigate to login
+3. Login with one of the default accounts above
+4. To test as student: use maria_santos@dlsu.edu.ph / password123
+5. To test as technician: use tech_admin@dlsu.edu.ph / admin123
+6. To test registration: click "Sign up", fill the form, submit
+7. To reset all data: open browser console and run localStorage.clear()
+
+NOTE: If you previously had data in localStorage from before these changes,
+run localStorage.clear() in the browser console to reset, then refresh.
+
+
+================================================================================
+9. SAMPLE DATA
+================================================================================
+
+5 Computer Labs:
+  AG1010  - Andrew Building      (30 seats)
+  LS313   - La Salle Hall        (25 seats)
+  GK101A  - Gokongwei Building   (40 seats)
+  GK101B  - Gokongwei Building   (40 seats)
+  GK304   - Gokongwei Building   (20 seats)
+
+7 Default Reservations (seeded per user on first login):
+  Mix of upcoming, completed, and cancelled statuses
+
+8 Colleges:
+  CCS, CLA, COB, COE, COS, GCOE, SOE, BAGCED
+
+20 Time Slots:
+  30-minute intervals from 7:30 AM to 5:30 PM
+
+
+================================================================================
+END OF REPORT
+================================================================================
