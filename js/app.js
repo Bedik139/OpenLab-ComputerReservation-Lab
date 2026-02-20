@@ -703,7 +703,7 @@ function buildIndexPage() {
     $banner.append(
         '<h1>Find Your Seat,<br>Skip the Search</h1>' +
         '<p>Check real-time computer lab availability across DLSU.<br>' +
-        'Reserve your slot in seconds — no more wandering.</p>' +
+        'Reserve your slot in seconds -- no more wandering.</p>' +
         '<div class="banner-buttons">' +
             '<a href="' + resolvePath("cmpslots.html") + '" class="btn btn-primary">View Labs</a>' +
             '<a href="' + resolvePath("register.html") + '" class="btn btn-outline">Register Now</a>' +
