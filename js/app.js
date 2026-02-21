@@ -111,6 +111,42 @@ var LABS = [
 
 /** Seat occupant data — who occupies/reserved each seat (for tooltips) */
 var SEAT_OCCUPANTS = {
+    "AG1010": {
+        "A3": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "A5": { name: "Anonymous", id: null, anonymous: true },
+        "A7": { name: "Anonymous", id: null, anonymous: true },
+        "A9": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "B1": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "B4": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "B6": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "B8": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "B10": { name: "Anonymous", id: null, anonymous: true },
+        "C2": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "C5": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "C6": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "C8": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "C10": { name: "Maria Clara Santos", id: "12340001", anonymous: false }
+    },
+    "LS313": {
+        "A1": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "A2": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "A4": { name: "Anonymous", id: null, anonymous: true },
+        "B1": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "B2": { name: "Anonymous", id: null, anonymous: true },
+        "B3": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "B5": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "C1": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "C2": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "C4": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "D1": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "D2": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "D3": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "D5": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "E2": { name: "Anonymous", id: null, anonymous: true },
+        "E3": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "E4": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "E5": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false }
+    },
     "GK101A": {
         "A3": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
         "A7": { name: "Anonymous", id: null, anonymous: true },
@@ -126,6 +162,48 @@ var SEAT_OCCUPANTS = {
         "D3": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
         "D7": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
         "D8": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false }
+    },
+    "GK101B": {
+        "A1": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "A2": { name: "Anonymous", id: null, anonymous: true },
+        "A3": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "A5": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "A6": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "A8": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "A10": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "B2": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "B3": { name: "Anonymous", id: null, anonymous: true },
+        "B5": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "B6": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "B7": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "B9": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "C1": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "C3": { name: "Anonymous", id: null, anonymous: true },
+        "C4": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "C7": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "C8": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "C9": { name: "Anonymous", id: null, anonymous: true },
+        "C10": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "D2": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "D3": { name: "Anonymous", id: null, anonymous: true },
+        "D5": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "D6": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "D8": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "D9": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "D10": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false }
+    },
+    "GK304": {
+        "A2": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "A4": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "A5": { name: "Anonymous", id: null, anonymous: true },
+        "B1": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "B3": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "B5": { name: "Maria Clara Santos", id: "12340001", anonymous: false },
+        "C2": { name: "Ana Garcia Lopez", id: "12340003", anonymous: false },
+        "C4": { name: "Jose Rizal Jr.", id: "12340002", anonymous: false },
+        "D1": { name: "Karl Reyes Mendoza", id: "12340004", anonymous: false },
+        "D3": { name: "Lea Domingo Cruz", id: "12340005", anonymous: false },
+        "D5": { name: "Maria Clara Santos", id: "12340001", anonymous: false }
     }
 };
 
@@ -375,16 +453,27 @@ var FEATURES = [
 // =============================================================================
 
 function isLoggedIn() {
-    return localStorage.getItem(USER_KEY) !== null;
+    return localStorage.getItem(USER_KEY) !== null || sessionStorage.getItem(USER_KEY) !== null;
 }
 
 function getCurrentUser() {
-    var userStr = localStorage.getItem(USER_KEY);
+    var userStr = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
     return userStr ? JSON.parse(userStr) : null;
+}
+
+/** Save current user to whichever storage holds the active session */
+function setCurrentUser(userObj) {
+    var userStr = JSON.stringify(userObj);
+    if (sessionStorage.getItem(USER_KEY) !== null) {
+        sessionStorage.setItem(USER_KEY, userStr);
+    } else {
+        localStorage.setItem(USER_KEY, userStr);
+    }
 }
 
 function logout() {
     localStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem(USER_KEY);
     localStorage.removeItem(RESERVATIONS_KEY);
     var path = window.location.pathname;
     window.location.href = (path.indexOf("/pages/") > -1) ? "../index.html" : "index.html";
@@ -463,6 +552,14 @@ function buildTimeSlotOptions(selectedValue) {
         html += '<option value="' + ts.value + '"' + sel + '>' + ts.label + '</option>';
     }
     return html;
+}
+
+/** Get the time slot value (e.g. "09:00") matching a given label string */
+function getTimeSlotValueByLabel(label) {
+    for (var i = 0; i < TIME_SLOTS.length; i++) {
+        if (TIME_SLOTS[i].label === label) return TIME_SLOTS[i].value;
+    }
+    return "09:00";
 }
 
 /** Build college <option> elements */
@@ -975,15 +1072,30 @@ function buildReservePage() {
     var lab = getLabByCode(labCode);
     if (!lab) lab = LABS[2]; // fallback GK101A
 
+    // Edit mode: load existing reservation if ?edit=ID is present
+    var editId = urlParams.get('edit') || null;
+    var editRes = null;
+    if (editId) {
+        var allUserRes = getReservations();
+        for (var ei = 0; ei < allUserRes.length; ei++) {
+            if (String(allUserRes[ei].id) === String(editId)) {
+                editRes = allUserRes[ei];
+                break;
+            }
+        }
+    }
+
     var user = getCurrentUser();
     var available = lab.totalSeats - lab.occupied.length - lab.reserved.length;
 
     var $container = $('.reserve-container');
 
     // Page Header
+    var headerTitle = editRes ? 'Edit Reservation' : 'Reserve a Seat';
+    var headerDesc = editRes ? 'Update your reservation details' : 'Select your preferred seat and time slot';
     $container.append(
-        '<div class="page-header"><h1>Reserve a Seat</h1>' +
-        '<p>Select your preferred seat and time slot</p></div>'
+        '<div class="page-header"><h1>' + headerTitle + '</h1>' +
+        '<p>' + headerDesc + '</p></div>'
     );
 
     var $layout = $('<div class="reserve-layout"></div>');
@@ -996,11 +1108,16 @@ function buildReservePage() {
 
     // Time Selection
     var today = new Date().toISOString().split('T')[0];
+    var maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 7);
+    var maxDateStr = maxDate.toISOString().split('T')[0];
+    var initialDate = editRes ? editRes.date : today;
+    var initialTimeVal = editRes ? getTimeSlotValueByLabel(editRes.timeSlot) : "09:00";
     leftHtml +=
         '<div class="time-selection"><label>Select Date & Time</label>' +
         '<div class="time-row">' +
-        '<input type="date" id="reserveDate" value="' + today + '">' +
-        '<select id="timeSlot">' + buildTimeSlotOptions("09:00") + '</select>' +
+        '<input type="date" id="reserveDate" value="' + initialDate + '" min="' + today + '" max="' + maxDateStr + '">' +
+        '<select id="timeSlot">' + buildTimeSlotOptions(initialTimeVal) + '</select>' +
         '</div></div>';
 
     // Seat Map
@@ -1040,17 +1157,19 @@ function buildReservePage() {
     $layout.append(leftHtml);
 
     // === Right Column: Booking Summary ===
-    var timeLabel = "09:00 AM - 09:30 AM";
+    var summaryTitle = editRes ? 'Edit Summary' : 'Booking Summary';
+    var confirmBtnText = 'Select a Seat to Continue';
+    var timeLabel = editRes ? editRes.timeSlot : "09:00 AM - 09:30 AM";
     var rightHtml =
         '<div class="booking-summary-panel">' +
             '<div class="panel-card summary-card">' +
-                '<h3>Booking Summary</h3>' +
+                '<h3>' + summaryTitle + '</h3>' +
                 '<div class="summary-details">' +
                     '<div class="summary-item"><span class="label">Lab</span><span class="value">' + lab.code + '</span></div>' +
                     '<div class="summary-item"><span class="label">Building</span><span class="value">' + lab.building + '</span></div>' +
-                    '<div class="summary-item"><span class="label">Date</span><span class="value" id="summaryDate">' + formatDateLong(today) + '</span></div>' +
+                    '<div class="summary-item"><span class="label">Date</span><span class="value" id="summaryDate">' + formatDateLong(initialDate) + '</span></div>' +
                     '<div class="summary-item"><span class="label">Time Slot</span><span class="value" id="summaryTime">' + timeLabel + '</span></div>' +
-                    '<div class="summary-item"><span class="label">Selected Seat</span><span class="value" id="summarySeat">-</span></div>' +
+                    '<div class="summary-item"><span class="label">Selected Seat</span><span class="value" id="summarySeat">' + (editRes ? editRes.seat : '-') + '</span></div>' +
                 '</div>' +
                 '<div class="divider"></div>' +
                 '<div class="rules-section"><h4>Reservation Rules</h4>' +
@@ -1060,10 +1179,10 @@ function buildReservePage() {
                     '<li>Maximum 2 active reservations</li></ul>' +
                 '</div>' +
                 '<div class="anon">' +
-                    '<input type="checkbox" id="anonymousToggle">' +
+                    '<input type="checkbox" id="anonymousToggle"' + (editRes && editRes.anonymous ? ' checked' : '') + '>' +
                     '<span class="reserve-text">Reserve anonymously</span>' +
                 '</div>' +
-                '<button class="confirm-btn" id="confirmBtn" disabled>Select a Seat to Continue</button>' +
+                '<button class="confirm-btn" id="confirmBtn" disabled>' + confirmBtnText + '</button>' +
                 '<a href="cmpslots.html" class="back-link">Back to Lab Selection</a>' +
             '</div>';
 
@@ -1095,8 +1214,18 @@ function buildReservePage() {
     showSeatReservee(lab);
     pollAvailability();
 
+    // Pre-select seat and enable confirm button when editing
+    if (editRes) {
+        var $editSeat = $('.seat[data-seat="' + editRes.seat + '"]');
+        if ($editSeat.length && !$editSeat.hasClass('occupied')) {
+            $editSeat.removeClass('available reserved').addClass('selected');
+            $('#summarySeat').text(editRes.seat);
+            $('#confirmBtn').prop('disabled', false).text('Update Reservation');
+        }
+    }
+
     $('#confirmBtn').on('click', function() {
-        handleConfirmReservation(lab);
+        handleConfirmReservation(lab, editId);
     });
 }
 
@@ -1161,7 +1290,7 @@ function pollAvailability() {
     $(window).on('unload', function() { clearInterval(intervalId); });
 }
 
-function handleConfirmReservation(lab) {
+function handleConfirmReservation(lab, editId) {
     if (!isLoggedIn()) {
         alert("You must login first.");
         window.location.href = "login.html";
@@ -1176,32 +1305,71 @@ function handleConfirmReservation(lab) {
     var timeText = $('#timeSlot option:selected').text();
     var isAnon = $('#anonymousToggle').is(':checked');
 
-    // Add to both user and global reservation stores
-    var newRes = {
-        id: Date.now(),
-        lab: lab.code,
-        seat: seat,
-        building: lab.building,
-        date: date,
-        displayDate: formatDateLong(date),
-        timeSlot: timeText,
-        status: "upcoming",
-        bookedOn: formatDateLong(new Date().toISOString().split('T')[0]),
-        anonymous: isAnon,
-        userEmail: user.email,
-        isWalkIn: false
-    };
+    // Validate date is not in the past
+    var today = new Date().toISOString().split('T')[0];
+    if (date < today) {
+        alert("Please select today or a future date.");
+        return;
+    }
 
-    var reservations = getReservations();
-    reservations.unshift(newRes);
-    saveReservations(reservations);
+    if (editId) {
+        // Update existing reservation in both stores
+        var reservations = getReservations();
+        for (var i = 0; i < reservations.length; i++) {
+            if (String(reservations[i].id) === String(editId)) {
+                reservations[i].seat = seat;
+                reservations[i].date = date;
+                reservations[i].displayDate = formatDateLong(date);
+                reservations[i].timeSlot = timeText;
+                reservations[i].anonymous = isAnon;
+                break;
+            }
+        }
+        saveReservations(reservations);
 
-    var allRes = getAllReservations();
-    allRes.unshift(newRes);
-    saveAllReservations(allRes);
+        var allRes = getAllReservations();
+        for (var j = 0; j < allRes.length; j++) {
+            if (String(allRes[j].id) === String(editId)) {
+                allRes[j].seat = seat;
+                allRes[j].date = date;
+                allRes[j].displayDate = formatDateLong(date);
+                allRes[j].timeSlot = timeText;
+                allRes[j].anonymous = isAnon;
+                break;
+            }
+        }
+        saveAllReservations(allRes);
 
-    alert("Reservation confirmed for Seat " + seat + " at " + lab.code + "!");
-    window.location.href = "reservations.html";
+        alert("Reservation updated for Seat " + seat + " at " + lab.code + "!");
+        window.location.href = "reservations.html";
+    } else {
+        // New reservation — add to both user and global stores
+        var newRes = {
+            id: Date.now(),
+            lab: lab.code,
+            seat: seat,
+            building: lab.building,
+            date: date,
+            displayDate: formatDateLong(date),
+            timeSlot: timeText,
+            status: "upcoming",
+            bookedOn: formatDateLong(new Date().toISOString().split('T')[0]),
+            anonymous: isAnon,
+            userEmail: user.email,
+            isWalkIn: false
+        };
+
+        var newReservations = getReservations();
+        newReservations.unshift(newRes);
+        saveReservations(newReservations);
+
+        var allResNew = getAllReservations();
+        allResNew.unshift(newRes);
+        saveAllReservations(allResNew);
+
+        alert("Reservation confirmed for Seat " + seat + " at " + lab.code + "!");
+        window.location.href = "reservations.html";
+    }
 }
 
 
@@ -1393,12 +1561,15 @@ function buildProfilePage() {
     var attendanceRate = totalRes > 0 ? Math.round((completed.length / (totalRes - upcoming.length)) * 100) : 100;
 
     var initials = getInitials(user.firstName, user.lastName);
+    var avatarInner = user.avatarDataUrl
+        ? '<img src="' + user.avatarDataUrl + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">'
+        : '<span>' + initials + '</span>';
     var $container = $('.profile-container');
 
     // Profile Header
     $container.append(
         '<div class="profile-header">' +
-            '<div class="avatar-section"><div class="avatar"><span>' + initials + '</span></div>' +
+            '<div class="avatar-section"><div class="avatar">' + avatarInner + '</div>' +
             '<button class="change-avatar-btn">Change Photo</button></div>' +
             '<div class="header-info">' +
                 '<h1>' + user.firstName + ' ' + user.lastName + '</h1>' +
@@ -1568,9 +1739,10 @@ function initProfileEdit() {
             email: email,
             college: $('#college').val(),
             accountType: currentUser ? currentUser.accountType : 'student',
-            bio: $('#bio').val().trim()
+            bio: $('#bio').val().trim(),
+            avatarDataUrl: currentUser ? (currentUser.avatarDataUrl || null) : null
         };
-        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+        setCurrentUser(updatedUser);
 
         // Sync to accounts storage
         var accounts = getAccounts();
@@ -1621,6 +1793,7 @@ function handleDeleteAccount() {
                 saveAllReservations(filteredRes);
             }
             localStorage.removeItem(USER_KEY);
+            sessionStorage.removeItem(USER_KEY);
             localStorage.removeItem(RESERVATIONS_KEY);
             window.location.href = '../index.html';
         }
@@ -1676,17 +1849,43 @@ function handleChangeAvatar() {
         if (file.size > 2 * 1024 * 1024) { alert("File too large! Max 2MB."); return; }
         var reader = new FileReader();
         reader.onload = function(e) {
-            var $img = $('<img>').attr({ src: e.target.result, style: 'width:100%;height:100%;border-radius:50%;object-fit:cover;' });
+            var dataUrl = e.target.result;
+            var $img = $('<img>').attr({ src: dataUrl, style: 'width:100%;height:100%;border-radius:50%;object-fit:cover;' });
             $('.avatar').empty().append($img);
+
+            // Persist avatar in user session and accounts storage
+            var user = getCurrentUser();
+            if (user) {
+                user.avatarDataUrl = dataUrl;
+                setCurrentUser(user);
+
+                var accounts = getAccounts();
+                for (var i = 0; i < accounts.length; i++) {
+                    if (accounts[i].email.toLowerCase() === user.email.toLowerCase()) {
+                        accounts[i].avatarDataUrl = dataUrl;
+                        break;
+                    }
+                }
+                saveAccounts(accounts);
+            }
         };
         reader.readAsDataURL(file);
     });
 }
 
 function handleNotificationToggle() {
-    $('.setting-item .toggle input[type="checkbox"]').on('change', function() {
+    var NOTIF_KEY = 'openlab_notifications';
+    var $toggle = $('.setting-item .toggle input[type="checkbox"]');
+
+    // Load saved preference (default: enabled)
+    var saved = localStorage.getItem(NOTIF_KEY);
+    if (saved !== null) {
+        $toggle.prop('checked', saved === 'true');
+    }
+
+    $toggle.on('change', function() {
         var enabled = $(this).is(':checked');
-        alert(enabled ? 'Email notifications enabled' : 'Email notifications disabled');
+        localStorage.setItem(NOTIF_KEY, String(enabled));
     });
 }
 
@@ -2142,9 +2341,16 @@ function initLoginPage() {
             studentId: account.studentId,
             college: account.college,
             accountType: account.accountType,
-            bio: account.bio
+            bio: account.bio,
+            avatarDataUrl: account.avatarDataUrl || null
         };
-        localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+
+        // Remember me: use localStorage (persistent) or sessionStorage (tab-only)
+        if ($('#remember').is(':checked')) {
+            localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+        } else {
+            sessionStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+        }
 
         // Seed/load user reservations
         seedUserReservations(account.email);
@@ -2158,7 +2364,7 @@ function initLoginPage() {
         if (email) {
             var account = findAccountByEmail(email);
             if (account) {
-                alert("Password hint: Your password is '" + account.password + "'");
+                alert("Your password cannot be retrieved. Please contact the lab administrator to reset it.");
             } else {
                 alert("Email not found in our records.");
             }
@@ -2244,7 +2450,8 @@ function initRegisterPage() {
             studentId: result.account.studentId,
             college: result.account.college,
             accountType: result.account.accountType,
-            bio: ''
+            bio: '',
+            avatarDataUrl: null
         };
         localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
         localStorage.setItem(RESERVATIONS_KEY, JSON.stringify([]));
@@ -2331,9 +2538,14 @@ function buildAdminSignupPage() {
             studentId: account.studentId,
             college: account.college,
             accountType: account.accountType,
-            bio: account.bio
+            bio: account.bio,
+            avatarDataUrl: account.avatarDataUrl || null
         };
-        localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+        if ($('#remember').is(':checked')) {
+            localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+        } else {
+            sessionStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+        }
         seedUserReservations(account.email);
         window.location.href = 'dashboard.html';
     });
