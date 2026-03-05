@@ -15,3 +15,45 @@
  */
 
 // TODO: Implement the above
+
+const mongoose = require('mongoose'); // call mongoose to interact with MongoDB
+
+// This is the schema for our Lab model
+const labSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    required: true,
+    unique: true
+  },
+
+  building: {
+    type: String,
+    required: true
+  },
+
+  buildingKey: {
+    type: String,
+    required: true
+  },
+
+  totalSeats: {
+    type: Number,
+    required: true
+  },
+
+  rows: [String], 
+  cols: {
+    type: Number,
+    required: true
+  },
+
+  hours: {
+    type: String,
+    required: true
+  }
+});
+
+
+
+// Export the Lab model so it can be used in other parts of the application
+module.exports = mongoose.model('Lab', labSchema);
