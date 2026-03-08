@@ -85,8 +85,13 @@ const userSchema = new mongoose.Schema({
   avatarClass: { 
     type: String, 
     default: '' 
-  }
+  },
 
+  notifications: {
+    type: Boolean,
+    default: true
+  }
+  
 }, { timestamps: true }); // Adds createdAt and updatedAt fields automatically
 
 
