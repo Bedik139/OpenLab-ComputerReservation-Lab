@@ -173,13 +173,13 @@ async function seedDatabase() {
 
     // Seed Reservations
     await Reservation.insertMany([
-      { user: mariaId, lab: "GK101A", seat: "B5", building: "Gokongwei Building", date: new Date("2025-02-10"), timeSlot: "09:00 AM - 09:30 AM", status: "upcoming", anonymous: false },
-      { user: mariaId, lab: "LS313",  seat: "A8", building: "La Salle Hall", date: new Date("2025-02-12"), timeSlot: "02:00 PM - 02:30 PM", status: "upcoming", anonymous: false },
-      { user: mariaId, lab: "AG1010", seat: "C3", building: "Andrew Building", date: new Date("2025-02-08"), timeSlot: "11:00 AM - 11:30 AM", status: "completed", anonymous: false },
-      { user: mariaId, lab: "GK101A", seat: "D7", building: "Gokongwei Building", date: new Date("2025-02-07"), timeSlot: "03:00 PM - 03:30 PM", status: "completed", anonymous: false },
-      { user: mariaId, lab: "GK304",  seat: "A2", building: "Gokongwei Building", date: new Date("2025-02-06"), timeSlot: "10:00 AM - 10:30 AM", status: "cancelled", anonymous: false },
-      { user: mariaId, lab: "GK101B", seat: "B3", building: "Gokongwei Building", date: new Date("2025-02-05"), timeSlot: "01:00 PM - 01:30 PM", status: "completed", anonymous: true },
-      { user: mariaId, lab: "LS313",  seat: "D1", building: "La Salle Hall", date: new Date("2025-02-04"), timeSlot: "09:30 AM - 10:00 AM", status: "completed", anonymous: false }
+      { user: mariaId, lab: "GK101A", seat: "B5", building: "Gokongwei Building", date: new Date("2025-02-10"), timeSlot: "09:00 AM - 09:30 AM", status: "upcoming", isAnonymous: false },
+      { user: mariaId, lab: "LS313",  seat: "A8", building: "La Salle Hall", date: new Date("2025-02-12"), timeSlot: "02:00 PM - 02:30 PM", status: "upcoming", isAnonymous: false },
+      { user: mariaId, lab: "AG1010", seat: "C3", building: "Andrew Building", date: new Date("2025-02-08"), timeSlot: "11:00 AM - 11:30 AM", status: "completed", isAnonymous: false },
+      { user: mariaId, lab: "GK101A", seat: "D7", building: "Gokongwei Building", date: new Date("2025-02-07"), timeSlot: "03:00 PM - 03:30 PM", status: "completed", isAnonymous: false },
+      { user: mariaId, lab: "GK304",  seat: "A2", building: "Gokongwei Building", date: new Date("2025-02-06"), timeSlot: "10:00 AM - 10:30 AM", status: "cancelled", isAnonymous: false },
+      { user: mariaId, lab: "GK101B", seat: "B3", building: "Gokongwei Building", date: new Date("2025-02-05"), timeSlot: "01:00 PM - 01:30 PM", status: "completed", isAnonymous: true },
+      { user: mariaId, lab: "LS313",  seat: "D1", building: "La Salle Hall", date: new Date("2025-02-04"), timeSlot: "09:30 AM - 10:00 AM", status: "completed", isAnonymous: false }
     ]);
 
     console.log("Reservations seeded");
