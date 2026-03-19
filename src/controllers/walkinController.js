@@ -32,3 +32,119 @@
  */
 
 // TODO: Implement the above
+
+// 1. Import models
+const Reservation = require('../models/Reservation');
+const User = require('../models/User');
+const Lab = require('../models/Lab');
+
+// 2. getAll(req, res)
+const getAll = async (req, res) => {
+    try {
+        // Fetch all upcoming walk-in reservations
+        const walkinReservations = await Reservation.find({ 
+            isWalkIn: true, 
+            status: 'upcoming' 
+        })
+        .populate('user', 'firstName lastName studentId')
+        .sort({ createdAt: -1 });
+
+        return res.json(walkinReservations);
+    } catch (error) {
+        console.error('Error fetching walk-in reservations:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// 3. create(req, res)
+const create = async (req, res) => {
+    try {
+        const { studentId, lab, seat, date, timeSlot } = req.body;
+        
+        // Ensure the technician is logged in
+        if (!req.session.user) {
+            return res.status(401).json({ error: 'Unauthorized: Please log in as a technician' });
+        }
+
+        // Look up the student by their Student ID
+        const student = await User.findOne({ studentId });
+        if (!student) {
+            return res.status(404).json({ 
+                error: `Student with ID ${studentId} not found in the system. Please have them register first.` 
+            });
+        }
+
+        // Look up lab info from Lab model to get the building name
+        const labInfo = await Lab.findOne({ code: lab });
+        if (!labInfo) {
+            return res.status(404).json({ error: 'Lab not found' });
+        }
+
+        // Prevent double-booking for the exact same seat and time
+        const existingReservation = await Reservation.findOne({
+            lab,
+            seat,
+            date,
+            timeSlot,
+            status: 'upcoming'
+        });
+
+        if (existingReservation) {
+            return res.status(400).json({ error: 'This seat is already reserved for the selected time slot.' });
+        }
+
+        // Create the new walk-in reservation
+        const newReservation = new Reservation({
+            user: student._id,
+            lab: lab,
+            building: labInfo.building,
+            seat,
+            date,
+            timeSlot,
+            isWalkIn: true,
+            createdBy: req.session.user._id, // Tracks which technician made the booking
+            status: 'upcoming'
+        });
+
+        await newReservation.save();
+        return res.status(201).json({ success: true, reservation: newReservation });
+
+    } catch (error) {
+        console.error('Error creating walk-in reservation:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// 4. removeNoShow(req, res)
+const removeNoShow = async (req, res) => {
+    try {
+        const reservationId = req.params.id;
+        
+        const reservation = await Reservation.findById(reservationId);
+        if (!reservation) {
+            return res.status(404).json({ error: 'Reservation not found' });
+        }
+
+        // Verify it's actually a walk-in reservation
+        if (!reservation.isWalkIn) {
+            return res.status(400).json({ error: 'Bad Request: This is a standard student reservation, not a walk-in.' });
+        }
+
+        // Set status to cancelled (indicating a no-show)
+        reservation.status = 'cancelled';
+        await reservation.save();
+
+        return res.json({ success: true, message: 'Walk-in reservation cancelled (No-show recorded).' });
+
+    } catch (error) {
+        console.error(`Error removing no-show for reservation ${req.params.id}:`, error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// 5. Export all functions
+module.exports = { 
+    getAll, 
+    create, 
+    removeNoShow 
+};

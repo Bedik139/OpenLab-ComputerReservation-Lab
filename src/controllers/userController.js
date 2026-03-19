@@ -40,3 +40,158 @@
  */
 
 // TODO: Implement the above
+
+// 1. Import models
+const User = require('../models/User');
+const Reservation = require('../models/Reservation');
+
+// 2. search(req, res)
+const search = async (req, res) => {
+    try {
+        const { q, college } = req.query;
+        let queryObj = {};
+
+        // If there's a search term, match against firstName, lastName, or studentId
+        if (q) {
+            const regex = new RegExp(q, 'i'); // 'i' makes it case-insensitive
+            queryObj.$or = [
+                { firstName: regex },
+                { lastName: regex },
+                { studentId: regex }
+            ];
+        }
+
+        // If a specific college is selected, add it to the filter
+        if (college) {
+            queryObj.college = college;
+        }
+
+        // Find users matching the query and explicitly exclude the password field
+        const users = await User.find(queryObj).select('-password');
+        
+        return res.json({ success: true, data: users });
+    } catch (error) {
+        console.error('Error searching users:', error);
+        return res.status(500).json({ error: 'Internal server error during search' });
+    }
+};
+
+// 3. getById(req, res)
+const getById = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        // Find user, excluding password
+        const user = await User.findById(userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Fetch their upcoming reservations, but ONLY the non-anonymous ones
+        const reservations = await Reservation.find({ 
+            user: userId, 
+            status: 'upcoming',
+            isAnonymous: false 
+        }).populate('lab', 'building code'); // Populating basic lab info for display
+
+        return res.json({ success: true, user, reservations });
+    } catch (error) {
+        console.error(`Error fetching user ${req.params.id}:`, error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// 4. updateProfile(req, res)
+const updateProfile = async (req, res) => {
+    try {
+        const { firstName, lastName, college, bio } = req.body;
+        const userId = req.session.user._id;
+
+        // Find user and update their details
+        const updatedUser = await User.findByIdAndUpdate(
+            userId, 
+            { firstName, lastName, college, bio }, 
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Keep the session data in sync with the updated database record
+        req.session.user.firstName = updatedUser.firstName;
+        req.session.user.lastName = updatedUser.lastName;
+        req.session.user.college = updatedUser.college;
+        req.session.user.bio = updatedUser.bio;
+
+        return res.json({ success: true, user: req.session.user });
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        return res.status(500).json({ error: 'Internal server error updating profile' });
+    }
+};
+
+// 5. changePassword(req, res)
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.session.user._id;
+
+        // Find the user (we need the password field here to compare it!)
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Verify current password
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Incorrect current password' });
+        }
+
+        // Set new password (the pre-save hook in the User model will hash it automatically)
+        user.password = newPassword;
+        await user.save();
+
+        return res.json({ success: true, message: 'Password successfully updated' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        return res.status(500).json({ error: 'Internal server error changing password' });
+    }
+};
+
+// 6. deleteAccount(req, res)
+const deleteAccount = async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+
+        // Delete all reservations owned by this user
+        await Reservation.deleteMany({ user: userId });
+
+        // Delete the user document itself
+        await User.findByIdAndDelete(userId);
+
+        // Destroy the session and clear the cookie
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error destroying session during account deletion:', err);
+                return res.status(500).json({ error: 'Account deleted, but failed to clear session' });
+            }
+            res.clearCookie('connect.sid');
+            return res.json({ success: true, message: 'Account and all associated reservations successfully deleted' });
+        });
+
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        return res.status(500).json({ error: 'Internal server error deleting account' });
+    }
+};
+
+// 7. Export all functions
+module.exports = {
+    search,
+    getById,
+    updateProfile,
+    changePassword,
+    deleteAccount
+};

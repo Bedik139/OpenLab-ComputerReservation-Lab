@@ -42,3 +42,127 @@
  */
 
 // TODO: Implement the above
+
+// 1. Import User model
+const User = require('../models/User');
+
+// 2. login(req, res)
+const login = async (req, res) => {
+    try {
+        const { email, password, techOnly } = req.body;
+
+        // Find user by email (ensure it's case-insensitive by converting to lowercase)
+        const user = await User.findOne({ email: email.toLowerCase() });
+        
+        // If not found, return 401
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        // Compare password (assuming a method exists on the User schema)
+        const match = await user.comparePassword(password);
+        
+        // If no match, return 401
+        if (!match) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        // Check if technician-only login was requested and if user qualifies
+        if (techOnly && user.accountType !== 'technician') {
+            return res.status(403).json({ error: 'Access denied. Technician account required.' });
+        }
+
+        // Set session variables
+        req.session.user = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            studentId: user.studentId,
+            college: user.college,
+            accountType: user.accountType,
+            bio: user.bio,
+            avatarUrl: user.avatarUrl,
+            avatarClass: user.avatarClass
+        };
+
+        // Return success
+        return res.json({ success: true, user: req.session.user });
+
+    } catch (error) {
+        console.error('Login Error:', error);
+        return res.status(500).json({ error: 'Internal server error during login' });
+    }
+};
+
+// 3. register(req, res)
+const register = async (req, res) => {
+    try {
+        const { firstName, lastName, studentId, email, college, accountType, password } = req.body;
+
+        // Check if email already exists
+        const existingEmail = await User.findOne({ email: email.toLowerCase() });
+        if (existingEmail) {
+            return res.status(400).json({ error: 'Email is already in use.' });
+        }
+
+        // Check if studentId already exists (only if studentId is provided)
+        if (studentId) {
+            const existingStudentId = await User.findOne({ studentId });
+            if (existingStudentId) {
+                return res.status(400).json({ error: 'Student ID is already registered.' });
+            }
+        }
+
+        // Create new User document 
+        // Note: Password hashing should ideally be handled by a pre-save hook in the User model!
+        const newUser = new User({
+            firstName,
+            lastName,
+            studentId,
+            email: email.toLowerCase(),
+            college,
+            accountType: accountType || 'student', // default to student if not provided
+            password
+        });
+
+        const user = await newUser.save();
+
+        // Set session
+        req.session.user = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            studentId: user.studentId,
+            college: user.college,
+            accountType: user.accountType,
+            bio: user.bio,
+            avatarUrl: user.avatarUrl,
+            avatarClass: user.avatarClass
+        };
+
+        return res.status(201).json({ success: true, user: req.session.user });
+
+    } catch (error) {
+        console.error('Registration Error:', error);
+        return res.status(500).json({ error: 'Internal server error during registration' });
+    }
+};
+
+// 4. logout(req, res)
+const logout = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout Error:', err);
+            return res.status(500).json({ error: 'Failed to logout' });
+        }
+        
+        // Clear the session cookie from the browser
+        res.clearCookie('connect.sid'); 
+        return res.json({ success: true });
+    });
+};
+
+// 5. Export functions
+module.exports = { login, register, logout };
