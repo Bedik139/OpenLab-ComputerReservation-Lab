@@ -744,76 +744,6 @@ FEATURE: General (Good UX)
 
 
 ================================================================================
-16. PHASE 2 COMPLIANCE (Back-End Development)
-================================================================================
-
-Phase 2 requires back-end logic with Node.js, MongoDB, Mongoose,
-Handlebars views, and complete routing. Graded on 75 points total.
-
-CRITERIA: Database (20 pts)
-  Target: EXCELLENT (20/20)
-  - MongoDB with Mongoose ODM — fully implemented
-  - 3 complete models: User, Reservation, Lab
-  - All schemas have proper types, validators, indexes, and refs
-  - Seed script provides 13 users, 5 labs, 25 reservations (exceeds
-    the minimum 5 sample data per feature)
-  - All database files in src/models/ (model folder)
-  - Password hashing with bcrypt pre-save hook
-  - Compound indexes for double-booking prevention
-
-CRITERIA: Views (15 pts)
-  Target: EXCELLENT (15/15)
-  - All views use Handlebars template engine (not raw HTML)
-  - 15 .hbs templates covering all features
-  - All views navigable from index page via navbar and links
-  - Views organized in src/views/ with layouts/ and partials/
-  - Two layouts: auth.hbs (public) and dashboard.hbs (authenticated)
-  - Reusable partials: head.hbs, navbar.hbs
-
-CRITERIA: Controller (20 pts)
-  Target: EXCELLENT (20/20)
-  - Node.js server hosted on localhost:3000
-  - All routes fully implemented in mainRouter.js
-  - 13 page routes (GET) + 15 API routes (POST/PUT/DELETE/GET)
-  - All forms use correct HTTP methods (POST for login/register,
-    PUT for updates, DELETE for removal, GET for searches)
-  - Proper middleware guards on protected routes
-  - Session management with express-session + connect-mongo
-  - Password hashing with bcrypt (exceeds Phase 2 requirements —
-    Phase 2 spec says these are NOT required yet, but implemented)
-
-CRITERIA: Content Organization (5 pts)
-  Target: EXCELLENT (5/5)
-  - Clear information hierarchy on all pages
-  - Dashboard with stats, quick actions, recent activity
-  - Reservation list with status badges and action buttons
-  - Profile page with organized sections
-
-CRITERIA: Navigation (5 pts)
-  Target: EXCELLENT (5/5)
-  - Dynamic navbar with role-aware links
-  - All pages reachable from navigation
-  - Breadcrumb-style flow: dashboard → labs → reserve → confirm
-  - Quick action links on dashboard
-
-CRITERIA: Visual Design (5 pts)
-  Target: EXCELLENT (5/5)
-  - Bootstrap-based responsive design
-  - Consistent color scheme and layout across pages
-  - Color-coded seat maps for lab availability
-  - Role badges, status indicators, avatar initials
-
-CRITERIA: Graphics (5 pts)
-  Target: EXCELLENT (5/5)
-  - Icons used throughout with supporting text
-  - Background image on landing page
-  - Seat grid visualization with color coding
-  - Avatar system with initials fallback
-
-ESTIMATED SCORE: 75/75
-
-
-================================================================================
 17. WHAT REMAINS TO IMPLEMENT (Beyond Phase 2)
 ================================================================================
 
@@ -841,6 +771,3 @@ grading. They may be relevant for Phase 3 or future development:
    - Bump existing reservations with notification
    - Requires: override logic + notification system
 
-================================================================================
-END OF REPORT
-================================================================================
