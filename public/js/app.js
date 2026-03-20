@@ -32,27 +32,49 @@ function initLoginPage() {
     var email = $('#email').val().trim();
     var password = $('#password').val();
 
-    if (!email || !password) {
-      alert('Please fill in all fields.');
+    // Front-end validation
+    var $error = $('.login-error');
+    if (!$error.length) {
+      $form.prepend('<div class="login-error" style="color:#e74c3c;margin-bottom:10px;display:none;"></div>');
+      $error = $('.login-error');
+    }
+    $error.hide().text('');
+
+    if (!email) {
+      $error.text('Please enter your email address.').show();
+      $('#email').focus();
       return;
     }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      $error.text('Please enter a valid email address.').show();
+      $('#email').focus();
+      return;
+    }
+    if (!password) {
+      $error.text('Please enter your password.').show();
+      $('#password').focus();
+      return;
+    }
+
+    var rememberMe = $('#remember').is(':checked');
 
     fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, password: password })
+      body: JSON.stringify({ email: email, password: password, rememberMe: rememberMe })
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
       if (data.success) {
         window.location.href = '/dashboard';
       } else {
-        alert(data.error || 'Invalid email or password.');
+        $error.text(data.error || 'Invalid email or password.').show();
         $('#password').val('').focus();
       }
     })
     .catch(function() {
-      alert('Login failed. Please try again.');
+      $error.text('Login failed. Please try again.').show();
     });
   });
 
@@ -79,27 +101,49 @@ function initTechLoginPage() {
     var email = $('#email').val().trim();
     var password = $('#password').val();
 
-    if (!email || !password) {
-      alert('Please fill in all fields.');
+    // Front-end validation
+    var $error = $('.login-error');
+    if (!$error.length) {
+      $form.prepend('<div class="login-error" style="color:#e74c3c;margin-bottom:10px;display:none;"></div>');
+      $error = $('.login-error');
+    }
+    $error.hide().text('');
+
+    if (!email) {
+      $error.text('Please enter your email address.').show();
+      $('#email').focus();
       return;
     }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      $error.text('Please enter a valid email address.').show();
+      $('#email').focus();
+      return;
+    }
+    if (!password) {
+      $error.text('Please enter your password.').show();
+      $('#password').focus();
+      return;
+    }
+
+    var rememberMe = $('#remember').is(':checked');
 
     fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, password: password, techOnly: true })
+      body: JSON.stringify({ email: email, password: password, techOnly: true, rememberMe: rememberMe })
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
       if (data.success) {
         window.location.href = '/dashboard';
       } else {
-        alert(data.error || 'Invalid technician credentials.');
+        $error.text(data.error || 'Invalid technician credentials.').show();
         $('#password').val('').focus();
       }
     })
     .catch(function() {
-      alert('Login failed. Please try again.');
+      $error.text('Login failed. Please try again.').show();
     });
   });
 }
@@ -115,24 +159,43 @@ function initRegisterPage() {
 
   $form.on('submit', function(e) {
     e.preventDefault();
+    // Front-end validation
+    var $error = $('.register-error');
+    if (!$error.length) {
+      $form.prepend('<div class="register-error" style="color:#e74c3c;margin-bottom:10px;display:none;"></div>');
+      $error = $('.register-error');
+    }
+    $error.hide().text('');
+
+    var firstName = $('#firstName').val().trim();
+    var lastName = $('#lastName').val().trim();
+    var studentId = $('#studentId').val().trim();
+    var email = $('#email').val().trim();
+    var college = $('#college').val();
+    var accountType = $('#accountType').val();
     var pass = $('#password').val();
     var confirmPass = $('#confirmPassword').val();
-    var studentId = $('#studentId').val().trim();
 
-    if (pass !== confirmPass) { alert('Passwords do not match.'); return; }
-    if (pass.length < 8) { alert('Password must be at least 8 characters.'); return; }
-    if (!/^[0-9]{8}$/.test(studentId)) { alert('Student ID must be exactly 8 digits.'); return; }
+    if (!firstName) { $error.text('First name is required.').show(); $('#firstName').focus(); return; }
+    if (!lastName) { $error.text('Last name is required.').show(); $('#lastName').focus(); return; }
+    if (!/^[0-9]{8}$/.test(studentId)) { $error.text('Student ID must be exactly 8 digits.').show(); $('#studentId').focus(); return; }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) { $error.text('Please enter a valid email address.').show(); $('#email').focus(); return; }
+    if (!college) { $error.text('Please select your college.').show(); $('#college').focus(); return; }
+    if (!accountType) { $error.text('Please select an account type.').show(); $('#accountType').focus(); return; }
+    if (pass.length < 8) { $error.text('Password must be at least 8 characters.').show(); $('#password').focus(); return; }
+    if (pass !== confirmPass) { $error.text('Passwords do not match.').show(); $('#confirmPassword').focus(); return; }
 
     fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        firstName: $('#firstName').val().trim(),
-        lastName: $('#lastName').val().trim(),
+        firstName: firstName,
+        lastName: lastName,
         studentId: studentId,
-        email: $('#email').val().trim(),
-        college: $('#college').val(),
-        accountType: $('#accountType').val(),
+        email: email,
+        college: college,
+        accountType: accountType,
         password: pass
       })
     })
@@ -142,11 +205,11 @@ function initRegisterPage() {
         alert('Registration successful! Welcome to OpenLab.');
         window.location.href = '/dashboard';
       } else {
-        alert('Registration failed: ' + (data.error || 'Unknown error'));
+        $error.text(data.error || 'Registration failed.').show();
       }
     })
     .catch(function() {
-      alert('Registration failed. Please try again.');
+      $error.text('Registration failed. Please try again.').show();
     });
   });
 }
@@ -234,8 +297,10 @@ function initSeatSelection() {
     var timeSlot = $('#timeSlot option:selected').text();
     var anonymous = $('#anonymousToggle').is(':checked');
 
+    if (!date) { alert('Please select a date.'); return; }
     var today = new Date().toISOString().split('T')[0];
     if (date < today) { alert('Please select today or a future date.'); return; }
+    if (!timeSlot || timeSlot === 'Select a time slot') { alert('Please select a time slot.'); return; }
 
     var url = editId ? '/api/reservations/' + editId : '/api/reservations';
     var method = editId ? 'PUT' : 'POST';
@@ -265,11 +330,31 @@ function initSeatSelection() {
     });
   });
 
-  // Poll availability (simulated)
-  setInterval(function() {
-    var count = Math.floor(Math.random() * 10) + 15;
-    $('.availability-badge').text(count + ' seats available');
-  }, 30000);
+  // Poll availability from server every 30 seconds
+  function refreshAvailability() {
+    var labCode = $('#confirmBtn').data('lab');
+    var date = $('#reserveDate').val();
+    var timeSlot = $('#timeSlot option:selected').text();
+    if (!labCode || !date || !timeSlot) return;
+
+    fetch('/api/labs/' + encodeURIComponent(labCode) + '/seats?date=' + date + '&timeSlot=' + encodeURIComponent(timeSlot))
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.seats) {
+        var availableCount = 0;
+        data.seats.forEach(function(seat) {
+          var $seatEl = $('.seat[data-seat="' + seat.id + '"]');
+          if (!$seatEl.hasClass('selected')) {
+            $seatEl.removeClass('available occupied reserved').addClass(seat.status);
+          }
+          if (seat.status === 'available') availableCount++;
+        });
+        $('.availability-badge').text(availableCount + ' seats available');
+      }
+    })
+    .catch(function() { /* silently fail on poll */ });
+  }
+  setInterval(refreshAvailability, 30000);
 }
 
 
@@ -757,6 +842,11 @@ function initGlobalSearch() {
 $(document).ready(function() {
   var path = window.location.pathname;
 
+  // Signout is available on all authenticated pages
+  if ($('#signoutBtn').length) {
+    initSignout();
+  }
+
   // Page-specific handlers
   if (path === '/login' || path === '/login/') {
     initLoginPage();
@@ -764,8 +854,6 @@ $(document).ready(function() {
     initTechLoginPage();
   } else if (path === '/register' || path === '/register/') {
     initRegisterPage();
-  } else if (path === '/dashboard' || path === '/dashboard/') {
-    initSignout();
   } else if (path.indexOf('/reserve') > -1) {
     initSeatSelection();
   } else if (path === '/reservations' || path === '/reservations/') {

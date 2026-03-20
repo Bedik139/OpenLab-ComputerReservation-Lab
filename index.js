@@ -114,9 +114,13 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 }  // 24 hours
 }));
 
-// 10. Make session user available to all templates
+// 10. Make session user available to all templates + refresh "Remember Me" on each visit
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
+    // If session has a 3-week maxAge (Remember Me), refresh it on every visit
+    if (req.session.user && req.session.cookie.maxAge > 1000 * 60 * 60 * 24) {
+        req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 21; // extend to 3 weeks
+    }
     next();
 });
 

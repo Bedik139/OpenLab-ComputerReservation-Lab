@@ -60,7 +60,30 @@ const getAll = async (req, res) => {
 const create = async (req, res) => {
     try {
         const { studentId, lab, seat, date, timeSlot } = req.body;
-        
+
+        // Back-end validation
+        if (!studentId || !/^[0-9]{8}$/.test(studentId)) {
+            return res.status(400).json({ error: 'Student ID must be exactly 8 digits.' });
+        }
+        if (!lab || !lab.trim()) {
+            return res.status(400).json({ error: 'Lab is required.' });
+        }
+        if (!seat || !/^[A-Z][0-9]{1,2}$/i.test(seat)) {
+            return res.status(400).json({ error: 'Seat must be in format like A1, B5, or C10.' });
+        }
+        if (!date) {
+            return res.status(400).json({ error: 'Date is required.' });
+        }
+        const walkDate = new Date(date);
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0);
+        if (walkDate < todayDate) {
+            return res.status(400).json({ error: 'Cannot reserve for a past date.' });
+        }
+        if (!timeSlot || !timeSlot.trim()) {
+            return res.status(400).json({ error: 'Time slot is required.' });
+        }
+
         // Ensure the technician is logged in
         if (!req.session.user) {
             return res.status(401).json({ error: 'Unauthorized: Please log in as a technician' });
@@ -128,6 +151,31 @@ const removeNoShow = async (req, res) => {
         // Verify it's actually a walk-in reservation
         if (!reservation.isWalkIn) {
             return res.status(400).json({ error: 'Bad Request: This is a standard student reservation, not a walk-in.' });
+        }
+
+        // Enforce 10-minute window: parse reservation time and check
+        const reservationDate = new Date(reservation.date);
+        const timeStr = reservation.timeSlot.split(' - ')[0]; // e.g. "09:00 AM"
+        const timeParts = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (timeParts) {
+            let hours = parseInt(timeParts[1]);
+            const minutes = parseInt(timeParts[2]);
+            const ampm = timeParts[3].toUpperCase();
+            if (ampm === 'PM' && hours !== 12) hours += 12;
+            if (ampm === 'AM' && hours === 12) hours = 0;
+            reservationDate.setHours(hours, minutes, 0, 0);
+
+            const now = new Date();
+            const diffMs = now - reservationDate;
+            const diffMin = diffMs / (1000 * 60);
+
+            // Only allow removal within 10 minutes after the reservation start time
+            if (diffMin < 0) {
+                return res.status(400).json({ error: 'Cannot remove no-show before the reservation time starts.' });
+            }
+            if (diffMin > 10) {
+                return res.status(400).json({ error: 'The 10-minute no-show window has passed for this reservation.' });
+            }
         }
 
         // Set status to cancelled (indicating a no-show)

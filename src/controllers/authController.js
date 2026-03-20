@@ -51,6 +51,14 @@ const login = async (req, res) => {
     try {
         const { email, password, techOnly } = req.body;
 
+        // Back-end validation
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required.' });
+        }
+        if (typeof email !== 'string' || !email.trim()) {
+            return res.status(400).json({ error: 'Please provide a valid email address.' });
+        }
+
         // Find user by email (ensure it's case-insensitive by converting to lowercase)
         const user = await User.findOne({ email: email.toLowerCase() });
         
@@ -86,6 +94,12 @@ const login = async (req, res) => {
             avatarClass: user.avatarClass
         };
 
+        // Handle "Remember Me" — extend cookie to 3 weeks
+        const rememberMe = req.body.rememberMe;
+        if (rememberMe) {
+            req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 21; // 3 weeks
+        }
+
         // Return success
         return res.json({ success: true, user: req.session.user });
 
@@ -99,6 +113,35 @@ const login = async (req, res) => {
 const register = async (req, res) => {
     try {
         const { firstName, lastName, studentId, email, college, accountType, password } = req.body;
+
+        // Back-end validation
+        if (!firstName || !firstName.trim()) {
+            return res.status(400).json({ error: 'First name is required.' });
+        }
+        if (!lastName || !lastName.trim()) {
+            return res.status(400).json({ error: 'Last name is required.' });
+        }
+        if (!email || !email.trim()) {
+            return res.status(400).json({ error: 'Email is required.' });
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Please provide a valid email address.' });
+        }
+        if (!studentId || !/^[0-9]{8}$/.test(studentId)) {
+            return res.status(400).json({ error: 'Student ID must be exactly 8 digits.' });
+        }
+        if (!password || password.length < 8) {
+            return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
+        }
+        const validColleges = ['CCS', 'CLA', 'COB', 'COE', 'COS', 'GCOE', 'SOE', 'BAGCED'];
+        if (!college || !validColleges.includes(college)) {
+            return res.status(400).json({ error: 'Please select a valid college.' });
+        }
+        const validAccountTypes = ['student', 'technician'];
+        if (accountType && !validAccountTypes.includes(accountType)) {
+            return res.status(400).json({ error: 'Invalid account type.' });
+        }
 
         // Check if email already exists
         const existingEmail = await User.findOne({ email: email.toLowerCase() });

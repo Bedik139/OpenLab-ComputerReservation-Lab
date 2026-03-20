@@ -102,6 +102,36 @@ const create = async (req, res) => {
         const { lab, seat, date, timeSlot, anonymous } = req.body;
         const user = req.session.user;
 
+        // Back-end validation
+        if (!lab || !lab.trim()) {
+            return res.status(400).json({ error: 'Lab is required.' });
+        }
+        if (!seat || !seat.trim()) {
+            return res.status(400).json({ error: 'Seat is required.' });
+        }
+        if (!/^[A-Z][0-9]{1,2}$/i.test(seat)) {
+            return res.status(400).json({ error: 'Seat must be in format like A1, B5, or C10.' });
+        }
+        if (!date) {
+            return res.status(400).json({ error: 'Date is required.' });
+        }
+        const reserveDate = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (reserveDate < today) {
+            return res.status(400).json({ error: 'Cannot reserve for a past date.' });
+        }
+        // Check max 7 days in advance
+        const maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 7);
+        maxDate.setHours(23, 59, 59, 999);
+        if (reserveDate > maxDate) {
+            return res.status(400).json({ error: 'Cannot reserve more than 7 days in advance.' });
+        }
+        if (!timeSlot || !timeSlot.trim()) {
+            return res.status(400).json({ error: 'Time slot is required.' });
+        }
+
         // Look up lab info to get building name
         const labInfo = await Lab.findOne({ code: lab });
         if (!labInfo) {
@@ -152,9 +182,11 @@ const update = async (req, res) => {
             return res.status(404).json({ error: 'Reservation not found' });
         }
 
-        // Security check: only the owner can update their reservation
-        if (reservation.user.toString() !== user._id.toString()) {
-            return res.status(403).json({ error: 'Forbidden: You can only edit your own reservations' });
+        // Security check: owner or technician can update
+        const isOwner = reservation.user.toString() === user._id.toString();
+        const isTechnician = user.accountType === 'technician';
+        if (!isOwner && !isTechnician) {
+            return res.status(403).json({ error: 'Forbidden: You do not have permission to edit this reservation' });
         }
 
         // Update allowed fields

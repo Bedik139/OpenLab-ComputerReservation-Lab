@@ -112,6 +112,10 @@ router.get('/adminsignup', (req, res) => {
     res.render('adminsignup', { layout: 'auth', title: 'Admin Signup', activePage: 'adminsignup' });
 });
 
+router.get('/about', (req, res) => {
+    res.render('about', { layout: 'dashboard', title: 'About OpenLab', activePage: 'about' });
+});
+
 // Protected Pages (Require Authentication)
 router.get('/changepassword', authMiddleware, (req, res) => {
     res.render('changepassword', { layout: 'auth', title: 'Change Password' });

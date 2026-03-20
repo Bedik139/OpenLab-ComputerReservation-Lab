@@ -107,6 +107,23 @@ const updateProfile = async (req, res) => {
         const { firstName, lastName, college, bio } = req.body;
         const userId = req.session.user._id;
 
+        // Back-end validation
+        if (!firstName || !firstName.trim()) {
+            return res.status(400).json({ error: 'First name is required.' });
+        }
+        if (!lastName || !lastName.trim()) {
+            return res.status(400).json({ error: 'Last name is required.' });
+        }
+        if (college) {
+            const validColleges = ['CCS', 'CLA', 'COB', 'COE', 'COS', 'GCOE', 'SOE', 'BAGCED'];
+            if (!validColleges.includes(college)) {
+                return res.status(400).json({ error: 'Please select a valid college.' });
+            }
+        }
+        if (bio && bio.length > 500) {
+            return res.status(400).json({ error: 'Bio must be 500 characters or less.' });
+        }
+
         // Find user and update their details
         const updatedUser = await User.findByIdAndUpdate(
             userId, 
@@ -136,6 +153,14 @@ const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
         const userId = req.session.user._id;
+
+        // Back-end validation
+        if (!currentPassword) {
+            return res.status(400).json({ error: 'Current password is required.' });
+        }
+        if (!newPassword || newPassword.length < 8) {
+            return res.status(400).json({ error: 'New password must be at least 8 characters long.' });
+        }
 
         // Find the user (we need the password field here to compare it!)
         const user = await User.findById(userId);
